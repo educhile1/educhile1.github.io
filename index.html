@@ -103,7 +103,7 @@
                 <div class="md:w-1/2 flex justify-center">
                     <div class="relative">
                         <div class="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-indigo-500 to-emerald-400 rounded-full overflow-hidden">
-                            <img src="https://placehold.co/800x800" alt="Foto profesional de [Tu Nombre], mostrando una sonrisa amigable y actitud profesional" class="w-full h-full object-cover" />
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ee530257-caeb-472c-b95c-07b5915ffd80.png" alt="Foto profesional de [Tu Nombre], mostrando una sonrisa amigable y actitud profesional" class="w-full h-full object-cover" />
                         </div>
                         <div class="absolute -bottom-4 -right-4 bg-white p-2 rounded-lg shadow-md">
                             <div class="text-sm">👋 Hola!</div>
@@ -334,7 +334,7 @@
                 <!-- Project 1 -->
                 <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300">
                     <div class="project-image h-48 overflow-hidden">
-                        <img src="https://placehold.co/600x400" alt="Captura de pantalla del proyecto de desarrollo web que muestra una interfaz moderna" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/cf11fe82-0b14-46f2-9e1b-1c9528e964ea.png" alt="Captura de pantalla del proyecto de desarrollo web que muestra una interfaz moderna" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-2">
@@ -352,7 +352,7 @@
                 <!-- Project 2 -->
                 <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300">
                     <div class="project-image h-48 overflow-hidden">
-                        <img src="https://placehold.co/600x400" alt="Diseño de aplicación móvil mostrando múltiples pantallas con interfaz de usuario limpia" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/901f5b9f-fee2-458e-82be-4f6fa6a4b984.png" alt="Diseño de aplicación móvil mostrando múltiples pantallas con interfaz de usuario limpia" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-2">
@@ -370,7 +370,7 @@
                 <!-- Project 3 -->
                 <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300">
                     <div class="project-image h-48 overflow-hidden">
-                        <img src="https://placehold.co/600x400" alt="Interfaz de usuario diseñada para plataforma web con colores vibrantes y tipografía moderna" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7c775294-557a-4e60-9b5b-edc88f389a55.png" alt="Interfaz de usuario diseñada para plataforma web con colores vibrantes y tipografía moderna" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
                     </div>
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-2">
@@ -396,13 +396,12 @@
     <section id="contact" class="py-16 bg-indigo-50">
         <div class="max-w-6xl mx-auto px-4">
             <h2 class="text-3xl font-bold mb-2 text-center gradient-text">Contacto</h2>
-            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Si estás interesado en trabajar conmigo o quieres más información sobre mis proyectos, no dudes en contactarme.</p>
-            
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Si estás interesado en trabajar conmigo o quieres más información sobre mis proyectos, no dudes en contactarme.</p>      
             <div class="flex flex-col md:flex-row gap-8">
                 <div class="md:w-1/2">
                     <div class="bg-white p-8 rounded-lg shadow-sm">
                         <h3 class="text-xl font-semibold mb-4">Envíame un mensaje</h3>
-                        <form>
+                        <form action="https://formsubmit.co/eduardocayun@gmail.com" method="POST">
                             <div class="mb-4">
                                 <label for="name" class="block text-gray-700 mb-2">Nombre</label>
                                 <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Tu nombre">
@@ -420,6 +419,7 @@
                                 <textarea id="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Escribe tu mensaje aquí..."></textarea>
                             </div>
                             <button type="submit" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Enviar Mensaje</button>
+                            <div id="form-response" class="mt-4 hidden"></div>
                         </form>
                     </div>
                 </div>
@@ -552,12 +552,45 @@
         });
         
         // Form submission handling
-        const contactForm = document.querySelector('form');
+        const contactForm = document.getElementById('contact-form');
+        const formResponse = document.getElementById('form-response');
+        
         if (contactForm) {
-            contactForm.addEventListener('submit', (e) => {
+            contactForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                alert('Formulario enviado con éxito! (Esta es una demostración)');
-                contactForm.reset();
+                
+                // Get form data
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                
+                // Validate form
+                if (!name || !email || !message) {
+                    formResponse.textContent = 'Por favor completa los campos requeridos';
+                    formResponse.className = 'mt-4 text-red-500';
+                    formResponse.classList.remove('hidden');
+                    return;
+                }
+                
+                // Prepare mailto link
+                const mailtoLink = `mailto:tu@email.com?subject=${encodeURIComponent(subject || 'Contacto desde portafolio')}&body=${encodeURIComponent(
+                    `Nombre: ${name}\nEmail: ${email}\n\nMensaje:\n${message}`
+                )}`;
+                
+                // Open email client
+                window.location.href = mailtoLink;
+                
+                // Show success message
+                formResponse.textContent = 'Redirigiendo a tu cliente de correo...';
+                formResponse.className = 'mt-4 text-green-500';
+                formResponse.classList.remove('hidden');
+                
+                // Reset form after delay
+                setTimeout(() => {
+                    contactForm.reset();
+                    formResponse.classList.add('hidden');
+                }, 3000);
             });
         }
     </script>
