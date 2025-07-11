@@ -1,91 +1,565 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="author" content="Eduardo TA" />
-  <meta name="description" content="Portafolio de Eduardo TA - Ingeniero en Informática" />
-  <title>Eduardo TA | Ingeniero en Informática</title>
-  
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Font Awesome (iconos) -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Portafolio Profesional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .navbar-active {
+            color: var(--primary) !important;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .timeline-item:not(:last-child) {
+            padding-bottom: 2rem;
+        }
+        
+        .timeline-item::after {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 20px;
+            height: 100%;
+            width: 2px;
+            background: #e2e8f0;
+        }
+        
+        .skill-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+        }
+        
+        .skill-progress {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+    </style>
 </head>
-<body class="bg-white text-gray-800">
-
-  <!-- Header -->
-  <header class="bg-[#004E64] text-white shadow-md">
-    <div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Eduardo TA</h1>
-      <nav class="space-x-4">
-        <a href="#sobre-mi" class="hover:underline">Sobre mí</a>
-        <a href="#proyectos" class="hover:underline">Proyectos</a>
-        <a href="#contacto" class="hover:underline">Contacto</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Hero -->
-  <section class="bg-[#E5E7EB] text-center py-20">
-    <h2 class="text-4xl font-bold mb-4">Ingeniero en Informática</h2>
-    <p class="text-lg text-gray-600 mb-6 max-w-xl mx-auto">Apasionado por la tecnología, la gestión de proyectos TI y las soluciones digitales modernas.</p>
-    <a href="#contacto" class="bg-[#00A5CF] text-white px-6 py-2 rounded-full hover:bg-[#008DB3] transition">Contáctame</a>
-  </section>
-
-  <!-- Sobre mí -->
-  <section id="sobre-mi" class="max-w-4xl mx-auto px-4 py-16">
-    <h3 class="text-3xl font-semibold text-center mb-8">Sobre mí</h3>
-    <p class="text-gray-700 text-lg text-justify">
-      Hola, soy Eduardo, Ingeniero en Informática con experiencia en consultoría TI, gestión de proyectos y desarrollo de soluciones digitales. Me enfoco en generar impacto estratégico a través de la tecnología, con interés en la innovación, automatización y herramientas geoespaciales.
-    </p>
-  </section>
-
-  <!-- Proyectos -->
-  <section id="proyectos" class="bg-[#F9FAFB] py-16 px-4">
-    <div class="max-w-6xl mx-auto">
-      <h3 class="text-3xl font-semibold text-center mb-12">Proyectos</h3>
-      <div class="grid md:grid-cols-2 gap-8">
-        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-          <h4 class="text-xl font-bold mb-2">Dashboard de Tickets TI</h4>
-          <p class="text-gray-600">Gráficos interactivos con Angular y JSON para visualizar la gestión de tickets por comuna, región y fecha.</p>
+<body class="bg-gray-50 text-slate-800">
+    <!-- Navbar -->
+    <nav class="fixed w-full bg-white shadow-sm z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <a href="#home" class="text-xl font-bold gradient-text">MI PORTAFOLIO</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-600 hover:text-indigo-600 transition">Inicio</a>
+                    <a href="#about" class="text-gray-600 hover:text-indigo-600 transition">Sobre mí</a>
+                    <a href="#experience" class="text-gray-600 hover:text-indigo-600 transition">Experiencia</a>
+                    <a href="#education" class="text-gray-600 hover:text-indigo-600 transition">Educación</a>
+                    <a href="#portfolio" class="text-gray-600 hover:text-indigo-600 transition">Portafolio</a>
+                    <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition">Contacto</a>
+                </div>
+                <button class="md:hidden focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-          <h4 class="text-xl font-bold mb-2">Sitio Web Personal</h4>
-          <p class="text-gray-600">Desarrollado con HTML, Tailwind CSS y GitHub Pages para potenciar mi marca personal como ingeniero TI.</p>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Hola, soy <span class="gradient-text">[Tu Nombre]</span></h1>
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-gray-600">[Tu Profesión]</h2>
+                    <p class="text-gray-500 mb-6 max-w-lg">Aquí puedes escribir un breve resumen sobre ti, tus habilidades y lo que te apasiona.</p>
+                    <div class="flex space-x-4 justify-center md:justify-start">
+                        <a href="#contact" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Contactame</a>
+                        <a href="#portfolio" class="px-6 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition">Ver proyectos</a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-indigo-500 to-emerald-400 rounded-full overflow-hidden">
+                            <img src="https://placehold.co/800x800" alt="Foto profesional de [Tu Nombre], mostrando una sonrisa amigable y actitud profesional" class="w-full h-full object-cover" />
+                        </div>
+                        <div class="absolute -bottom-4 -right-4 bg-white p-2 rounded-lg shadow-md">
+                            <div class="text-sm">👋 Hola!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- Puedes agregar más proyectos aquí -->
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Contacto -->
-  <section id="contacto" class="py-16 px-4">
-    <div class="max-w-3xl mx-auto text-center">
-      <h3 class="text-3xl font-semibold mb-6">Contacto</h3>
-      <p class="mb-6 text-gray-700">¿Quieres hablar de tecnología, proyectos o colaboraciones? ¡Escríbeme!</p>
-      <div class="flex justify-center gap-6 text-2xl">
-        <a href="mailto:tu-correo@gmail.com" class="text-[#004E64] hover:text-[#00A5CF]"><i class="fas fa-envelope"></i></a>
-        <a href="https://www.linkedin.com/in/tuusuario" target="_blank" class="text-[#004E64] hover:text-[#00A5CF]"><i class="fab fa-linkedin"></i></a>
-        <a href="https://github.com/educhile1" target="_blank" class="text-[#004E64] hover:text-[#00A5CF]"><i class="fab fa-github"></i></a>
-      </div>
-    </div>
-  </section>
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Sobre Mí</h2>
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/3 mb-8 md:mb-0 md:pr-8">
+                    <h3 class="text-xl font-semibold mb-4">Información Personal</h3>
+                    <ul class="space-y-2">
+                        <li><strong>Nombre:</strong> [Tu Nombre Completo]</li>
+                        <li><strong>Ubicación:</strong> [Ciudad, País]</li>
+                        <li><strong>Email:</strong> [tu@email.com]</li>
+                        <li><strong>Teléfono:</strong> [+123456789]</li>
+                    </ul>
+                    
+                    <h3 class="text-xl font-semibold mt-8 mb-4">Habilidades</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>HTML/CSS</span>
+                                <span>90%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>JavaScript</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>[Otra habilidad]</span>
+                                <span>80%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-2/3 md:pl-8 border-l border-gray-200">
+                    <h3 class="text-xl font-semibold mb-4">Presentación Personal</h3>
+                    <p class="mb-6 text-gray-700">Aquí puedes escribir una presentación más detallada sobre ti, tus valores profesionales, lo que te motiva y lo que buscas en tu carrera. Habla sobre tus fortalezas, tus áreas de interés y cualquier otro aspecto que consideres relevante.</p>
+                    
+                    <h3 class="text-xl font-semibold mb-4 mt-8">Idiomas</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="bg-indigo-50 px-4 py-2 rounded-full">Español (Nativo)</div>
+                        <div class="bg-indigo-50 px-4 py-2 rounded-full">Inglés (Avanzado)</div>
+                        <div class="bg-indigo-50 px-4 py-2 rounded-full">Otro idioma</div>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold mb-4 mt-8">Intereses</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex items-center">
+                            <div class="w-5 h-5 bg-indigo-500 mr-2 rounded-full"></div>
+                            Tecnología
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-5 h-5 bg-emerald-500 mr-2 rounded-full"></div>
+                            Viajes
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-5 h-5 bg-amber-500 mr-2 rounded-full"></div>
+                            Fotografía
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-5 h-5 bg-fuchsia-500 mr-2 rounded-full"></div>
+                            Musica
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <!-- Footer -->
-  <footer class="bg-[#004E64] text-white text-center py-4 mt-8">
-    <p>&copy; 2025 Eduardo TA - Todos los derechos reservados</p>
-  </footer>
+    <!-- Experience Section -->
+    <section id="experience" class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Experiencia Laboral</h2>
+            
+            <div class="relative">
+                <!-- Experience Item 1 -->
+                <div class="timeline-item relative pl-8">
+                    <div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-indigo-500 border-4 border-indigo-100"></div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between flex-col sm:flex-row">
+                            <h3 class="text-xl font-semibold">Nombre del Puesto</h3>
+                            <span class="text-indigo-600 font-medium">2020 - Presente</span>
+                        </div>
+                        <div class="flex justify-between text-gray-500 mb-3">
+                            <span>Nombre de la Empresa</span>
+                            <span>Ciudad, País</span>
+                        </div>
+                        <p class="text-gray-700 mb-4">Breve descripción de tus responsabilidades y logros en este puesto. Puedes destacar proyectos importantes o resultados alcanzados.</p>
+                        <ul class="list-disc pl-5 text-gray-600 space-y-1">
+                            <li>Logro o responsabilidad importante 1</li>
+                            <li>Logro o responsabilidad importante 2</li>
+                            <li>Logro o responsabilidad importante 3</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Experience Item 2 -->
+                <div class="timeline-item relative pl-8 mt-8">
+                    <div class="absolute top-0 left-0 w-4 h-4 rounded-full bg-indigo-500 border-4 border-indigo-100"></div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="flex justify-between flex-col sm:flex-row">
+                            <h3 class="text-xl font-semibold">Nombre del Puesto</h3>
+                            <span class="text-indigo-600 font-medium">2018 - 2020</span>
+                        </div>
+                        <div class="flex justify-between text-gray-500 mb-3">
+                            <span>Nombre de la Empresa</span>
+                            <span>Ciudad, País</span>
+                        </div>
+                        <p class="text-gray-700 mb-4">Descripción de este puesto anterior, enfocándote en las habilidades desarrolladas y cómo contribuiste al éxito del equipo o empresa.</p>
+                        <ul class="list-disc pl-5 text-gray-600 space-y-1">
+                            <li>Logro o responsabilidad importante 1</li>
+                            <li>Logro o responsabilidad importante 2</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- Education Section -->
+    <section id="education" class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Educación y Cursos</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Educación Formal -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 border-b pb-2">Educación</h3>
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 p-5 rounded-lg">
+                            <h4 class="font-medium text-lg">Título Académico</h4>
+                            <div class="text-gray-500 mb-2">Nombre de la Universidad | 2015 - 2019</div>
+                            <p class="text-gray-700">Descripción breve del programa o logros académicos relevantes durante este periodo.</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-5 rounded-lg">
+                            <h4 class="font-medium text-lg">Otro Programa Educativo</h4>
+                            <div class="text-gray-500 mb-2">Institución Educativa | 2013 - 2015</div>
+                            <p class="text-gray-700">Información sobre este programa educativo que haya contribuido a tu formación profesional.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cursos y Certificaciones -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 border-b pb-2">Cursos y Certificaciones</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-start p-4 hover:bg-gray-50 rounded-lg transition">
+                            <div>
+                                <h4 class="font-medium">Curso Avanzado de JavaScript</h4>
+                                <div class="text-gray-500 text-sm">Plataforma del Curso | 2021</div>
+                            </div>
+                            <div class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">Certificado</div>
+                        </div>
+                        
+                        <div class="flex justify-between items-start p-4 hover:bg-gray-50 rounded-lg transition">
+                            <div>
+                                <h4 class="font-medium">Diseño UX/UI</h4>
+                                <div class="text-gray-500 text-sm">Institución | 2020</div>
+                            </div>
+                            <div class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">Certificado</div>
+                        </div>
+                        
+                        <div class="flex justify-between items-start p-4 hover:bg-gray-50 rounded-lg transition">
+                            <div>
+                                <h4 class="font-medium">Marketing Digital</h4>
+                                <div class="text-gray-500 text-sm">Nombre del Curso | 2019</div>
+                            </div>
+                            <div class="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs rounded">Completado</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Skills Section -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-4 border-b pb-2">Herramientas y Tecnologías</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">HTML5</div>
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">CSS3</div>
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">JavaScript</div>
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">React</div>
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">Node.js</div>
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">Git</div>
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">Figma</div>
+                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm">Photoshop</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Portafolio de Proyectos</h2>
+            
+            <!-- Filters -->
+            <div class="flex justify-center mb-10">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button class="px-4 py-2 text-sm font-medium rounded-l-lg bg-indigo-600 text-white">Todos</button>
+                    <button class="px-4 py-2 text-sm font-medium bg-white border-y border-gray-200">Web</button>
+                    <button class="px-4 py-2 text-sm font-medium bg-white border-y border-gray-200">Diseño</button>
+                    <button class="px-4 py-2 text-sm font-medium rounded-r-lg bg-white border border-gray-200">Apps</button>
+                </div>
+            </div>
+            
+            <!-- Projects Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Project 1 -->
+                <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300">
+                    <div class="project-image h-48 overflow-hidden">
+                        <img src="https://placehold.co/600x400" alt="Captura de pantalla del proyecto de desarrollo web que muestra una interfaz moderna" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-semibold">Nombre del Proyecto</h3>
+                            <div class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">Web</div>
+                        </div>
+                        <p class="text-gray-600 mb-4">Breve descripción del proyecto, tecnologías utilizadas y propósito del mismo.</p>
+                        <div class="flex space-x-2">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Ver Demo</a>
+                            <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Código</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 2 -->
+                <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300">
+                    <div class="project-image h-48 overflow-hidden">
+                        <img src="https://placehold.co/600x400" alt="Diseño de aplicación móvil mostrando múltiples pantallas con interfaz de usuario limpia" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-semibold">Aplicación Móvil</h3>
+                            <div class="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs rounded">App</div>
+                        </div>
+                        <p class="text-gray-600 mb-4">Descripción del proyecto de aplicación móvil, plataforma objetivo y funcionalidades clave.</p>
+                        <div class="flex space-x-2">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Ver en App Store</a>
+                            <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Detalles</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 3 -->
+                <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300">
+                    <div class="project-image h-48 overflow-hidden">
+                        <img src="https://placehold.co/600x400" alt="Interfaz de usuario diseñada para plataforma web con colores vibrantes y tipografía moderna" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-semibold">Diseño UX/UI</h3>
+                            <div class="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded">Diseño</div>
+                        </div>
+                        <p class="text-gray-600 mb-4">Explicación del proceso de diseño, herramientas utilizadas y resultados obtenidos.</p>
+                        <div class="flex space-x-2">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Ver Caso de Estudio</a>
+                            <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Prototipo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-10">
+                <button class="px-6 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition">Ver más proyectos</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-indigo-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold mb-2 text-center gradient-text">Contacto</h2>
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Si estás interesado en trabajar conmigo o quieres más información sobre mis proyectos, no dudes en contactarme.</p>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/2">
+                    <div class="bg-white p-8 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold mb-4">Envíame un mensaje</h3>
+                        <form>
+                            <div class="mb-4">
+                                <label for="name" class="block text-gray-700 mb-2">Nombre</label>
+                                <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Tu nombre">
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 mb-2">Email</label>
+                                <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="tu@email.com">
+                            </div>
+                            <div class="mb-4">
+                                <label for="subject" class="block text-gray-700 mb-2">Asunto</label>
+                                <input type="text" id="subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Asunto del mensaje">
+                            </div>
+                            <div class="mb-4">
+                                <label for="message" class="block text-gray-700 mb-2">Mensaje</label>
+                                <textarea id="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Escribe tu mensaje aquí..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Enviar Mensaje</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="bg-white p-8 rounded-lg shadow-sm h-full">
+                        <h3 class="text-xl font-semibold mb-4">Información de Contacto</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Correo Electrónico</h4>
+                                    <p class="text-gray-600">tu@email.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Teléfono</h4>
+                                    <p class="text-gray-600">+123 456 7890</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Ubicación</h4>
+                                    <p class="text-gray-600">Ciudad, País</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-semibold mt-8 mb-4">Redes Sociales</h3>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 hover:bg-indigo-100 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+                                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 hover:bg-indigo-100 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 hover:bg-indigo-100 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 hover:bg-indigo-100 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.8.457a2.212 2.212 0 0 0-1.019 1.016C1.222 2.244 1.087 2.828 1.048 3.68 1.01 4.55 1 4.817 1 6.001v2.741c0 1.183.01 1.45.048 2.296.04.852.174 1.433.4 1.91.22.478.528.823 1.015 1.018.473.191 1.054.325 1.906.365C5.556 15.99 5.829 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.911-.4a2.212 2.212 0 0 0 1.016-1.019c.194-.473.319-1.053.361-1.906.037-.852.048-1.122.048-2.299V6.001c0-1.184-.01-1.451-.048-2.298-.04-.851-.175-1.433-.4-1.909a2.212 2.212 0 0 0-1.02-1.018C12.747.224 12.166.09 11.313.05 10.457.01 10.184 0 8 0Zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.927.629.288.292.443.56.572.933.11.281.24.709.276 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485-.145.372-.318.64-.629.928-.29.288-.56.443-.933.572-.282.11-.708.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.193 2.193 0 0 1-.93-.572 2.219 2.219 0 0 1-.628-.927c-.112-.283-.241-.708-.276-1.486-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.6-.928.292-.288.56-.443.933-.572.282-.11.708-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.001Zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92Zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217Zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 bg-indigo-900 text-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <a href="#home" class="text-xl font-bold gradient-text">MI PORTAFOLIO</a>
+                    <p class="mt-2 text-indigo-200">© 2024 Todos los derechos reservados</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-indigo-200 hover:text-white transition">Privacidad</a>
+                    <a href="#" class="text-indigo-200 hover:text-white transition">Términos</a>
+                    <a href="#" class="text-indigo-200 hover:text-white transition">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg hidden items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Back to top button
+        const backToTopButton = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('hidden');
+                backToTopButton.classList.add('flex');
+            } else {
+                backToTopButton.classList.add('hidden');
+                backToTopButton.classList.remove('flex');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Mobile menu toggle (to be implemented fully if needed)
+        document.querySelector('nav button').addEventListener('click', () => {
+            alert('Menú móvil se implementará según sea necesario');
+        });
+        
+        // Form submission handling
+        const contactForm = document.querySelector('form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Formulario enviado con éxito! (Esta es una demostración)');
+                contactForm.reset();
+            });
+        }
+    </script>
 </body>
 </html>
