@@ -131,7 +131,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Configuración inicial
+                // Configuración inicial
             // Place your music files in same folder as HTML file or specify correct relative path
             // Example: If music is in /music folder next to HTML file, use:
             const musicFolder = 'music/';
@@ -141,10 +141,6 @@
                 { title: 'Maxi y Luka, para su Opa', artist: 'Eduardo Cayún M. / IA', file: 'Opa Amor.mp3' },
                 { title: 'Together', artist: 'Eduardo Cayún M. / IA', file: 'Together.mp3' }
             ];
-            
-            // Cambia los nombres de las canciones y los archivos por los tuyos
-            // Por ejemplo:
-            // { title: 'Rock', artist: 'Mi Banda', file: 'rock.mp3' },
             
             // Elementos del DOM
             const audioPlayer = new Audio();
@@ -200,8 +196,7 @@
             // Cargar canción
             function loadSong(index) {
                 const song = songs[index];
-                // Ensure your music files are in the same directory as the HTML file
-                audioPlayer.src = song.file;
+                audioPlayer.src = musicFolder + song.file;
                 songTitleElement.textContent = song.title;
                 songArtistElement.textContent = song.artist;
                 
