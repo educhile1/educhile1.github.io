@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Música Personal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .progress-container {
+            transition: width 0.1s linear;
+        }
+
+        .album-cover {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .album-cover:hover {
+            transform: scale(1.02);
+        }
+
+        .song-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+
+        .song-item.active {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-left: 3px solid #6366f1;
+        }
+
+        /* Animación para cuando cambia la canción */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="bg-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+            <!-- Encabezado -->
+            <div class="p-6 bg-gradient-to-r from-indigo-900 to-purple-900">
+                <h1 class="text-3xl font-bold text-center">Tu Música</h1>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="p-6">
+                <!-- Portada del álbum y info de la canción -->
+                <div class="flex flex-col items-center mb-8 fade-in">
+                    <div class="album-cover w-64 h-64 rounded-lg overflow-hidden mb-6 bg-gray-700 flex items-center justify-center">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6644b145-7d13-4d9a-ae25-8be91ce84f19.png" alt="Portada de álbum musical con diseño abstracto en tonos morados y azules" class="w-full h-full object-cover" />
+                    </div>
+                    
+                    <div class="text-center w-full">
+                        <h2 id="song-title" class="text-2xl font-semibold mb-1 truncate">Canción Actual</h2>
+                        <p id="song-artist" class="text-slate-400">Artista</p>
+                    </div>
+                </div>
+
+                <!-- Barra de progreso -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm text-slate-400 mb-2">
+                        <span id="current-time">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-indigo-500 progress-container" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Controles -->
+                <div class="flex justify-center items-center space-x-8 mb-8">
+                    <button id="prev-btn" class="text-slate-300 hover:text-white focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    
+                    <button id="play-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 focus:outline-none transform hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path id="play-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    
+                    <button id="next-btn" class="text-slate-300 hover:text-white focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Volumen -->
+                <div class="flex items-center space-x-4 mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M12 6a7.975 7.975 0 015.657 2.343m0 0a8 8 0 010 11.313m-11.314 0a8 8 0 010-11.313m2.343 2.343a4 4 0 000 5.656" />
+                    </svg>
+                    <input id="volume" type="range" min="0" max="1" step="0.01" value="0.7" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Lista de reproducción -->
+            <div class="border-t border-slate-700 p-6">
+                <h3 class="text-lg font-semibold mb-4">Lista de reproducción</h3>
+                <div id="playlist" class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                    <!-- Las canciones se agregarán aquí con JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuración inicial
+            const musicFolder = 'music/'; // Cambia esto por tu ruta de la carpeta de música
+            const songs = [
+                { title: 'Mi canción 1', artist: 'Yo', file: 'cancion1.mp3' },
+                { title: 'Mi canción 2', artist: 'Yo', file: 'cancion2.mp3' },
+                { title: 'Mi canción 3', artist: 'Yo', file: 'cancion3.mp3' },
+                { title: 'Mi canción 4', artist: 'Yo', file: 'cancion4.mp3' },
+                { title: 'Mi canción 5', artist: 'Yo', file: 'cancion5.mp3' }
+            ];
+            
+            // Cambia los nombres de las canciones y los archivos por los tuyos
+            // Por ejemplo:
+            // { title: 'Rock', artist: 'Mi Banda', file: 'rock.mp3' },
+            
+            // Elementos del DOM
+            const audioPlayer = new Audio();
+            const playBtn = document.getElementById('play-btn');
+            const playIcon = document.getElementById('play-icon');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const currentTimeElement = document.getElementById('current-time');
+            const durationElement = document.getElementById('duration');
+            const songTitleElement = document.getElementById('song-title');
+            const songArtistElement = document.getElementById('song-artist');
+            const volumeControl = document.getElementById('volume');
+            const playlistElement = document.getElementById('playlist');
+            
+            let currentSongIndex = 0;
+            let isPlaying = false;
+            
+            // Inicializar el reproductor
+            function initPlayer() {
+                // Crear la lista de reproducción
+                songs.forEach((song, index) => {
+                    const songElement = document.createElement('div');
+                    songElement.className = `song-item p-3 rounded-lg flex justify-between items-center ${index === currentSongIndex ? 'active' : ''}`;
+                    songElement.innerHTML = `
+                        <div>
+                            <div class="font-medium">${song.title}</div>
+                            <div class="text-sm text-slate-400">${song.artist}</div>
+                        </div>
+                        <span class="text-xs text-slate-500">${formatTime(0)}</span>
+                    `;
+                    songElement.addEventListener('click', () => playSong(index));
+                    playlistElement.appendChild(songElement);
+                });
+                
+                // Cargar la primera canción
+                loadSong(currentSongIndex);
+                
+                // Event listeners
+                playBtn.addEventListener('click', togglePlay);
+                prevBtn.addEventListener('click', prevSong);
+                nextBtn.addEventListener('click', nextSong);
+                audioPlayer.addEventListener('timeupdate', updateProgress);
+                audioPlayer.addEventListener('ended', nextSong);
+                audioPlayer.addEventListener('loadedmetadata', () => {
+                    durationElement.textContent = formatTime(audioPlayer.duration);
+                    updateSongDurations();
+                });
+                progressBar.parentElement.addEventListener('click', seek);
+                volumeControl.addEventListener('input', setVolume);
+            }
+            
+            // Cargar canción
+            function loadSong(index) {
+                const song = songs[index];
+                audioPlayer.src = musicFolder + song.file;
+                songTitleElement.textContent = song.title;
+                songArtistElement.textContent = song.artist;
+                
+                // Actualizar la clase activa en la lista de reproducción
+                document.querySelectorAll('.song-item').forEach((item, i) => {
+                    if (i === index) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+                
+                // Resetear la barra de progreso
+                progressBar.style.width = '0%';
+                currentTimeElement.textContent = '0:00';
+                
+                // Aplicar animación de cambio
+                document.querySelector('.album-cover').classList.add('animate-pulse');
+                setTimeout(() => {
+                    document.querySelector('.album-cover').classList.remove('animate-pulse');
+                }, 500);
+            }
+            
+            // Reproducir/pausar
+            function togglePlay() {
+                if (isPlaying) {
+                    audioPlayer.pause();
+                    playIcon.setAttribute('d', 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z');
+                } else {
+                    audioPlayer.play();
+                    playIcon.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
+                }
+                isPlaying = !isPlaying;
+                
+                // Agregar efecto visual
+                playBtn.classList.toggle('bg-indigo-700', isPlaying);
+            }
+            
+            // Canción anterior
+            function prevSong() {
+                currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+                loadSong(currentSongIndex);
+                if (isPlaying) {
+                    audioPlayer.play();
+                }
+            }
+            
+            // Siguiente canción
+            function nextSong() {
+                currentSongIndex = (currentSongIndex + 1) % songs.length;
+                loadSong(currentSongIndex);
+                if (isPlaying) {
+                    audioPlayer.play();
+                }
+            }
+            
+            // Actualizar barra de progreso
+            function updateProgress() {
+                const { currentTime, duration } = audioPlayer;
+                const progressPercent = (currentTime / duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                currentTimeElement.textContent = formatTime(currentTime);
+            }
+            
+            // Buscar en la canción
+            function seek(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audioPlayer.duration;
+                audioPlayer.currentTime = (clickX / width) * duration;
+            }
+            
+            // Ajustar volumen
+            function setVolume() {
+                audioPlayer.volume = this.value;
+            }
+            
+            // Formatear tiempo (mm:ss)
+            function formatTime(seconds) {
+                if (isNaN(seconds)) return '0:00';
+                
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+            
+            // Actualizar duraciones en la lista de reproducción
+            function updateSongDurations() {
+                document.querySelectorAll('.song-item').forEach((item, index) => {
+                    if (index === currentSongIndex) {
+                        const durationSpan = item.querySelector('span');
+                        if (durationSpan) {
+                            durationSpan.textContent = formatTime(audioPlayer.duration);
+                        }
+                    }
+                });
+            }
+            
+            // Iniciar el reproductor
+            initPlayer();
+        });
+    </script>
+</body>
+</html>
+
