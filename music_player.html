@@ -64,8 +64,8 @@
             <div class="p-6">
                 <!-- Portada del álbum y info de la canción -->
                 <div class="flex flex-col items-center mb-8 fade-in">
-                    <div class="album-cover w-64 h-64 rounded-lg overflow-hidden mb-6 bg-gray-700 flex items-center justify-center">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6644b145-7d13-4d9a-ae25-8be91ce84f19.png" alt="Portada de álbum musical con diseño abstracto en tonos morados y azules" class="w-full h-full object-cover" />
+                    <div class="album-cover w-80 h-80 rounded-lg overflow-hidden mb-6 bg-gray-700">
+                        <canvas id="particle-canvas" class="w-full h-full"></canvas>
                     </div>
                     
                     <div class="text-center w-full">
@@ -132,13 +132,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Configuración inicial
-            const musicFolder = 'music/'; // Cambia esto por tu ruta de la carpeta de música
+            // Place your music files in same folder as HTML file or specify correct relative path
+            // Example: If music is in /music folder next to HTML file, use:
+            const musicFolder = 'music/';
             const songs = [
-                { title: 'Mi canción 1', artist: 'Yo', file: 'cancion1.mp3' },
-                { title: 'Mi canción 2', artist: 'Yo', file: 'cancion2.mp3' },
-                { title: 'Mi canción 3', artist: 'Yo', file: 'cancion3.mp3' },
-                { title: 'Mi canción 4', artist: 'Yo', file: 'cancion4.mp3' },
-                { title: 'Mi canción 5', artist: 'Yo', file: 'cancion5.mp3' }
+                // Replace these with your actual song files
+                { title: 'Cruzando cielos', artist: 'Eduardo Cayún M. / IA', file: 'Cruzando Cielos.mp3' },
+                { title: 'Maxi y Luka, para su Opa', artist: 'Eduardo Cayún M. / IA', file: 'Opa Amor.mp3' },
+                { title: 'Together', artist: 'Eduardo Cayún M. / IA', file: 'Together.mp3' }
             ];
             
             // Cambia los nombres de las canciones y los archivos por los tuyos
@@ -199,7 +200,8 @@
             // Cargar canción
             function loadSong(index) {
                 const song = songs[index];
-                audioPlayer.src = musicFolder + song.file;
+                // Ensure your music files are in the same directory as the HTML file
+                audioPlayer.src = song.file;
                 songTitleElement.textContent = song.title;
                 songArtistElement.textContent = song.artist;
                 
@@ -301,6 +303,108 @@
             // Iniciar el reproductor
             initPlayer();
         });
+    </script>
+
+    <script>
+        // Particle animation
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 320;
+        canvas.height = 320;
+        
+        const particles = [];
+        const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#f59e0b', '#10b981', '#06b6d4'];
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.baseSize = Math.random() * 8 + 2;
+                this.size = this.baseSize;
+                this.targetSize = this.baseSize;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.shape = Math.floor(Math.random() * 3); // 0=circle, 1=square, 2=triangle
+                this.rotation = 0;
+                this.rotationSpeed = Math.random() * 0.1 - 0.05;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+                
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                
+                // Random size changes
+                if (Math.random() < 0.02) {
+                    this.targetSize = this.baseSize * (0.5 + Math.random());
+                }
+                this.size += (this.targetSize - this.size) * 0.1;
+                
+                // Random shape changes
+                if (Math.random() < 0.005) {
+                    this.shape = Math.floor(Math.random() * 3);
+                }
+                
+                // Change color randomly
+                if (Math.random() < 0.01) {
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+            }
+            
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
+                switch(this.shape) {
+                    case 0: // Circle
+                        ctx.beginPath();
+                        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        break;
+                        
+                    case 1: // Square
+                        ctx.fillRect(-this.size, -this.size, this.size * 2, this.size * 2);
+                        break;
+                        
+                    case 2: // Triangle
+                        ctx.beginPath();
+                        ctx.moveTo(0, -this.size);
+                        ctx.lineTo(-this.size, this.size);
+                        ctx.lineTo(this.size, this.size);
+                        ctx.closePath();
+                        ctx.fill();
+                        break;
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        function initParticles() {
+            for (let i = 0; i < 80; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        initParticles();
+        animate();
     </script>
 </body>
 </html>
