@@ -25,3 +25,19 @@ La estructura del proyecto sigue el estándar típico de un sitio estático:
 ├── /css # Hojas de estilo
 ├── /js # Scripts JavaScript
 └── README.md # Documentación del proyecto
+
+
+
+
+.
+├── src
+│   ├── index.js
+│   └── components
+│       ├── Button.js
+│       └── Input.js
+├── tests
+│   ├── index.test.js
+│   └── components
+│       ├── Button.test.js
+│       └── Input.test.js
+└── README.md
