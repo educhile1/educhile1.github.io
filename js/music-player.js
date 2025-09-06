@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const durationElement = document.getElementById('duration');
     const songTitleElement = document.getElementById('song-title');
     const songArtistElement = document.getElementById('song-artist');
-    const volumeControl = document.getElementById('volume');
     const playlistElement = document.getElementById('playlist');
 
     // =================================================================
@@ -67,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSongDurations();
         });
         progressBar.parentElement.addEventListener('click', seek);
-        volumeControl.addEventListener('input', setVolume);
     }
 
     // =================================================================
@@ -147,11 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const clickX = e.offsetX;
         const duration = audioPlayer.duration;
         audioPlayer.currentTime = (clickX / width) * duration;
-    }
-
-    // Set volume
-    function setVolume() {
-        audioPlayer.volume = this.value;
     }
 
     // Format time to mm:ss
