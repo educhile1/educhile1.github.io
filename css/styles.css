@@ -1,0 +1,71 @@
+/* =================================================================
+    IMPORTS
+================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* =================================================================
+    VARIABLES
+================================================================== */
+:root {
+    --primary: #4f46e5;
+    --secondary: #10b981;
+    --dark: #1e293b;
+    --light: #f8fafc;
+    --gray: #64748b;
+}
+
+/* =================================================================
+    GENERAL STYLES
+================================================================== */
+body {
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+}
+
+/* =================================================================
+    UTILITY CLASSES
+================================================================== */
+.gradient-text {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* =================================================================
+    COMPONENT STYLES
+================================================================== */
+.navbar-active {
+    color: var(--primary) !important;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.timeline-item:not(:last-child) {
+    padding-bottom: 2rem;
+}
+
+.timeline-item::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 20px;
+    height: 100%;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.skill-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: #e2e8f0;
+}
+
+.skill-progress {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
