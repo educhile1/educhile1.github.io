@@ -5,64 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reproductor de Música Personal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .progress-container {
-            transition: width 0.1s linear;
-        }
-
-        .album-cover {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .album-cover:hover {
-            transform: scale(1.02);
-        }
-
-        .song-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            cursor: pointer;
-        }
-
-        .song-item.active {
-            background-color: rgba(99, 102, 241, 0.2);
-            border-left: 3px solid #6366f1;
-        }
-
-        /* Animación para cuando cambia la canción */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/music-player.css">
 </head>
-<body>
-    <div class="container mx-auto px-4 max-w-4xl">
+<body class="bg-slate-900">
+    <!-- =================================================================
+    NAVBAR
+    ================================================================== -->
+    <nav class="fixed w-full bg-slate-800 shadow-md z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <a href="index.html" class="text-xl font-bold gradient-text">PORTAFOLIO</a>
+                <a href="index.html" class="text-gray-300 hover:text-indigo-400 transition">Volver al inicio</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- =================================================================
+    MUSIC PLAYER
+    ================================================================== -->
+    <div class="container mx-auto px-4 max-w-4xl pt-24">
         <div class="bg-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-            <!-- Encabezado -->
+            <!-- =================================================================
+            HEADER
+            ================================================================== -->
             <div class="p-6 bg-gradient-to-r from-indigo-900 to-purple-900">
                 <h1 class="text-3xl font-bold text-center">Tu Música</h1>
             </div>
 
-            <!-- Contenido principal -->
+            <!-- =================================================================
+            MAIN CONTENT
+            ================================================================== -->
             <div class="p-6">
-                <!-- Portada del álbum y info de la canción -->
+                <!-- Album Art and Song Info -->
                 <div class="flex flex-col items-center mb-8 fade-in">
                     <div class="album-cover w-80 h-80 rounded-lg overflow-hidden mb-6 bg-gray-700">
                         <canvas id="particle-canvas" class="w-full h-full"></canvas>
@@ -74,7 +49,7 @@
                     </div>
                 </div>
 
-                <!-- Barra de progreso -->
+                <!-- Progress Bar -->
                 <div class="mb-6">
                     <div class="flex justify-between text-sm text-slate-400 mb-2">
                         <span id="current-time">0:00</span>
@@ -85,7 +60,7 @@
                     </div>
                 </div>
 
-                <!-- Controles -->
+                <!-- Controls -->
                 <div class="flex justify-center items-center space-x-8 mb-8">
                     <button id="prev-btn" class="text-slate-300 hover:text-white focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,7 +82,7 @@
                     </button>
                 </div>
 
-                <!-- Volumen -->
+                <!-- Volume -->
                 <div class="flex items-center space-x-4 mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M12 6a7.975 7.975 0 015.657 2.343m0 0a8 8 0 010 11.313m-11.314 0a8 8 0 010-11.313m2.343 2.343a4 4 0 000 5.656" />
@@ -119,7 +94,9 @@
                 </div>
             </div>
 
-            <!-- Lista de reproducción -->
+            <!-- =================================================================
+            PLAYLIST
+            ================================================================== -->
             <div class="border-t border-slate-700 p-6">
                 <h3 class="text-lg font-semibold mb-4">Lista de reproducción</h3>
                 <div id="playlist" class="space-y-2 max-h-60 overflow-y-auto pr-2">
@@ -129,277 +106,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-                // Configuración inicial
-      
-            const musicFolder = 'music/';
-            const songs = [
-                // Agregar Archivos.
-                { title: 'Cruzando cielos', artist: 'Eduardo Cayún M. / IA', file: 'Cruzando Cielos.mp3' },
-                { title: 'Maxi y Luka, para su Opa', artist: 'Eduardo Cayún M. / IA', file: 'Opa Amor.mp3' },
-                { title: 'Together', artist: 'Eduardo Cayún M. / IA', file: 'Together.mp3' }
-            ];
-            
-            // Elementos del DOM
-            const audioPlayer = new Audio();
-            const playBtn = document.getElementById('play-btn');
-            const playIcon = document.getElementById('play-icon');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            const progressBar = document.getElementById('progress-bar');
-            const currentTimeElement = document.getElementById('current-time');
-            const durationElement = document.getElementById('duration');
-            const songTitleElement = document.getElementById('song-title');
-            const songArtistElement = document.getElementById('song-artist');
-            const volumeControl = document.getElementById('volume');
-            const playlistElement = document.getElementById('playlist');
-            
-            let currentSongIndex = 0;
-            let isPlaying = false;
-            
-            // Inicializar el reproductor
-            function initPlayer() {
-                // Crear la lista de reproducción
-                songs.forEach((song, index) => {
-                    const songElement = document.createElement('div');
-                    songElement.className = `song-item p-3 rounded-lg flex justify-between items-center ${index === currentSongIndex ? 'active' : ''}`;
-                    songElement.innerHTML = `
-                        <div>
-                            <div class="font-medium">${song.title}</div>
-                            <div class="text-sm text-slate-400">${song.artist}</div>
-                        </div>
-                        <span class="text-xs text-slate-500">${formatTime(0)}</span>
-                    `;
-                    songElement.addEventListener('click', () => playSong(index));
-                    playlistElement.appendChild(songElement);
-                });
-                
-                // Cargar la primera canción
-                loadSong(currentSongIndex);
-                
-                // Event listeners
-                playBtn.addEventListener('click', togglePlay);
-                prevBtn.addEventListener('click', prevSong);
-                nextBtn.addEventListener('click', nextSong);
-                audioPlayer.addEventListener('timeupdate', updateProgress);
-                audioPlayer.addEventListener('ended', nextSong);
-                audioPlayer.addEventListener('loadedmetadata', () => {
-                    durationElement.textContent = formatTime(audioPlayer.duration);
-                    updateSongDurations();
-                });
-                progressBar.parentElement.addEventListener('click', seek);
-                volumeControl.addEventListener('input', setVolume);
-            }
-            
-            // Cargar canción
-            function loadSong(index) {
-                const song = songs[index];
-                audioPlayer.src = musicFolder + song.file;
-                songTitleElement.textContent = song.title;
-                songArtistElement.textContent = song.artist;
-                
-                // Actualizar la clase activa en la lista de reproducción
-                document.querySelectorAll('.song-item').forEach((item, i) => {
-                    if (i === index) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                });
-                
-                // Resetear la barra de progreso
-                progressBar.style.width = '0%';
-                currentTimeElement.textContent = '0:00';
-                
-                // Aplicar animación de cambio
-                document.querySelector('.album-cover').classList.add('animate-pulse');
-                setTimeout(() => {
-                    document.querySelector('.album-cover').classList.remove('animate-pulse');
-                }, 500);
-            }
-            
-            // Reproducir/pausar
-            function togglePlay() {
-                if (isPlaying) {
-                    audioPlayer.pause();
-                    playIcon.setAttribute('d', 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z');
-                } else {
-                    audioPlayer.play();
-                    playIcon.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
-                }
-                isPlaying = !isPlaying;
-                
-                // Agregar efecto visual
-                playBtn.classList.toggle('bg-indigo-700', isPlaying);
-            }
-            
-            // Canción anterior
-            function prevSong() {
-                currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-                loadSong(currentSongIndex);
-                if (isPlaying) {
-                    audioPlayer.play();
-                }
-            }
-            
-            // Siguiente canción
-            function nextSong() {
-                currentSongIndex = (currentSongIndex + 1) % songs.length;
-                loadSong(currentSongIndex);
-                if (isPlaying) {
-                    audioPlayer.play();
-                }
-            }
-            
-            // Actualizar barra de progreso
-            function updateProgress() {
-                const { currentTime, duration } = audioPlayer;
-                const progressPercent = (currentTime / duration) * 100;
-                progressBar.style.width = `${progressPercent}%`;
-                currentTimeElement.textContent = formatTime(currentTime);
-            }
-            
-            // Buscar en la canción
-            function seek(e) {
-                const width = this.clientWidth;
-                const clickX = e.offsetX;
-                const duration = audioPlayer.duration;
-                audioPlayer.currentTime = (clickX / width) * duration;
-            }
-            
-            // Ajustar volumen
-            function setVolume() {
-                audioPlayer.volume = this.value;
-            }
-            
-            // Formatear tiempo (mm:ss)
-            function formatTime(seconds) {
-                if (isNaN(seconds)) return '0:00';
-                
-                const minutes = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-            }
-            
-            // Actualizar duraciones en la lista de reproducción
-            function updateSongDurations() {
-                document.querySelectorAll('.song-item').forEach((item, index) => {
-                    if (index === currentSongIndex) {
-                        const durationSpan = item.querySelector('span');
-                        if (durationSpan) {
-                            durationSpan.textContent = formatTime(audioPlayer.duration);
-                        }
-                    }
-                });
-            }
-            
-            // Iniciar el reproductor
-            initPlayer();
-        });
-    </script>
-
-    <script>
-        // Particle animation
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 320;
-        canvas.height = 320;
-        
-        const particles = [];
-        const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#f59e0b', '#10b981', '#06b6d4'];
-        
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.baseSize = Math.random() * 8 + 2;
-                this.size = this.baseSize;
-                this.targetSize = this.baseSize;
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.speedX = Math.random() * 3 - 1.5;
-                this.speedY = Math.random() * 3 - 1.5;
-                this.shape = Math.floor(Math.random() * 3); // 0=circle, 1=square, 2=triangle
-                this.rotation = 0;
-                this.rotationSpeed = Math.random() * 0.1 - 0.05;
-            }
-            
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.rotation += this.rotationSpeed;
-                
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-                
-                // Random size changes
-                if (Math.random() < 0.02) {
-                    this.targetSize = this.baseSize * (0.5 + Math.random());
-                }
-                this.size += (this.targetSize - this.size) * 0.1;
-                
-                // Random shape changes
-                if (Math.random() < 0.005) {
-                    this.shape = Math.floor(Math.random() * 3);
-                }
-                
-                // Change color randomly
-                if (Math.random() < 0.01) {
-                    this.color = colors[Math.floor(Math.random() * colors.length)];
-                }
-            }
-            
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                
-                switch(this.shape) {
-                    case 0: // Circle
-                        ctx.beginPath();
-                        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-                        ctx.fill();
-                        break;
-                        
-                    case 1: // Square
-                        ctx.fillRect(-this.size, -this.size, this.size * 2, this.size * 2);
-                        break;
-                        
-                    case 2: // Triangle
-                        ctx.beginPath();
-                        ctx.moveTo(0, -this.size);
-                        ctx.lineTo(-this.size, this.size);
-                        ctx.lineTo(this.size, this.size);
-                        ctx.closePath();
-                        ctx.fill();
-                        break;
-                }
-                
-                ctx.restore();
-            }
-        }
-        
-        function initParticles() {
-            for (let i = 0; i < 80; i++) {
-                particles.push(new Particle());
-            }
-        }
-        
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
-            
-            requestAnimationFrame(animate);
-        }
-        
-        initParticles();
-        animate();
-    </script>
+    <script src="js/music-player.js"></script>
 </body>
 </html>
 
