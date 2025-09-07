@@ -69,3 +69,61 @@ body {
     border-radius: 4px;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
 }
+
+/* =================================================================
+    DARK MODE STYLES
+================================================================== */
+body.dark {
+    background-color: var(--dark);
+    color: var(--light);
+}
+
+body.dark .bg-white {
+    background-color: #1e293b;
+}
+
+body.dark .bg-gray-50 {
+    background-color: #0f172a;
+}
+
+body.dark .text-slate-800 {
+    color: var(--light);
+}
+
+body.dark .text-gray-600 {
+    color: #94a3b8;
+}
+
+body.dark .text-gray-700 {
+    color: #cbd5e1;
+}
+
+body.dark .text-gray-500 {
+    color: #94a3b8;
+}
+
+body.dark nav {
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
+}
+
+body.dark .timeline-item::after {
+    background: #334155;
+}
+
+body.dark .skill-bar {
+    background: #334155;
+}
+
+body.dark .border-gray-200 {
+    border-color: #334155;
+}
+
+body.dark .hover\:bg-gray-200:hover {
+    background-color: #334155;
+}
+
+body.dark .project-card {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+}
