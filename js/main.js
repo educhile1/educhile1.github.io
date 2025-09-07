@@ -81,3 +81,61 @@ if (localStorage.getItem('theme') === 'dark') {
 
 // Update the icon on page load
 updateDarkIcon();
+
+/* =================================================================
+    MUSIC PLAYER
+================================================================== */
+const musicPlayerContainer = document.getElementById('music-player-container');
+const showMusicPlayerBtn = document.getElementById('show-music-player');
+const showMusicPlayerMobileBtn = document.getElementById('show-music-player-mobile');
+
+function openMusicPlayer() {
+    fetch('music_player.html')
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const musicPlayerNode = doc.querySelector('.container');
+
+            if (musicPlayerNode) {
+                musicPlayerContainer.innerHTML = ''; // Clear previous content
+                musicPlayerContainer.appendChild(musicPlayerNode);
+                musicPlayerContainer.classList.remove('hidden');
+                musicPlayerContainer.classList.add('music-player-overlay');
+                document.body.classList.add('body-no-scroll');
+
+                // Add close button
+                const closeBtn = document.createElement('button');
+                closeBtn.innerHTML = '&times;';
+                closeBtn.className = 'close-btn';
+                closeBtn.onclick = closeMusicPlayer;
+                musicPlayerContainer.prepend(closeBtn);
+
+                // Load music player script
+                const script = document.createElement('script');
+                script.src = 'js/music-player.js';
+                script.onload = () => {
+                    // Script loaded
+                };
+                document.body.appendChild(script);
+            }
+        })
+        .catch(error => console.error('Error loading the music player:', error));
+}
+
+function closeMusicPlayer() {
+    musicPlayerContainer.classList.add('hidden');
+    musicPlayerContainer.classList.remove('music-player-overlay');
+    musicPlayerContainer.innerHTML = '';
+    document.body.classList.remove('body-no-scroll');
+}
+
+showMusicPlayerBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openMusicPlayer();
+});
+
+showMusicPlayerMobileBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openMusicPlayer();
+});
