@@ -15,7 +15,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // =================================================================
     // DOM ELEMENTS
     // =================================================================
+    // Common
     const audioPlayer = new Audio();
+    const songTitleElement = document.getElementById('song-title');
+    const songArtistElement = document.getElementById('song-artist');
+    const playlistElement = document.getElementById('playlist');
+
+    // Mobile
     const playBtn = document.getElementById('play-btn');
     const playIcon = document.getElementById('play-icon');
     const prevBtn = document.getElementById('prev-btn');
@@ -23,12 +29,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressBar = document.getElementById('progress-bar');
     const currentTimeElement = document.getElementById('current-time');
     const durationElement = document.getElementById('duration');
-    const songTitleElement = document.getElementById('song-title');
-    const songArtistElement = document.getElementById('song-artist');
-    const playlistElement = document.getElementById('playlist');
     const volumeSlider = document.getElementById('volume-slider');
     const shuffleBtn = document.getElementById('shuffle-btn');
     const repeatBtn = document.getElementById('repeat-btn');
+
+    // Desktop
+    const playBtnDesktop = document.getElementById('play-btn-desktop');
+    const playIconDesktop = document.getElementById('play-icon-desktop');
+    const prevBtnDesktop = document.getElementById('prev-btn-desktop');
+    const nextBtnDesktop = document.getElementById('next-btn-desktop');
+    const progressBarDesktop = document.getElementById('progress-bar-desktop');
+    const currentTimeElementDesktop = document.getElementById('current-time-desktop');
+    const durationElementDesktop = document.getElementById('duration-desktop');
+    const volumeSliderDesktop = document.getElementById('volume-slider-desktop');
+    const shuffleBtnDesktop = document.getElementById('shuffle-btn-desktop');
+    const repeatBtnDesktop = document.getElementById('repeat-btn-desktop');
 
     // =================================================================
     // STATE VARIABLES
@@ -61,20 +76,28 @@ document.addEventListener('DOMContentLoaded', function() {
         loadSong(currentSongIndex);
 
         // Add event listeners
+        // Mobile
         playBtn.addEventListener('click', togglePlay);
         prevBtn.addEventListener('click', prevSong);
         nextBtn.addEventListener('click', nextSong);
-        audioPlayer.addEventListener('timeupdate', updateProgress);
-        audioPlayer.addEventListener('timeupdate', updateProgress);
-        audioPlayer.addEventListener('loadedmetadata', () => {
-            durationElement.textContent = formatTime(audioPlayer.duration);
-            updateSongDurations();
-        });
-        audioPlayer.addEventListener('ended', handleSongEnd);
         progressBar.parentElement.addEventListener('click', seek);
         volumeSlider.addEventListener('input', setVolume);
         shuffleBtn.addEventListener('click', toggleShuffle);
         repeatBtn.addEventListener('click', toggleRepeat);
+
+        // Desktop
+        playBtnDesktop.addEventListener('click', togglePlay);
+        prevBtnDesktop.addEventListener('click', prevSong);
+        nextBtnDesktop.addEventListener('click', nextSong);
+        progressBarDesktop.parentElement.addEventListener('click', seek);
+        volumeSliderDesktop.addEventListener('input', setVolume);
+        shuffleBtnDesktop.addEventListener('click', toggleShuffle);
+        repeatBtnDesktop.addEventListener('click', toggleRepeat);
+
+        // Global Audio Events
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+        audioPlayer.addEventListener('loadedmetadata', updateDuration);
+        audioPlayer.addEventListener('ended', handleSongEnd);
     }
 
     // =================================================================
@@ -82,6 +105,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // =================================================================
     function setVolume() {
         audioPlayer.volume = volumeSlider.value;
+        // Sync desktop slider if it exists
+        if (volumeSliderDesktop) {
+            volumeSliderDesktop.value = volumeSlider.value;
+        }
     }
 
     // =================================================================
@@ -122,6 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
         audioPlayer.play();
         // Update the play/pause icon
         playIcon.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
+        playIconDesktop.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
         // Update the state
         isPlaying = true;
     }
@@ -131,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isPlaying) {
             audioPlayer.pause();
             playIcon.setAttribute('d', 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z');
+            playIconDesktop.setAttribute('d', 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z');
             isPlaying = false;
         } else {
             // If no song is loaded, play the first one
@@ -139,10 +168,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 audioPlayer.play();
                 playIcon.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
+                playIconDesktop.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
                 isPlaying = true;
             }
         }
         playBtn.classList.toggle('bg-indigo-700', isPlaying);
+        playBtnDesktop.classList.toggle('bg-indigo-700', isPlaying);
+        playBtn.classList.toggle('active', isPlaying);
+        playBtnDesktop.classList.toggle('active', isPlaying);
     }
 
     // Play previous song
@@ -169,24 +202,33 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleShuffle() {
         isShuffle = !isShuffle;
         shuffleBtn.classList.toggle('active', isShuffle);
+        shuffleBtnDesktop.classList.toggle('active', isShuffle);
     }
 
     // Toggle repeat mode
     function toggleRepeat() {
+        const repeatSVG = {
+            all: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7l-4 4 4 4M17 17l4-4-4-4M3 12h18" /></svg>`,
+            one: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7l-4 4 4 4M17 17l4-4-4-4M3 12h18" /><path d="M12 8v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+            none: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 2l4 4-4 4M3 12h18M7 22l-4-4 4-4" /></svg>`
+        };
+
         if (repeatMode === 'none') {
             repeatMode = 'all';
             repeatBtn.classList.add('active');
-            // SVG for repeat all
-            repeatBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7l-4 4 4 4M17 17l4-4-4-4M3 12h18" /></svg>`;
+            repeatBtnDesktop.classList.add('active');
+            repeatBtn.innerHTML = repeatSVG.all;
+            repeatBtnDesktop.innerHTML = repeatSVG.all;
         } else if (repeatMode === 'all') {
             repeatMode = 'one';
-            // SVG for repeat one
-            repeatBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7l-4 4 4 4M17 17l4-4-4-4M3 12h18" /><path d="M12 8v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+            repeatBtn.innerHTML = repeatSVG.one;
+            repeatBtnDesktop.innerHTML = repeatSVG.one;
         } else {
             repeatMode = 'none';
             repeatBtn.classList.remove('active');
-            // SVG for repeat none
-            repeatBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 2l4 4-4 4M3 12h18M7 22l-4-4 4-4" /></svg>`;
+            repeatBtnDesktop.classList.remove('active');
+            repeatBtn.innerHTML = repeatSVG.none;
+            repeatBtnDesktop.innerHTML = repeatSVG.none;
         }
     }
 
@@ -203,8 +245,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateProgress() {
         const { currentTime, duration } = audioPlayer;
         const progressPercent = (currentTime / duration) * 100;
-        progressBar.style.width = `${progressPercent}%`;
-        currentTimeElement.textContent = formatTime(currentTime);
+        if (progressBar) progressBar.style.width = `${progressPercent}%`;
+        if (progressBarDesktop) progressBarDesktop.style.width = `${progressPercent}%`;
+        if (currentTimeElement) currentTimeElement.textContent = formatTime(currentTime);
+        if (currentTimeElementDesktop) currentTimeElementDesktop.textContent = formatTime(currentTime);
+    }
+
+    // Update duration display
+    function updateDuration() {
+        const duration = audioPlayer.duration;
+        if (durationElement) durationElement.textContent = formatTime(duration);
+        if (durationElementDesktop) durationElementDesktop.textContent = formatTime(duration);
+        updateSongDurations();
     }
 
     // Seek in the song
@@ -247,8 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
 ================================================================== */
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
-canvas.width = 320;
-canvas.height = 320;
 
 const particles = [];
 const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#f59e0b', '#10b981', '#06b6d4'];
@@ -324,14 +374,25 @@ class Particle {
     }
 }
 
+function resizeCanvas() {
+    const container = canvas.parentElement;
+    if (container) {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+    }
+}
+
 function initParticles() {
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    particles.length = 0; // Limpiar partículas existentes antes de crear nuevas
     for (let i = 0; i < 80; i++) {
         particles.push(new Particle());
     }
 }
 
 function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < particles.length; i++) {
         particles[i].update();
