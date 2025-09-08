@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // =================================================================
     const musicFolder = 'music/';
     const songs = [
-        { title: 'Cruzando cielos', artist: 'Eduardo Cayún M. / IA', file: 'Cruzando Cielos.mp3' },
-        { title: 'Maxi y Luka, para su Opa', artist: 'Eduardo Cayún M. / IA', file: 'Opa Amor.mp3' },
-        { title: 'Together', artist: 'Eduardo Cayún M. / IA', file: 'Together.mp3' }
+        { title: 'Cruzando cielos', artist: 'Eduardo Cayún M. / IA', file: 'Cruzando Cielos.mp3', image: 'images/perfil_pro_eduf.jpg' },
+        { title: 'Maxi y Luka, para su Opa', artist: 'Eduardo Cayún M. / IA', file: 'Opa Amor.mp3', image: 'images/perfil_pro_eduf.jpg' },
+        { title: 'Together', artist: 'Eduardo Cayún M. / IA', file: 'Together.mp3', image: 'images/perfil_pro_eduf.jpg' }
     ];
 
     // =================================================================
@@ -26,12 +26,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const songTitleElement = document.getElementById('song-title');
     const songArtistElement = document.getElementById('song-artist');
     const playlistElement = document.getElementById('playlist');
+    const volumeSlider = document.getElementById('volume-slider');
+    const albumArt = document.getElementById('album-art');
+    const shuffleBtn = document.getElementById('shuffle-btn');
+    const repeatBtn = document.getElementById('repeat-btn');
 
     // =================================================================
     // STATE VARIABLES
     // =================================================================
     let currentSongIndex = 0;
     let isPlaying = false;
+    let isShuffle = false;
+    let repeatMode = 'none'; // 'none', 'one', 'all'
 
     // =================================================================
     // PLAYER INITIALIZATION
@@ -60,12 +66,22 @@ document.addEventListener('DOMContentLoaded', function() {
         prevBtn.addEventListener('click', prevSong);
         nextBtn.addEventListener('click', nextSong);
         audioPlayer.addEventListener('timeupdate', updateProgress);
-        audioPlayer.addEventListener('ended', nextSong);
         audioPlayer.addEventListener('loadedmetadata', () => {
             durationElement.textContent = formatTime(audioPlayer.duration);
             updateSongDurations();
         });
+        audioPlayer.addEventListener('ended', handleSongEnd);
         progressBar.parentElement.addEventListener('click', seek);
+        volumeSlider.addEventListener('input', setVolume);
+        shuffleBtn.addEventListener('click', toggleShuffle);
+        repeatBtn.addEventListener('click', toggleRepeat);
+    }
+
+    // =================================================================
+    // VOLUME CONTROL
+    // =================================================================
+    function setVolume() {
+        audioPlayer.volume = volumeSlider.value;
     }
 
     // =================================================================
@@ -77,6 +93,16 @@ document.addEventListener('DOMContentLoaded', function() {
         audioPlayer.src = musicFolder + song.file;
         songTitleElement.textContent = song.title;
         songArtistElement.textContent = song.artist;
+
+        // Update album art
+        if (song.image) {
+            albumArt.src = song.image;
+            albumArt.classList.remove('hidden');
+            canvas.classList.add('hidden');
+        } else {
+            albumArt.classList.add('hidden');
+            canvas.classList.remove('hidden');
+        }
 
         // Update active class in playlist
         document.querySelectorAll('.song-item').forEach((item, i) => {
@@ -137,8 +163,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Play next song
     function nextSong() {
-        currentSongIndex = (currentSongIndex + 1) % songs.length;
+        if (isShuffle) {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * songs.length);
+            } while (newIndex === currentSongIndex);
+            currentSongIndex = newIndex;
+        } else {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+        }
         playSong(currentSongIndex);
+    }
+
+    // Toggle shuffle mode
+    function toggleShuffle() {
+        isShuffle = !isShuffle;
+        shuffleBtn.classList.toggle('active', isShuffle);
+    }
+
+    // Toggle repeat mode
+    function toggleRepeat() {
+        if (repeatMode === 'none') {
+            repeatMode = 'all';
+            repeatBtn.className = 'text-slate-400 hover:text-white focus:outline-none relative repeat-all';
+        } else if (repeatMode === 'all') {
+            repeatMode = 'one';
+            repeatBtn.className = 'text-slate-400 hover:text-white focus:outline-none relative repeat-one';
+        } else {
+            repeatMode = 'none';
+            repeatBtn.className = 'text-slate-400 hover:text-white focus:outline-none relative repeat-none';
+        }
+    }
+
+    // Handle song end
+    function handleSongEnd() {
+        if (repeatMode === 'one') {
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+        } else if (repeatMode === 'all') {
+            nextSong();
+        }
     }
 
     // Update progress bar
