@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // =================================================================
     const musicFolder = 'music/';
     const songs = [
-        { title: 'Cruzando cielos', artist: 'Eduardo Cayún M. / IA', file: 'Cruzando Cielos.mp3', image: 'images/perfil_pro_eduf.jpg' },
-        { title: 'Maxi y Luka, para su Opa', artist: 'Eduardo Cayún M. / IA', file: 'Opa Amor.mp3', image: 'images/perfil_pro_eduf.jpg' },
-        { title: 'Together', artist: 'Eduardo Cayún M. / IA', file: 'Together.mp3', image: 'images/perfil_pro_eduf.jpg' }
+        { title: 'Cruzando cielos', artist: 'Eduardo Cayún M. / IA', file: 'Cruzando Cielos.mp3' },
+        { title: 'Maxi y Luka, para su Opa', artist: 'Eduardo Cayún M. / IA', file: 'Opa Amor.mp3' },
+        { title: 'Together', artist: 'Eduardo Cayún M. / IA', file: 'Together.mp3' }
     ];
 
     // =================================================================
@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const songArtistElement = document.getElementById('song-artist');
     const playlistElement = document.getElementById('playlist');
     const volumeSlider = document.getElementById('volume-slider');
-    const albumArt = document.getElementById('album-art');
     const shuffleBtn = document.getElementById('shuffle-btn');
     const repeatBtn = document.getElementById('repeat-btn');
 
@@ -66,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
         prevBtn.addEventListener('click', prevSong);
         nextBtn.addEventListener('click', nextSong);
         audioPlayer.addEventListener('timeupdate', updateProgress);
+        audioPlayer.addEventListener('timeupdate', updateProgress);
         audioPlayer.addEventListener('loadedmetadata', () => {
             durationElement.textContent = formatTime(audioPlayer.duration);
             updateSongDurations();
@@ -93,16 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         audioPlayer.src = musicFolder + song.file;
         songTitleElement.textContent = song.title;
         songArtistElement.textContent = song.artist;
-
-        // Update album art
-        if (song.image) {
-            albumArt.src = song.image;
-            albumArt.classList.remove('hidden');
-            canvas.classList.add('hidden');
-        } else {
-            albumArt.classList.add('hidden');
-            canvas.classList.remove('hidden');
-        }
 
         // Update active class in playlist
         document.querySelectorAll('.song-item').forEach((item, i) => {
@@ -185,21 +175,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleRepeat() {
         if (repeatMode === 'none') {
             repeatMode = 'all';
-            repeatBtn.className = 'text-slate-400 hover:text-white focus:outline-none relative repeat-all';
+            repeatBtn.classList.add('active');
+            // SVG for repeat all
+            repeatBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7l-4 4 4 4M17 17l4-4-4-4M3 12h18" /></svg>`;
         } else if (repeatMode === 'all') {
             repeatMode = 'one';
-            repeatBtn.className = 'text-slate-400 hover:text-white focus:outline-none relative repeat-one';
+            // SVG for repeat one
+            repeatBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7l-4 4 4 4M17 17l4-4-4-4M3 12h18" /><path d="M12 8v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         } else {
             repeatMode = 'none';
-            repeatBtn.className = 'text-slate-400 hover:text-white focus:outline-none relative repeat-none';
+            repeatBtn.classList.remove('active');
+            // SVG for repeat none
+            repeatBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 2l4 4-4 4M3 12h18M7 22l-4-4 4-4" /></svg>`;
         }
     }
 
     // Handle song end
     function handleSongEnd() {
         if (repeatMode === 'one') {
-            audioPlayer.currentTime = 0;
-            audioPlayer.play();
+            playSong(currentSongIndex);
         } else if (repeatMode === 'all') {
             nextSong();
         }
