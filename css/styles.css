@@ -152,9 +152,9 @@ body.dark .project-card {
     transform: translate(-50%, -50%);
     z-index: 101;
     width: 90%;
-    max-width: 600px;
+    max-width: 300px;
     height: 90%;
-    max-height: 500px;
+    max-height: 250px;
 }
 
 .body-no-scroll {
