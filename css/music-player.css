@@ -72,23 +72,6 @@ input[type=range]:hover::-webkit-slider-thumb {
 }
 
 /* Shuffle and Repeat buttons active state */
-#shuffle-btn.active {
-    color: #8b5cf6;
-}
-
-#repeat-btn #repeat-all-icon,
-#repeat-btn #repeat-one-icon,
-#repeat-btn #repeat-none-icon {
-    display: none;
-}
-
-#repeat-btn.repeat-none #repeat-none-icon,
-#repeat-btn.repeat-all #repeat-all-icon,
-#repeat-btn.repeat-one #repeat-one-icon {
-    display: block;
-}
-
-#repeat-btn.repeat-all,
-#repeat-btn.repeat-one {
+#shuffle-btn.active, #repeat-btn.active {
     color: #8b5cf6;
 }
