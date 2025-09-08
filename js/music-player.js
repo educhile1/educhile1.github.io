@@ -98,37 +98,47 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     }
 
+    // Play a song
+    function playSong(index) {
+        // Load the song
+        loadSong(index);
+        // Play the song
+        audioPlayer.play();
+        // Update the play/pause icon
+        playIcon.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
+        // Update the state
+        isPlaying = true;
+    }
+
     // Play/pause a song
     function togglePlay() {
         if (isPlaying) {
             audioPlayer.pause();
             playIcon.setAttribute('d', 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z');
+            isPlaying = false;
         } else {
-            audioPlayer.play();
-            playIcon.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
+            // If no song is loaded, play the first one
+            if (!audioPlayer.src) {
+                playSong(0);
+            } else {
+                audioPlayer.play();
+                playIcon.setAttribute('d', 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z');
+                isPlaying = true;
+            }
         }
-        isPlaying = !isPlaying;
-
-        // Add visual effect
         playBtn.classList.toggle('bg-indigo-700', isPlaying);
     }
 
     // Play previous song
     function prevSong() {
         currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-        loadSong(currentSongIndex);
-        if (isPlaying) {
-            audioPlayer.play();
-        }
+        playSong(currentSongIndex);
     }
 
     // Play next song
     function nextSong() {
         currentSongIndex = (currentSongIndex + 1) % songs.length;
-        loadSong(currentSongIndex);
-        if (isPlaying) {
-            audioPlayer.play();
-        }
+        playSong(currentSongIndex);
     }
 
     // Update progress bar
