@@ -6,8 +6,9 @@ body {
     color: #e2e8f0;
     height: 100vh;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    padding-right: 50px;
 }
 
 .progress-container {
