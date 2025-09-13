@@ -83,8 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Constantes del juego
     const COLS = 14;
     const ROWS = 24;
-    const BLOCK_SIZE = 40;
-    const NEXT_PIECE_BLOCK_SIZE = 12;
+    const BLOCK_SIZE = 32;
+    const NEXT_PIECE_BLOCK_SIZE = 10;
 
     context.canvas.width = COLS * BLOCK_SIZE;
     context.canvas.height = ROWS * BLOCK_SIZE;
