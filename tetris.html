@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Definitivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-wrapper">
+        <h1>Tetris Definitivo</h1>
+        <div class="game-container">
+            <canvas id="tetris" width="720" height="1040"></canvas>
+            <aside class="sidebar">
+                <div class="sidebar-box"><h2>Puntuación</h2><p id="score">0</p></div>
+                <div class="sidebar-box"><h2>Nivel</h2><p id="level">0</p></div>
+                <div class="sidebar-box"><h2>Siguiente</h2><div id="next-pieces"></div></div>
+                <div class="sidebar-box"><h2>Guardada</h2><canvas id="hold-piece" width="96" height="96"></canvas></div>
+                <div class="sidebar-box">
+                    <h2>Audio</h2>
+                    <div class="audio-controls">
+                        <button id="mute-btn">🔇</button>
+                        <button id="vol-down-btn">-</button>
+                        <span id="vol-display">5</span>
+                        <button id="vol-up-btn">+</button>
+                    </div>
+                    <h3>Música</h3>
+                    <div class="music-controls">
+                        <button class="music-track-btn" data-track="0">1</button>
+                        <button class="music-track-btn" data-track="1">2</button>
+                        <button class="music-track-btn" data-track="2">3</button>
+                        <button class="music-track-btn" data-track="3">4</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Pantallas de UI -->
+    <div id="start-screen" class="overlay">
+        <div class="overlay-content">
+            <h2>Edu Tetris</h2>
+            <div class="controls-info">
+                <button id="start-btn">Iniciar Juego</button>
+                <br>
+                <br>
+                <h3>Controles</h3>
+                <p><span>← → / A D</span> Mover</p>
+                <p><span>↑ / W</span> Rotar</p>
+                <p><span>Q</span> Rotar Izq.</p>
+                <p><span>↓ / S</span> Acelerar</p>
+                <p><span>Espacio</span> Caída Rápida</p>
+                <p><span>C</span> Guardar</p>
+                <p><span>P / Esc</span> Pausa</p>
+            </div>
+            
+        </div>
+    </div>
+    <div id="pause-screen" class="overlay hidden">
+        <div class="overlay-content">
+            <h2>Pausa</h2>
+            <button id="resume-btn">Reanudar</button>
+        </div>
+    </div>
+    <div id="game-over-screen" class="overlay hidden">
+        <div class="overlay-content">
+            <h2>Game Over</h2>
+            <p>Puntuación Final: <span id="final-score">0</span></p>
+            <button id="play-again-btn">Jugar de Nuevo</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
