@@ -103,11 +103,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // =================================================================
     // VOLUME CONTROL
     // =================================================================
-    function setVolume() {
-        audioPlayer.volume = volumeSlider.value;
-        // Sync desktop slider if it exists
+    function setVolume(event) {
+        const newVolume = event.target.value;
+        audioPlayer.volume = newVolume;
+
+        // Sincronizar ambos controles deslizantes de volumen
+        if (volumeSlider) {
+            volumeSlider.value = newVolume;
+        }
         if (volumeSliderDesktop) {
-            volumeSliderDesktop.value = volumeSlider.value;
+            volumeSliderDesktop.value = newVolume;
         }
     }
 
