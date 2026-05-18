@@ -7,76 +7,84 @@
     <meta name="author" content="Eduardo A. Cayún M.">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
-  
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
 </head>
 
 <body class="bg-gray-50 text-slate-800 dark:bg-zinc-900 dark:text-gray-200">
     <!-- =================================================================
     NAVBAR
     ================================================================== -->
-    <nav class="fixed w-full bg-white shadow-sm z-50 dark:bg-zinc-800">
+    <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 dark:bg-zinc-900/90 border-b border-gray-100 dark:border-zinc-800/80 transition-colors duration-300">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
-                <a href="#home" class="text-xl font-bold gradient-text">PORTAFOLIO</a>
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8">
-                    <a href="#home" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Inicio</a>
-                    <a href="#about" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Sobre mí</a>
-                    <a href="#education" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Educación</a>
-                    <a href="#portfolio" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Portafolio</a>
-                    <a href="#" id="show-music-player" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Música</a>
-                    <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400">Contacto</a>
+                <a href="#home" class="text-xl font-bold gradient-text tracking-wide">PORTAFOLIO</a>
+                
+                <div class="flex items-center space-x-6">
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#home" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Inicio</a>
+                        <a href="#about" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Sobre mí</a>
+                        <a href="#education" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Educación</a>
+                        <a href="#portfolio" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Portafolio</a>
+                        <a href="#" id="show-music-player" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Música</a>
+                        <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Contacto</a>
+                    </div>
+                    
+                    <!-- Dark Mode Toggle Button (Sleek design in navbar) -->
+                    <button id="dark-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-lg transition duration-200 focus:outline-none flex items-center justify-center w-10 h-10" title="Cambiar tema">
+                        🌙
+                    </button>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
                 </div>
-                <button id="mobile-menu-button" class="md:hidden focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                    </svg>
-                </button>
             </div>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden">
-            <a href="#home" class="block py-2 px-4 text-sm hover:bg-gray-200">Inicio</a>
-            <a href="#about" class="block py-2 px-4 text-sm hover:bg-gray-200">Sobre mí</a>
-            <a href="#education" class="block py-2 px-4 text-sm hover:bg-gray-200">Educación</a>
-            <a href="#portfolio" class="block py-2 px-4 text-sm hover:bg-gray-200">Portafolio</a>
-            <a href="#" id="show-music-player-mobile" class="block py-2 px-4 text-sm hover:bg-gray-200">Música</a>
-            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contacto</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-zinc-900 border-t border-gray-100 dark:border-zinc-800 py-2 transition-all duration-300">
+            <a href="#home" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Inicio</a>
+            <a href="#about" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Sobre mí</a>
+            <a href="#education" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Educación</a>
+            <a href="#portfolio" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Portafolio</a>
+            <a href="#" id="show-music-player-mobile" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Música</a>
+            <a href="#contact" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Contacto</a>
         </div>
     </nav>
 
     <!-- =================================================================
     HERO SECTION
     ================================================================== -->
-    <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 dark:bg-zinc-900">
+    <section id="home" class="pt-32 pb-16 md:pt-40 md:pb-24 dark:bg-zinc-900 transition-colors duration-300">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Hola, soy <span class="gradient-text">Eduardo Cayún M.</span></h1>
-                    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-gray-600 dark:text-gray-400">MBA e Ingeniero en informatica, </h2>
-                    <p class="text-gray-500 mb-6 max-w-lg dark:text-gray-400">Estoy aquí para mejorar tu empresa con texnología y procesos eficientes.</p>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">Hola, soy <span class="gradient-text">Eduardo Cayún M.</span></h1>
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-gray-600 dark:text-gray-400">MBA e Ingeniero en Informática</h2>
+                    <p class="text-gray-500 mb-8 max-w-lg dark:text-gray-400 text-lg">Estoy aquí para mejorar tu empresa con tecnología y procesos eficientes.</p>
                     <div class="flex space-x-4 justify-center md:justify-start">
-                        <a href="#contact" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Contactame</a>
-                        <a href="#portfolio" class="px-6 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-indigo-900">Ver proyectos</a>
+                        <a href="#contact" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-md shadow-indigo-200 dark:shadow-none">Contáctame</a>
+                        <a href="#portfolio" class="px-6 py-3 border border-indigo-600 text-indigo-600 font-medium rounded-lg hover:bg-indigo-50 transition dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-indigo-900/30">Ver proyectos</a>
                     </div>
                 </div>
                 <div class="md:w-1/2 flex justify-center">
-                <div class="relative">
-                    <div
-                        class="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-indigo-500 to-emerald-400 rounded-full overflow-hidden">
-                        <img src="images/perfil_pro_eduf.jpg" alt="Foto profesional de Eduardo" class="w-full h-full object-cover" />
+                    <div class="relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-indigo-500 to-emerald-400 rounded-full overflow-hidden shadow-xl p-1">
+                            <div class="w-full h-full bg-white dark:bg-zinc-900 rounded-full overflow-hidden">
+                                <img src="images/perfil_pro_eduf.jpg" alt="Foto profesional de Eduardo" class="w-full h-full object-cover" />
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-white px-4 py-2 rounded-xl shadow-lg dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 animate-bounce">
+                            <div class="text-sm font-semibold">👋 ¡Hola!</div>
+                        </div>
                     </div>
-                    <div class="absolute -bottom-4 -right-4 bg-white p-2 rounded-lg shadow-md dark:bg-zinc-700">
-                        <div class="text-sm">👋 Hola!</div>
-                    </div>
-                    <!-- Botón modo oscuro -->
-                    <button id="dark-toggle"
-                        class="absolute top-4 right-4 bg-gray-200 dark:bg-gray-700 text-4xl rounded-full p-4 shadow-lg transition hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center justify-center"
-                        style="width: 64px; height: 64px;"
-                        title="Cambiar modo oscuro">
-                        🌙
-                    </button>
-                </div>
                 </div>
             </div>
         </div>
@@ -134,28 +142,28 @@
                     
                     <h3 class="text-xl font-semibold mb-4 mt-8">Idiomas</h3>
                     <div class="flex flex-wrap gap-4">
-                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-900 dark:text-indigo-300">Español (Nativo)</div>
-                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-900 dark:text-indigo-300">Inglés Profesional (Intermedio)</div>
-                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-900 dark:text-indigo-300">Portugues (Básico)</div>
+                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50 font-medium">Español (Nativo)</div>
+                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50 font-medium">Inglés Profesional (Intermedio)</div>
+                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50 font-medium">Portugués (Básico)</div>
                     </div>
                     
                     <h3 class="text-xl font-semibold mb-4 mt-8">Intereses</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="flex items-center">
-                            <div class="w-5 h-5 bg-indigo-500 mr-2 rounded-full"></div>
+                    <div class="flex flex-wrap gap-6">
+                        <div class="flex items-center text-gray-700 dark:text-gray-300">
+                            <div class="w-3 h-3 bg-indigo-500 mr-2.5 rounded-full shadow shadow-indigo-400"></div>
                             Tecnología
                         </div>
-                        <div class="flex items-center">
-                            <div class="w-5 h-5 bg-emerald-500 mr-2 rounded-full"></div>
+                        <div class="flex items-center text-gray-700 dark:text-gray-300">
+                            <div class="w-3 h-3 bg-emerald-500 mr-2.5 rounded-full shadow shadow-emerald-400"></div>
                             Viajes
                         </div>
-                        <div class="flex items-center">
-                            <div class="w-5 h-5 bg-amber-500 mr-2 rounded-full"></div>
+                        <div class="flex items-center text-gray-700 dark:text-gray-300">
+                            <div class="w-3 h-3 bg-amber-500 mr-2.5 rounded-full shadow shadow-amber-400"></div>
                             Fotografía
                         </div>
-                        <div class="flex items-center">
-                            <div class="w-5 h-5 bg-fuchsia-500 mr-2 rounded-full"></div>
-                            Musica
+                        <div class="flex items-center text-gray-700 dark:text-gray-300">
+                            <div class="w-3 h-3 bg-fuchsia-500 mr-2.5 rounded-full shadow shadow-fuchsia-400"></div>
+                            Música
                         </div>
                     </div>
                 </div>
@@ -189,20 +197,22 @@
                             <p class="text-gray-700 dark:text-gray-300">Carrera profesional con sólida formación en desarrollo y arquitectura de software.</p>
                         </div>
 
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700">
-                            <h4 class="font-medium text-lg">Diplomado en Gestión de Proyectos</h4>
+                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700 transition duration-200 hover:shadow-sm">
+                            <h4 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">Diplomado en Gestión de Proyectos</h4>
                             <div class="text-gray-500 mb-2 dark:text-gray-400">DUOC UC | 2013</div>
-                            <p class="text-gray-700 dark:text-gray-300">Basado en metodologías PMI.</p>
+                            <p class="text-gray-700 dark:text-gray-300 text-sm">Especialización basada en metodologías PMI para una dirección de proyectos tecnológica y ágil.</p>
                         </div>
 
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700">
-                            <h4 class="font-medium text-lg">Diplomado en Arquitectura de la Información</h4>
+                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700 transition duration-200 hover:shadow-sm">
+                            <h4 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">Diplomado en Arquitectura de la Información</h4>
                             <div class="text-gray-500 mb-2 dark:text-gray-400">DUOC UC | 2013</div>
+                            <p class="text-gray-700 dark:text-gray-300 text-sm">Enfoque centrado en la usabilidad, experiencia de usuario (UX/UI) y estructuración estratégica de datos.</p>
                         </div>
 
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700">
-                            <h4 class="font-medium text-lg">Diplomado en Business Intelligence</h4>
+                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700 transition duration-200 hover:shadow-sm">
+                            <h4 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">Diplomado en Business Intelligence</h4>
                             <div class="text-gray-500 mb-2 dark:text-gray-400">IEDE Business School, U. Europea de Madrid | 2012</div>
+                            <p class="text-gray-700 dark:text-gray-300 text-sm">Formación avanzada en minería de datos, modelado analítico y toma de decisiones corporativas.</p>
                         </div>
                     </div>
                 </div>
@@ -393,18 +403,7 @@
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-800 dark:text-gray-200">Correo Electrónico</h4>
-                                    <p class="text-gray-600 dark:text-gray-400">tu@email.com</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 dark:bg-indigo-900">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-800 dark:text-gray-200">Teléfono</h4>
-                                    <p class="text-gray-600 dark:text-gray-400">+123 456 7890</p>
+                                    <a href="mailto:eduardocayun@gmail.com" class="text-indigo-600 dark:text-indigo-400 hover:underline">eduardocayun@gmail.com</a>
                                 </div>
                             </div>
                             <div class="flex items-start">
@@ -416,7 +415,18 @@
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-800 dark:text-gray-200">Ubicación</h4>
-                                    <p class="text-gray-600 dark:text-gray-400">Ciudad, País</p>
+                                    <p class="text-gray-600 dark:text-gray-400">Santiago, Chile / Asunción, Paraguay</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 dark:bg-indigo-900">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-800 dark:text-gray-200">Modalidad</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">Presencial / Remoto (Latam y Global)</p>
                                 </div>
                             </div>
                         </div>

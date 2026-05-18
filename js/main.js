@@ -55,7 +55,7 @@ const body = document.body;
 
 // Function to update the dark mode icon
 function updateDarkIcon() {
-    if (body.classList.contains('dark')) {
+    if (document.documentElement.classList.contains('dark')) {
         darkToggle.textContent = '☀️';
     } else {
         darkToggle.textContent = '🌙';
@@ -64,10 +64,11 @@ function updateDarkIcon() {
 
 // Toggle dark mode when the button is clicked
 darkToggle.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
     body.classList.toggle('dark');
     updateDarkIcon();
     // Save user preference in localStorage
-    if (body.classList.contains('dark')) {
+    if (document.documentElement.classList.contains('dark')) {
         localStorage.setItem('theme', 'dark');
     } else {
         localStorage.setItem('theme', 'light');
@@ -76,7 +77,11 @@ darkToggle.addEventListener('click', () => {
 
 // Check for saved user preference on page load
 if (localStorage.getItem('theme') === 'dark') {
+    document.documentElement.classList.add('dark');
     body.classList.add('dark');
+} else {
+    document.documentElement.classList.remove('dark');
+    body.classList.remove('dark');
 }
 
 // Update the icon on page load
