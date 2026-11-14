@@ -1,8 +1,8 @@
 /* =================================================================
-   EDU TETRIS ARCADE - CORE ENGINE & AUDIO
+   EDU TETRIS ARCADE — NEXT-GEN ENGINE, CRYSTAL TEXTURES & AUDIO
 ================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
+    // Canvas & Context
     const canvas = document.getElementById('tetris');
     const context = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const holdContext = holdCanvas.getContext('2d');
     const toastBadge = document.getElementById('toast-badge');
 
-    // UI Screens & Overlays
+    // UI Overlays
     const startScreen = document.getElementById('start-screen');
     const pauseScreen = document.getElementById('pause-screen');
     const gameOverScreen = document.getElementById('game-over-screen');
@@ -32,7 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const volDisplay = document.getElementById('vol-display');
     const musicTrackBtns = document.querySelectorAll('.music-track-btn');
 
-    // Audio & Synth fallback
+    // =================================================================
+    // HIGH-FIDELITY WEB AUDIO SYNTHESIZER ENGINE
+    // =================================================================
     let audioCtx = null;
     function getAudioCtx() {
         if (!audioCtx) {
@@ -45,81 +47,162 @@ document.addEventListener('DOMContentLoaded', () => {
         return audioCtx;
     }
 
-    function playSynthSound(type) {
+    // Sound FX volume
+    let volume = 0.55;
+    let currentTrack = 0;
+    let isMuted = false;
+
+    // Advanced Synthesizer Sound Generator
+    function playEnhancedSound(type, extra = 0) {
         if (isMuted) return;
         const ctx = getAudioCtx();
         if (!ctx) return;
 
         const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        const currentVol = volume * 0.3;
+        const masterGain = ctx.createGain();
+        masterGain.connect(ctx.destination);
+        masterGain.gain.setValueAtTime(volume * 0.45, now);
 
         if (type === 'move') {
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(220, now);
-            osc.frequency.exponentialRampToValueAtTime(140, now + 0.05);
-            gain.gain.setValueAtTime(currentVol, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-            osc.start(now);
-            osc.stop(now + 0.05);
-        } else if (type === 'rotate') {
+            // Snappy arcade blip with stereo feel
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(320, now);
-            osc.frequency.exponentialRampToValueAtTime(520, now + 0.08);
-            gain.gain.setValueAtTime(currentVol, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-            osc.start(now);
-            osc.stop(now + 0.08);
-        } else if (type === 'drop') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(120, now);
-            osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
-            gain.gain.setValueAtTime(currentVol * 1.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-            osc.start(now);
-            osc.stop(now + 0.1);
-        } else if (type === 'clear') {
-            osc.type = 'square';
             osc.frequency.setValueAtTime(440, now);
-            osc.frequency.setValueAtTime(587.33, now + 0.07);
-            osc.frequency.setValueAtTime(880, now + 0.14);
-            gain.gain.setValueAtTime(currentVol * 0.8, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+            osc.frequency.exponentialRampToValueAtTime(260, now + 0.04);
+            gain.gain.setValueAtTime(0.5, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+            osc.connect(gain);
+            gain.connect(masterGain);
             osc.start(now);
-            osc.stop(now + 0.28);
-        } else if (type === 'hold') {
+            osc.stop(now + 0.045);
+        } else if (type === 'rotate') {
+            // Futuristic laser twirl
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
             osc.type = 'triangle';
-            osc.frequency.setValueAtTime(350, now);
-            osc.frequency.setValueAtTime(440, now + 0.05);
-            gain.gain.setValueAtTime(currentVol, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(740, now + 0.08);
+            gain.gain.setValueAtTime(0.6, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            osc.connect(gain);
+            gain.connect(masterGain);
             osc.start(now);
-            osc.stop(now + 0.1);
+            osc.stop(now + 0.085);
+        } else if (type === 'drop') {
+            // Sub-bass punch thud
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(140, now);
+            osc.frequency.exponentialRampToValueAtTime(38, now + 0.12);
+            gain.gain.setValueAtTime(0.9, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(now);
+            osc.stop(now + 0.13);
+        } else if (type === 'hardDrop') {
+            // Heavy cyber impact with snap
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(200, now);
+            osc1.frequency.exponentialRampToValueAtTime(30, now + 0.18);
+
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(600, now);
+            osc2.frequency.exponentialRampToValueAtTime(80, now + 0.08);
+
+            gain.gain.setValueAtTime(1.0, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(masterGain);
+
+            osc1.start(now);
+            osc2.start(now);
+            osc1.stop(now + 0.19);
+            osc2.stop(now + 0.19);
+        } else if (type === 'hold') {
+            // Ethereal dual-tone swap
+            [523.25, 783.99].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + i * 0.03);
+                gain.gain.setValueAtTime(0.5, now + i * 0.03);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.14);
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(now + i * 0.03);
+                osc.stop(now + 0.15);
+            });
+        } else if (type === 'clear') {
+            // Harmonic rising chord chime
+            const baseNotes = [523.25, 659.25, 783.99, 1046.50];
+            const count = Math.min(4, Math.max(1, extra));
+            for (let i = 0; i < count; i++) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(baseNotes[i], now + i * 0.05);
+                gain.gain.setValueAtTime(0.7, now + i * 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.05 + 0.28);
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(now + i * 0.05);
+                osc.stop(now + i * 0.05 + 0.3);
+            }
+        } else if (type === 'tetris') {
+            // Epic triumphant 4-line fanfare
+            const fanfare = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+            fanfare.forEach((freq, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                gain.gain.setValueAtTime(0.6, now + idx * 0.06);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.06 + 0.4);
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(now + idx * 0.06);
+                osc.stop(now + idx * 0.06 + 0.42);
+            });
+        } else if (type === 'combo') {
+            // Incremental combo chime
+            const pitch = 330 * Math.pow(1.12, Math.min(10, extra));
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(pitch, now);
+            gain.gain.setValueAtTime(0.7, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(now);
+            osc.stop(now + 0.22);
         } else if (type === 'gameover') {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(300, now);
-            osc.frequency.exponentialRampToValueAtTime(60, now + 0.6);
-            gain.gain.setValueAtTime(currentVol, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-            osc.start(now);
-            osc.stop(now + 0.6);
+            // Sad descending cadence
+            [392, 349.23, 311.13, 261.63].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now + i * 0.12);
+                gain.gain.setValueAtTime(0.5, now + i * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.12 + 0.35);
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(now + i * 0.12);
+                osc.stop(now + i * 0.12 + 0.38);
+            });
         }
     }
 
-    const soundFiles = {
-        move: new Audio('sounds/move.wav'),
-        rotate: new Audio('sounds/rotate.wav'),
-        drop: new Audio('sounds/drop.wav'),
-        clear: new Audio('sounds/clear.wav'),
-        gameOver: new Audio('sounds/gameover.wav'),
-        hold: new Audio('sounds/hold.wav'),
-        explosion: new Audio('sounds/explosion.wav')
-    };
-
+    // Audio file tracks for background music
     const musicTracks = [
         new Audio(encodeURI('music/Cruzando Cielos.mp3')),
         new Audio(encodeURI('music/Opa Amor.mp3')),
@@ -130,10 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         track.preload = 'auto';
     });
 
-    let volume = 0.5;
-    let currentTrack = 0;
-    let isMuted = false;
-
     function updateVolumeDisplay() {
         const displayVal = isMuted ? '0' : Math.round(volume * 10);
         if (volDisplay) volDisplay.textContent = displayVal;
@@ -142,28 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (quickMuteBtn) quickMuteBtn.textContent = icon;
 
         musicTracks.forEach(track => {
-            track.volume = isMuted ? 0 : volume * 0.7;
+            track.volume = isMuted ? 0 : volume * 0.65;
         });
-        Object.values(soundFiles).forEach(s => {
-            s.volume = isMuted ? 0 : volume;
-        });
-    }
-
-    function playSound(soundName) {
-        if (isMuted) return;
-        try {
-            if (soundFiles[soundName]) {
-                soundFiles[soundName].currentTime = 0;
-                const p = soundFiles[soundName].play();
-                if (p && p.catch) {
-                    p.catch(() => playSynthSound(soundName));
-                }
-            } else {
-                playSynthSound(soundName);
-            }
-        } catch (e) {
-            playSynthSound(soundName);
-        }
     }
 
     function startCurrentMusic() {
@@ -176,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const targetTrack = musicTracks[currentTrack];
         if (targetTrack) {
-            targetTrack.volume = volume * 0.7;
+            targetTrack.volume = volume * 0.65;
             targetTrack.play().catch(() => {});
         }
     }
@@ -231,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =================================================================
-    // RESPONSIVE GAME DIMENSIONS
+    // RESPONSIVE SIZING & BOARD GEOMETRY
     // =================================================================
     const COLS = 12;
     const ROWS = 22;
@@ -240,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resizeBoard() {
         const availableHeight = Math.max(380, window.innerHeight - 170);
         const availableWidth = Math.max(260, Math.min(window.innerWidth - 40, 480));
-        
+
         const blockSizeFromHeight = Math.floor(availableHeight / ROWS);
         const blockSizeFromWidth = Math.floor(availableWidth / (COLS + 2));
 
@@ -259,7 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     resizeBoard();
 
-    // Game State
+    // =================================================================
+    // GAME STATE & HIGH SCORE
+    // =================================================================
     let board = createBoard(COLS, ROWS);
     let score = 0;
     let level = 1;
@@ -267,66 +328,31 @@ document.addEventListener('DOMContentLoaded', () => {
     let combo = 0;
     let gameOver = false;
     let paused = false;
-    let animationFrameId;
+    let animationFrameId = null;
 
-    // High score from localStorage
     let highScore = parseInt(localStorage.getItem('edu_tetris_highscore') || '0', 10);
     if (highScoreElement) highScoreElement.textContent = highScore;
 
-    // =================================================================
-    // PIECES & COLORS
-    // =================================================================
-    const PIECES = [
-        // Standard Tetrominoes
-        [[1, 1, 1, 1]],                    // I (Cyan)
-        [[1, 1, 1], [0, 1, 0]],            // T (Purple)
-        [[1, 1, 0], [0, 1, 1]],            // Z (Red)
-        [[0, 1, 1], [1, 1, 0]],            // S (Green)
-        [[1, 1], [1, 1]],                  // O (Yellow)
-        [[1, 0, 0], [1, 1, 1]],            // L (Orange)
-        [[0, 0, 1], [1, 1, 1]],            // J (Blue)
-        // Bonus Arcade Pieces
-        [[1, 1, 1, 1, 1]],                 // Super I (Pink)
-        [[0, 1, 0], [1, 1, 1], [0, 1, 0]], // Cruz / Cross (Gold)
-        [[1, 1, 1], [1, 0, 1]],            // U shape (Emerald)
-        [[1]]                              // Spark / Dot (White/Lime)
-    ];
-
-    const COLORS = [
-        null,
-        '#00f0ff', // I (Cyan)
-        '#b026ff', // T (Purple)
-        '#ff2a5f', // Z (Red)
-        '#00ff88', // S (Green)
-        '#ffe600', // O (Yellow)
-        '#ff8800', // L (Orange)
-        '#3b82f6', // J (Blue)
-        '#ff00b7', // Super I
-        '#ffd700', // Cross
-        '#10b981', // U
-        '#a3e635'  // Spark
-    ];
-
-    let piece = null;
-    let nextPieces = [];
-    let heldPiece = null;
-    let canHold = true;
-    let lastMoveWasRotate = false;
-
-    // Particle FX
-    let impactParticles = [];
-    let explosionParticles = [];
+    // Screenshake & Laser Trail FX
+    let screenShake = 0;
+    let laserBeams = [];
+    let lineShockwaves = [];
+    let particles = [];
     let stars = [];
+
+    function addScreenShake(amount) {
+        screenShake = Math.max(screenShake, amount);
+    }
 
     function initStars() {
         stars = [];
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() * 2 + 1,
-                speed: Math.random() * 0.4 + 0.2,
-                opacity: Math.random() * 0.6 + 0.2
+                size: Math.random() * 2 + 0.8,
+                speed: Math.random() * 0.4 + 0.15,
+                opacity: Math.random() * 0.7 + 0.2
             });
         }
     }
@@ -336,14 +362,54 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!toastBadge) return;
         toastBadge.textContent = text;
         toastBadge.style.borderColor = color;
-        toastBadge.style.boxShadow = `0 0 25px ${color}`;
+        toastBadge.style.boxShadow = `0 0 35px ${color}`;
         toastBadge.classList.add('show');
-        setTimeout(() => toastBadge.classList.remove('show'), 900);
+        setTimeout(() => toastBadge.classList.remove('show'), 950);
     }
 
     function createBoard(cols, rows) {
         return Array.from({ length: rows }, () => Array(cols).fill(0));
     }
+
+    // =================================================================
+    // HIGH-DEFINITION CRYSTAL & NEON PALETTE
+    // =================================================================
+    const PIECES = [
+        // Standard Tetrominoes
+        [[1, 1, 1, 1]],                    // I (Cyan Crystal)
+        [[1, 1, 1], [0, 1, 0]],            // T (Amethyst Purple)
+        [[1, 1, 0], [0, 1, 1]],            // Z (Ruby Red)
+        [[0, 1, 1], [1, 1, 0]],            // S (Emerald Lime)
+        [[1, 1], [1, 1]],                  // O (Solar Topaz)
+        [[1, 0, 0], [1, 1, 1]],            // L (Amber Fire)
+        [[0, 0, 1], [1, 1, 1]],            // J (Sapphire Blue)
+        // Bonus Arcade Pieces
+        [[1, 1, 1, 1, 1]],                 // Super I (Neon Magenta)
+        [[0, 1, 0], [1, 1, 1], [0, 1, 0]], // Cruz / Cross (Imperial Gold)
+        [[1, 1, 1], [1, 0, 1]],            // U shape (Beryl Green)
+        [[1]]                              // Spark / Dot (Prismatic White)
+    ];
+
+    const COLORS = [
+        null,
+        '#00f0ff', // 1: Cyan
+        '#b026ff', // 2: Amethyst Purple
+        '#ff1a53', // 3: Ruby Red
+        '#00ff88', // 4: Emerald Green
+        '#ffe600', // 5: Solar Yellow
+        '#ff8400', // 6: Amber Orange
+        '#2563eb', // 7: Sapphire Blue
+        '#ff00b7', // 8: Neon Magenta
+        '#ffd700', // 9: Gold
+        '#059669', // 10: Deep Emerald
+        '#f8fafc'  // 11: Prismatic White
+    ];
+
+    let piece = null;
+    let nextPieces = [];
+    let heldPiece = null;
+    let canHold = true;
+    let lastMoveWasRotate = false;
 
     function getRandomPiece() {
         const rand = Math.floor(Math.random() * PIECES.length);
@@ -379,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =================================================================
-    // RENDERING & VISUAL EFFECTS
+    // ULTRA-HIGH QUALITY BLOCK TEXTURE RENDERER
     // =================================================================
     function hexToRgb(hex) {
         if (!hex) return { r: 255, g: 255, b: 255 };
@@ -392,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    function drawNeonBlock(ctx, x, y, size, colorHex, isGhost = false) {
+    function drawCrystalBlock(ctx, x, y, size, colorHex, isGhost = false) {
         const px = x * size;
         const py = y * size;
 
@@ -401,32 +467,66 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
             ctx.lineWidth = 1.5;
             ctx.setLineDash([3, 3]);
-            ctx.strokeRect(px + 2, py + 2, size - 4, size - 4);
-            ctx.fillStyle = 'rgba(0, 240, 255, 0.08)';
-            ctx.fillRect(px + 2, py + 2, size - 4, size - 4);
+            ctx.strokeRect(px + 1.5, py + 1.5, size - 3, size - 3);
+            ctx.fillStyle = 'rgba(0, 240, 255, 0.07)';
+            ctx.fillRect(px + 1.5, py + 1.5, size - 3, size - 3);
             ctx.restore();
             return;
         }
 
         const rgb = hexToRgb(colorHex);
 
-        // Block fill with 3D gradient
-        const grad = ctx.createLinearGradient(px, py, px + size, py + size);
-        grad.addColorStop(0, `rgb(${Math.min(255, rgb.r + 70)}, ${Math.min(255, rgb.g + 70)}, ${Math.min(255, rgb.b + 70)})`);
-        grad.addColorStop(0.5, colorHex);
-        grad.addColorStop(1, `rgb(${Math.max(0, rgb.r - 60)}, ${Math.max(0, rgb.g - 60)}, ${Math.max(0, rgb.b - 60)})`);
+        // 1. Outer Bevel & Base Gradient
+        const outerGrad = ctx.createLinearGradient(px, py, px + size, py + size);
+        outerGrad.addColorStop(0, `rgb(${Math.min(255, rgb.r + 90)}, ${Math.min(255, rgb.g + 90)}, ${Math.min(255, rgb.b + 90)})`);
+        outerGrad.addColorStop(0.35, colorHex);
+        outerGrad.addColorStop(1, `rgb(${Math.max(0, rgb.r - 80)}, ${Math.max(0, rgb.g - 80)}, ${Math.max(0, rgb.b - 80)})`);
 
-        ctx.fillStyle = grad;
+        ctx.fillStyle = outerGrad;
         ctx.fillRect(px + 1, py + 1, size - 2, size - 2);
 
-        // Gloss highlight
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-        ctx.fillRect(px + 2, py + 2, size - 4, Math.floor(size * 0.35));
+        // 2. Crystal Core Inset Facet
+        const inset = Math.max(3, Math.floor(size * 0.16));
+        const innerGrad = ctx.createRadialGradient(
+            px + size * 0.4, py + size * 0.35, 1,
+            px + size * 0.5, py + size * 0.5, size * 0.65
+        );
+        innerGrad.addColorStop(0, `rgba(255, 255, 255, 0.7)`);
+        innerGrad.addColorStop(0.2, colorHex);
+        innerGrad.addColorStop(1, `rgba(${Math.max(0, rgb.r - 95)}, ${Math.max(0, rgb.g - 95)}, ${Math.max(0, rgb.b - 95)}, 0.95)`);
 
-        // Neon outline
-        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.8)`;
+        ctx.fillStyle = innerGrad;
+        ctx.fillRect(px + inset, py + inset, size - inset * 2, size - inset * 2);
+
+        // 3. Diagonal Gloss Glare
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(px + 2, py + 2);
+        ctx.lineTo(px + size - 2, py + 2);
+        ctx.lineTo(px + 2, py + size - 2);
+        ctx.closePath();
+        const glare = ctx.createLinearGradient(px, py, px + size * 0.5, py + size * 0.5);
+        glare.addColorStop(0, 'rgba(255, 255, 255, 0.55)');
+        glare.addColorStop(0.5, 'rgba(255, 255, 255, 0.12)');
+        glare.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = glare;
+        ctx.fill();
+        ctx.restore();
+
+        // 4. Center Micro Jewel Emblem
+        const centerSize = Math.max(2, Math.floor(size * 0.18));
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.fillRect(
+            px + Math.floor((size - centerSize) / 2),
+            py + Math.floor((size - centerSize) / 2),
+            centerSize,
+            centerSize
+        );
+
+        // 5. Crisp Neon Edge Rim
+        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.85)`;
         ctx.lineWidth = 1;
-        ctx.strokeRect(px + 1, py + 1, size - 2, size - 2);
+        ctx.strokeRect(px + 0.5, py + 0.5, size - 1, size - 1);
     }
 
     function drawMatrix(matrix, offset, ctx, blockSize, colorHex = null, isGhost = false) {
@@ -434,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.forEach((value, x) => {
                 if (value !== 0) {
                     const blockColor = colorHex || COLORS[value];
-                    drawNeonBlock(ctx, x + offset.x, y + offset.y, blockSize, blockColor, isGhost);
+                    drawCrystalBlock(ctx, x + offset.x, y + offset.y, blockSize, blockColor, isGhost);
                 }
             });
         });
@@ -459,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         nextPieces.slice(0, 2).forEach(p => {
             const pCanvas = document.createElement('canvas');
-            const previewSize = Math.max(14, Math.floor(BLOCK_SIZE * 0.65));
+            const previewSize = Math.max(14, Math.floor(BLOCK_SIZE * 0.68));
             pCanvas.width = 4 * previewSize;
             pCanvas.height = 3 * previewSize;
 
@@ -483,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
         holdContext.fillRect(0, 0, holdCanvas.width, holdCanvas.height);
 
         if (heldPiece) {
-            const previewSize = Math.max(14, Math.floor(BLOCK_SIZE * 0.65));
+            const previewSize = Math.max(14, Math.floor(BLOCK_SIZE * 0.68));
             const w = heldPiece.matrix[0].length;
             const h = heldPiece.matrix.length;
             const offsetX = (holdCanvas.width / previewSize - w) / 2;
@@ -493,31 +593,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function createExplosion(x, y, colorHex) {
+    // Spark Burst Generator
+    function createSparks(x, y, colorHex, count = 20) {
         const rgb = hexToRgb(colorHex);
-        for (let i = 0; i < 18; i++) {
+        for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 4 + 1.5;
-            explosionParticles.push({
+            const speed = Math.random() * 5 + 2;
+            particles.push({
                 x: (x + 0.5) * BLOCK_SIZE,
                 y: (y + 0.5) * BLOCK_SIZE,
                 vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                size: Math.random() * 4 + 2,
+                vy: Math.sin(angle) * speed - 1.2,
+                size: Math.random() * 4 + 1.5,
                 color: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b},`,
-                life: 1,
-                decay: Math.random() * 0.03 + 0.02
+                life: 1.0,
+                decay: Math.random() * 0.035 + 0.02
             });
         }
     }
 
+    // Hard Drop Laser Effect
+    function addLaserBeam(colX, startY, endY, colorHex) {
+        laserBeams.push({
+            x: colX * BLOCK_SIZE,
+            width: BLOCK_SIZE,
+            startY: startY * BLOCK_SIZE,
+            endY: (endY + 1) * BLOCK_SIZE,
+            alpha: 0.9,
+            color: colorHex
+        });
+    }
+
+    // Shockwave Line Flash
+    function addLineShockwave(rowY) {
+        lineShockwaves.push({
+            y: rowY * BLOCK_SIZE,
+            alpha: 1.0,
+            thickness: BLOCK_SIZE
+        });
+    }
+
+    // =================================================================
+    // MAIN DRAW LOOP WITH SCREEN SHAKE & EFFECTS
+    // =================================================================
     function draw() {
-        // Clear board with dark background
-        context.fillStyle = '#070913';
+        context.save();
+
+        // 1. Apply Screen Shake
+        if (screenShake > 0) {
+            const dx = (Math.random() - 0.5) * screenShake;
+            const dy = (Math.random() - 0.5) * screenShake;
+            context.translate(dx, dy);
+            screenShake *= 0.86;
+            if (screenShake < 0.2) screenShake = 0;
+        }
+
+        // 2. Clear Board Canvas
+        context.fillStyle = '#060812';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Subtle background grid
-        context.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        // 3. Ambient Grid Lines
+        context.strokeStyle = 'rgba(0, 240, 255, 0.05)';
         context.lineWidth = 0.5;
         for (let c = 0; c <= COLS; c++) {
             context.beginPath();
@@ -532,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
             context.stroke();
         }
 
-        // Draw Stars
+        // 4. Moving Stars
         stars.forEach(s => {
             s.y += s.speed;
             if (s.y > canvas.height) {
@@ -543,39 +679,61 @@ document.addEventListener('DOMContentLoaded', () => {
             context.fillRect(s.x, s.y, s.size, s.size);
         });
 
-        // Draw Ghost piece
+        // 5. Draw Laser Beams
+        for (let i = laserBeams.length - 1; i >= 0; i--) {
+            const b = laserBeams[i];
+            const rgb = hexToRgb(b.color);
+            context.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${b.alpha * 0.35})`;
+            context.fillRect(b.x, b.startY, b.width, b.endY - b.startY);
+            b.alpha -= 0.12;
+            if (b.alpha <= 0) laserBeams.splice(i, 1);
+        }
+
+        // 6. Draw Ghost Piece
         if (piece) {
             drawGhostPiece();
         }
 
-        // Draw settled blocks
+        // 7. Settled Blocks
         drawMatrix(board, { x: 0, y: 0 }, context, BLOCK_SIZE);
 
-        // Draw active piece
+        // 8. Active Piece
         if (piece) {
             drawMatrix(piece.matrix, piece.pos, context, BLOCK_SIZE, piece.color);
         }
 
-        // Draw explosions
-        for (let i = explosionParticles.length - 1; i >= 0; i--) {
-            const p = explosionParticles[i];
+        // 9. Shockwave Lines on Clear
+        for (let i = lineShockwaves.length - 1; i >= 0; i--) {
+            const sw = lineShockwaves[i];
+            context.fillStyle = `rgba(255, 255, 255, ${sw.alpha * 0.85})`;
+            context.fillRect(0, sw.y, canvas.width, sw.thickness);
+            sw.alpha -= 0.14;
+            if (sw.alpha <= 0) lineShockwaves.splice(i, 1);
+        }
+
+        // 10. Particle Sparks
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
             p.x += p.vx;
             p.y += p.vy;
+            p.vy += 0.15; // Gravity
             p.life -= p.decay;
             if (p.life <= 0) {
-                explosionParticles.splice(i, 1);
+                particles.splice(i, 1);
                 continue;
             }
             context.fillStyle = `${p.color} ${p.life})`;
             context.shadowColor = p.color + ' 1)';
-            context.shadowBlur = 6;
+            context.shadowBlur = 8;
             context.fillRect(p.x, p.y, p.size, p.size);
             context.shadowBlur = 0;
         }
+
+        context.restore();
     }
 
     // =================================================================
-    // GAME LOGIC & COLLISION
+    // COLLISION & ROTATION
     // =================================================================
     function collides(targetBoard, targetPiece) {
         const { matrix, pos } = targetPiece;
@@ -636,9 +794,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalPos = piece.pos.x;
         const rotated = rotateMatrix(piece.matrix, dir);
         piece.matrix = rotated;
-        playSound('rotate');
+        playEnhancedSound('rotate');
 
-        // Wall kick
         let offset = 1;
         while (collides(board, piece)) {
             piece.pos.x += offset;
@@ -659,7 +816,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (collides(board, piece)) {
             piece.pos.x -= dir;
         } else {
-            playSound('move');
+            playEnhancedSound('move');
         }
     }
 
@@ -670,7 +827,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (collides(board, piece)) {
             piece.pos.y--;
-            playSound('drop');
+            playEnhancedSound('drop');
+            addScreenShake(2);
             merge(board, piece);
             sweep();
             resetPlayer();
@@ -680,11 +838,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function hardDrop() {
         if (!piece || paused || gameOver) return;
+        const startY = piece.pos.y;
+
+        // Trace vertical laser beams down each column occupied by the piece
+        piece.matrix.forEach((row, y) => {
+            row.forEach((v, x) => {
+                if (v !== 0) {
+                    addLaserBeam(piece.pos.x + x, startY + y, piece.pos.y + y, piece.color);
+                }
+            });
+        });
+
         while (!collides(board, piece)) {
             piece.pos.y++;
         }
         piece.pos.y--;
-        playSound('drop');
+
+        playEnhancedSound('hardDrop');
+        addScreenShake(8);
         merge(board, piece);
         sweep();
         resetPlayer();
@@ -693,7 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function hold() {
         if (!canHold || paused || gameOver || !piece) return;
-        playSound('hold');
+        playEnhancedSound('hold');
 
         if (heldPiece) {
             const temp = heldPiece;
@@ -732,10 +903,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Explode row
+            // Explode row with sparks
             for (let x = 0; x < board[y].length; ++x) {
-                createExplosion(x, y, COLORS[board[y][x]] || '#00f0ff');
+                createSparks(x, y, COLORS[board[y][x]] || '#00f0ff', 10);
             }
+            addLineShockwave(y);
 
             const row = board.splice(y, 1)[0].fill(0);
             board.unshift(row);
@@ -745,10 +917,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (linesInSweep > 0) {
             combo++;
-            playSound('clear');
             const linePoints = [0, 100, 300, 600, 1200];
             const basePoints = linePoints[Math.min(linesInSweep, 4)] || (linesInSweep * 350);
-            const comboBonus = (combo - 1) * 50;
+            const comboBonus = (combo - 1) * 60;
             const pointsEarned = (basePoints + comboBonus) * level;
 
             updateScore(pointsEarned);
@@ -756,13 +927,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (linesElement) linesElement.textContent = linesCleared;
 
             if (linesInSweep >= 4) {
-                showToast('¡TETRIS!', '#00ff88');
+                playEnhancedSound('tetris');
+                addScreenShake(18);
+                showToast('¡TETRIS IMPERIAL!', '#00ff88');
             } else if (linesInSweep === 3) {
-                showToast('¡TRIPLE!', '#00f0ff');
+                playEnhancedSound('clear', 3);
+                addScreenShake(10);
+                showToast('¡TRIPLE COMBO!', '#00f0ff');
             } else if (linesInSweep === 2) {
-                showToast('¡DOUBLE!', '#b026ff');
-            } else if (combo > 1) {
-                showToast(`COMBO x${combo}!`, '#ffaa00');
+                playEnhancedSound('clear', 2);
+                addScreenShake(6);
+                showToast('¡DOBLE!', '#b026ff');
+            } else {
+                playEnhancedSound('clear', 1);
+                addScreenShake(4);
+                if (combo > 1) {
+                    playEnhancedSound('combo', combo);
+                    showToast(`¡COMBO x${combo}!`, '#ffaa00');
+                }
             }
 
             // Level up every 10 lines
@@ -770,7 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (nextLevel > level) {
                 level = nextLevel;
                 if (levelElement) levelElement.textContent = level;
-                dropInterval = Math.max(120, 900 - (level - 1) * 80);
+                dropInterval = Math.max(110, 900 - (level - 1) * 75);
                 showToast(`¡NIVEL ${level}!`, '#ffe600');
             }
         } else {
@@ -790,16 +972,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =================================================================
-    // MAIN LOOP
+    // GAME LOOP
     // =================================================================
     let dropCounter = 0;
     let dropInterval = 900;
     let lastTime = 0;
 
     function gameLoop(time = 0) {
-        if (gameOver || paused) {
-            return;
-        }
+        if (gameOver || paused) return;
+
         const deltaTime = time - lastTime;
         lastTime = time;
 
@@ -813,12 +994,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =================================================================
-    // CONTROLS & EVENT LISTENERS
+    // INPUT LISTENERS & TOUCH BINDINGS
     // =================================================================
     document.addEventListener('keydown', event => {
         if (gameOver) return;
 
-        // Resume / Pause with P or Escape
         if (event.key === 'p' || event.key === 'P' || event.key === 'Escape') {
             togglePause();
             return;
@@ -859,7 +1039,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Mobile Touch buttons
     function bindTouch(id, action) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -898,7 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showGameOverScreen() {
         cancelAnimationFrame(animationFrameId);
-        playSound('gameOver');
+        playEnhancedSound('gameover');
         stopMusic();
         if (finalScoreElement) finalScoreElement.textContent = score;
         if (highScoreMsg) {
@@ -925,6 +1104,10 @@ document.addEventListener('DOMContentLoaded', () => {
         canHold = true;
         dropInterval = 900;
         dropCounter = 0;
+        screenShake = 0;
+        laserBeams = [];
+        lineShockwaves = [];
+        particles = [];
 
         if (scoreElement) scoreElement.textContent = '0';
         if (levelElement) levelElement.textContent = '1';
