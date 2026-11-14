@@ -1,89 +1,363 @@
-/* Estilos para Tetris Definitivo */
-body {
-    background-color: #202028;
-    color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+/* =================================================================
+   EDU TETRIS ARCADE - CYBER NEON STYLES
+================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+:root {
+    --neon-blue: #00f0ff;
+    --neon-purple: #b026ff;
+    --neon-green: #00ff88;
+    --neon-pink: #ff007f;
+    --neon-amber: #ffaa00;
+    --bg-dark: #0a0c16;
+    --card-bg: rgba(18, 24, 43, 0.75);
+    --border-glow: rgba(0, 240, 255, 0.25);
+}
+
+* {
+    box-sizing: border-box;
     margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
-#game-wrapper {
-    text-align: center;
-}
-
-h1 {
-    margin-bottom: 20px;
-    font-size: 2.5em;
-    color: #eee;
-}
-
-.game-container {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    border: 3px solid #fff;
-    padding: 10px;
-    background: #333;
-    border-radius: 10px;
-}
-
-canvas#tetris {
-    border: 3px solid #000;
-    background-color: #111;
-}
-
-.sidebar {
+body {
+    background: radial-gradient(circle at 50% 20%, #151b36 0%, #080a12 80%);
+    color: #e2e8f0;
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    width: 180px;
-    width: 200px;
-    text-align: left;
-}
-
-.sidebar-box {
-    background: #111;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: 10px;
-    border-radius: 8px;
-    border: 2px solid #000;
 }
 
-.sidebar-box h2, .sidebar-box h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.1em;
-    border-bottom: 1px solid #555;
-    padding-bottom: 5px;
-    text-align: center;
-}
-
-.sidebar-box h3 { font-size: 1em; border: none; margin-top: 10px; }
-.sidebar-box p { margin: 0; font-size: 1.4em; font-weight: bold; color: #fefefe; text-align: center; }
-
-#next-pieces { display: flex; flex-direction: column; gap: 10px; }
-
-#next-pieces canvas, canvas#hold-piece { background-color: #111; border: 2px solid #000; width: 100%; border-radius: 4px; }
-
-.audio-controls, .music-controls { display: flex; justify-content: space-around; align-items: center; }
-.audio-controls button, .music-controls button { background: #444; border: 1px solid #666; color: #fff; font-weight: bold; cursor: pointer; padding: 5px 8px; border-radius: 4px; transition: background-color 0.2s; }
-.audio-controls button:hover, .music-controls button:hover { background: #555; }
-.music-controls button.active { background: #0DFF72; color: #000; }
-#vol-display { font-weight: bold; }
-
-/* Estilos de Overlay */
-.overlay {
+/* Background animated glow grid */
+body::before {
+    content: '';
     position: fixed;
     top: 0;
     left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+#game-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 980px;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Header bar */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.back-link {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--neon-blue);
+    border-color: var(--neon-blue);
+    background: rgba(0, 240, 255, 0.1);
+}
+
+.arcade-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    text-align: center;
+}
+
+/* Main Layout */
+.game-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 16px;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glow);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 240, 255, 0.15);
+    padding: 14px;
+    border-radius: 16px;
+    max-width: 100%;
+}
+
+/* Canvas board wrapper */
+.canvas-wrapper {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 240, 255, 0.2);
+    border: 2px solid rgba(0, 240, 255, 0.4);
+    background: #000000;
+}
+
+canvas#tetris {
+    display: block;
+    background: #070913;
+    max-height: 72vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Sidebars (Left & Right for widescreen, or single for mobile) */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 175px;
+}
+
+.sidebar-box {
+    background: rgba(10, 14, 28, 0.85);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.sidebar-box h2, .sidebar-box h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.sidebar-box .metric {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.sidebar-box .metric.score-metric {
+    color: var(--neon-green);
+    text-shadow: 0 0 12px rgba(0, 255, 136, 0.5);
+}
+
+.sidebar-box .metric.high-metric {
+    color: var(--neon-amber);
+    text-shadow: 0 0 12px rgba(255, 170, 0, 0.5);
+    font-size: 1.15rem;
+}
+
+.sidebar-box .metric.level-metric {
+    color: var(--neon-blue);
+}
+
+.sidebar-box .metric.lines-metric {
+    color: var(--neon-pink);
+}
+
+#next-pieces {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    margin-top: 4px;
+}
+
+#next-pieces canvas, canvas#hold-piece {
+    background-color: #060810;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 8px;
+}
+
+/* Audio Controls */
+.audio-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.audio-controls button, .music-controls button {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.audio-controls button:hover, .music-controls button:hover {
+    background: rgba(0, 240, 255, 0.2);
+    border-color: var(--neon-blue);
+    transform: translateY(-1px);
+}
+
+.music-controls {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.music-controls button {
+    flex: 1;
+    font-size: 0.75rem;
+}
+
+.music-controls button.active {
+    background: var(--neon-blue);
+    color: #000;
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+}
+
+#vol-display {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--neon-blue);
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Floating Banner Notifications (T-Spin, Tetris, Combos) */
+.toast-badge {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.5rem;
+    padding: 8px 18px;
+    border-radius: 8px;
+    background: rgba(10, 14, 28, 0.95);
+    border: 2px solid var(--neon-pink);
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.7);
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 20;
+    white-space: nowrap;
+}
+
+.toast-badge.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Touch Controls for Mobile */
+.mobile-controls {
+    display: none;
+    width: 100%;
+    margin-top: 14px;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.touch-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    color: #ffffff;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 12px 14px;
+    border-radius: 12px;
+    min-width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    touch-action: manipulation;
+}
+
+.touch-btn:active {
+    background: var(--neon-blue);
+    color: #000;
+    transform: scale(0.95);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+}
+
+.touch-btn.accent {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+}
+
+.touch-btn.accent:active {
+    background: var(--neon-green);
+    color: #000;
+}
+
+.touch-btn.action {
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+}
+
+.touch-btn.action:active {
+    background: var(--neon-pink);
+    color: #000;
+}
+
+/* UI Overlays (Start, Pause, Game Over) */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 9, 18, 0.88);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
+    padding: 16px;
+    transition: opacity 0.2s ease;
 }
 
 .overlay.hidden {
@@ -91,55 +365,128 @@ canvas#tetris {
 }
 
 .overlay-content {
-    background: #202028;
-    padding: 40px;
-    border-radius: 15px;
-    border: 3px solid #fff;
+    background: linear-gradient(145deg, #161c36, #0c1020);
+    padding: 32px 36px;
+    border-radius: 20px;
+    border: 2px solid var(--neon-blue);
     text-align: center;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.35);
+    max-width: 440px;
+    width: 100%;
 }
 
 .overlay-content h2 {
-    margin: 0 0 20px 0;
-    font-size: 2.5em;
+    font-family: 'Orbitron', monospace;
+    margin: 0 0 16px 0;
+    font-size: 2.2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .overlay-content p {
-    font-size: 1.5em;
-    margin-bottom: 25px;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #cbd5e1;
 }
 
-.overlay-content button {
-    background: #0DFF72;
-    color: #000;
+.overlay-content button.cta-btn {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+    color: #000000;
     border: none;
-    padding: 15px 30px;
-    font-size: 1.2em;
-    font-weight: bold;
-    border-radius: 8px;
+    padding: 14px 32px;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 900;
+    border-radius: 10px;
     cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
     transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
 }
 
-.overlay-content button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(13, 255, 114, 0.5);
+.overlay-content button.cta-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.7);
 }
 
-/* Estilos para la info de controles */
 .controls-info {
-    margin: 25px 0;
+    margin: 18px 0;
     text-align: left;
-    display: inline-block;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .controls-info h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    color: var(--neon-blue);
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .controls-info p {
-    font-size: 1em;
-    margin: 5px 0;
+    font-size: 0.9rem;
+    margin: 4px 0;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
 }
-.controls-info span { display: inline-block; width: 80px; font-weight: bold; color: #0DFF72; }
+
+.controls-info span {
+    font-weight: 700;
+    color: var(--neon-green);
+    font-family: monospace;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .arcade-title {
+        font-size: 1.25rem;
+    }
+    
+    .game-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .sidebar {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .sidebar-box {
+        padding: 8px;
+    }
+
+    .sidebar-box h2 {
+        font-size: 0.65rem;
+    }
+
+    .sidebar-box .metric {
+        font-size: 1.1rem;
+    }
+
+    .sidebar-box.audio-box {
+        grid-column: span 4;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sidebar-box.audio-box h2 {
+        margin: 0;
+    }
+
+    .mobile-controls {
+        display: flex;
+    }
+}

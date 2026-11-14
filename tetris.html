@@ -2,73 +2,126 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris Definitivo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Edu Tetris Arcade — Eduardo Cayún M.</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-wrapper">
-        <div style="margin-bottom: 10px; text-align: left;">
-            <a href="index.html#lab" style="color: #94a3b8; text-decoration: none; font-size: 0.95rem; font-weight: 600;">← Volver al Portafolio</a>
-        </div>
-        <h1>Tetris Definitivo</h1>
-        <div class="game-container">
-            <canvas id="tetris" width="720" height="1040"></canvas>
+        <!-- Top Nav Bar -->
+        <header class="top-nav">
+            <a href="index.html#lab" class="back-link">
+                <span>←</span> Volver al Portafolio
+            </a>
+            <h1 class="arcade-title">EDU TETRIS ARCADE</h1>
+            <div style="width: 140px; text-align: right;">
+                <span id="quick-mute" style="cursor: pointer; font-size: 1.1rem; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">🔊</span>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="game-container">
+            <!-- Left Sidebar (Score & Hold) -->
             <aside class="sidebar">
-                <div class="sidebar-box"><h2>Puntuación</h2><p id="score">0</p></div>
-                <div class="sidebar-box"><h2>Nivel</h2><p id="level">0</p></div>
-                <div class="sidebar-box"><h2>Siguiente</h2><div id="next-pieces"></div></div>
-                <div class="sidebar-box"><h2>Guardada</h2><canvas id="hold-piece" width="96" height="96"></canvas></div>
                 <div class="sidebar-box">
-                    <h2>Audio</h2>
+                    <h2>Récord</h2>
+                    <p id="high-score" class="metric high-metric">0</p>
+                </div>
+                <div class="sidebar-box">
+                    <h2>Puntuación</h2>
+                    <p id="score" class="metric score-metric">0</p>
+                </div>
+                <div class="sidebar-box">
+                    <h2>Guardada (C)</h2>
+                    <canvas id="hold-piece" width="80" height="80"></canvas>
+                </div>
+            </aside>
+
+            <!-- Center Canvas -->
+            <div class="canvas-wrapper">
+                <canvas id="tetris"></canvas>
+                <div id="toast-badge" class="toast-badge">¡TETRIS!</div>
+            </div>
+
+            <!-- Right Sidebar (Level, Lines, Next & Audio) -->
+            <aside class="sidebar">
+                <div class="sidebar-box">
+                    <h2>Nivel</h2>
+                    <p id="level" class="metric level-metric">1</p>
+                </div>
+                <div class="sidebar-box">
+                    <h2>Líneas</h2>
+                    <p id="lines" class="metric lines-metric">0</p>
+                </div>
+                <div class="sidebar-box">
+                    <h2>Siguiente</h2>
+                    <div id="next-pieces"></div>
+                </div>
+                <div class="sidebar-box audio-box">
+                    <h2>Banda Sonora</h2>
                     <div class="audio-controls">
-                        <button id="mute-btn">🔇</button>
-                        <button id="vol-down-btn">-</button>
+                        <button id="mute-btn" title="Silenciar / Activar sonido">🔊</button>
+                        <button id="vol-down-btn" title="Bajar volumen">-</button>
                         <span id="vol-display">5</span>
-                        <button id="vol-up-btn">+</button>
+                        <button id="vol-up-btn" title="Subir volumen">+</button>
                     </div>
-                    <h3>Música</h3>
                     <div class="music-controls">
-                        <button class="music-track-btn" data-track="0">1</button>
-                        <button class="music-track-btn" data-track="1">2</button>
-                        <button class="music-track-btn" data-track="2">3</button>
+                        <button class="music-track-btn active" data-track="0" title="Cruzando Cielos">Track 1</button>
+                        <button class="music-track-btn" data-track="1" title="Opa Amor">Track 2</button>
+                        <button class="music-track-btn" data-track="2" title="Together">Track 3</button>
                     </div>
                 </div>
             </aside>
+        </main>
+
+        <!-- Mobile Touch Controls -->
+        <nav class="mobile-controls" aria-label="Controles táctiles">
+            <div style="display: flex; gap: 8px;">
+                <button id="touch-left" class="touch-btn" aria-label="Mover a la izquierda">◀</button>
+                <button id="touch-right" class="touch-btn" aria-label="Mover a la derecha">▶</button>
+                <button id="touch-down" class="touch-btn" aria-label="Bajar pieza">▼</button>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button id="touch-hold" class="touch-btn action" aria-label="Guardar pieza">HOLD</button>
+                <button id="touch-rotate" class="touch-btn accent" aria-label="Rotar pieza">↻</button>
+                <button id="touch-drop" class="touch-btn action" aria-label="Caída rápida">DROP</button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- UI Overlays -->
+    <div id="start-screen" class="overlay">
+        <div class="overlay-content">
+            <h2>EDU TETRIS</h2>
+            <p>Arcade Edition con Audio &amp; Partículas</p>
+            <div class="controls-info">
+                <h3>CONTROLES DE TECLADO</h3>
+                <p>Mover <span>← → / A D</span></p>
+                <p>Rotar Horario <span>↑ / W</span></p>
+                <p>Rotar Antihorario <span>Q / Z</span></p>
+                <p>Acelerar Caída <span>↓ / S</span></p>
+                <p>Caída Instantánea <span>Espacio</span></p>
+                <p>Guardar Pieza <span>C / Shift</span></p>
+                <p>Pausa <span>P / Esc</span></p>
+            </div>
+            <button id="start-btn" class="cta-btn">¡INICIAR PARTIDA!</button>
         </div>
     </div>
 
-    <!-- Pantallas de UI -->
-    <div id="start-screen" class="overlay">
-        <div class="overlay-content">
-            <h2>Edu Tetris</h2>
-            <div class="controls-info">
-                <button id="start-btn">Iniciar Juego</button>
-                <br>
-                <br>
-                <h3>Controles</h3>
-                <p><span>← → / A D</span> Mover</p>
-                <p><span>↑ / W</span> Rotar</p>
-                <p><span>Q</span> Rotar Izq.</p>
-                <p><span>↓ / S</span> Acelerar</p>
-                <p><span>Espacio</span> Caída Rápida</p>
-                <p><span>C</span> Guardar</p>
-                <p><span>P / Esc</span> Pausa</p>
-            </div>
-            
-        </div>
-    </div>
     <div id="pause-screen" class="overlay hidden">
         <div class="overlay-content">
-            <h2>Pausa</h2>
-            <button id="resume-btn">Reanudar</button>
+            <h2>PAUSA</h2>
+            <p>Partida pausada temporalmente</p>
+            <button id="resume-btn" class="cta-btn">REANUDAR</button>
         </div>
     </div>
+
     <div id="game-over-screen" class="overlay hidden">
         <div class="overlay-content">
-            <h2>Game Over</h2>
-            <p>Puntuación Final: <span id="final-score">0</span></p>
-            <button id="play-again-btn">Jugar de Nuevo</button>
+            <h2>FIN DEL JUEGO</h2>
+            <p>Puntuación Final: <strong id="final-score" style="color: var(--neon-green); font-size: 1.6rem;">0</strong></p>
+            <p id="high-score-msg" style="color: var(--neon-amber); font-size: 1rem; display: none;">🏆 ¡Nuevo Récord Personal!</p>
+            <button id="play-again-btn" class="cta-btn">JUGAR DE NUEVO</button>
         </div>
     </div>
 
