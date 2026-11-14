@@ -1,273 +1,375 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portafolio Profesional — Eduardo Cayún M.</title>
+    <title>Eduardo Cayún M. — MBA &amp; Líder de Proyectos TI | Transformación Digital, Arquitectura &amp; IA</title>
+    <meta name="description" content="Portafolio ejecutivo de Eduardo Cayún M., MBA e Ingeniero en Informática con +15 años liderando proyectos TI, transformación digital, arquitectura cloud/GIS e IA aplicada en Chile, Paraguay y Uruguay.">
     <meta name="author" content="Eduardo A. Cayún M.">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- Open Graph / LinkedIn / WhatsApp Preview -->
+    <meta property="og:title" content="Eduardo Cayún M. — MBA &amp; Líder de Proyectos TI | Transformación Digital &amp; IA">
+    <meta property="og:description" content="+15 años dirigiendo proyectos tecnológicos críticos para el Estado, Banca, Energía y Telecomunicaciones en Latam.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://educhile1.github.io/">
+    <meta property="og:image" content="https://educhile1.github.io/images/perfil_pro_eduf.jpg">
+
+    <!-- Inline SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%234f46e5'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='system-ui,sans-serif' font-weight='700' font-size='28'%3EEC%3C/text%3E%3C/svg%3E">
+
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class'
+        };
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
         }
     </script>
 </head>
 
-<body class="bg-gray-50 text-slate-800 dark:bg-zinc-900 dark:text-gray-200">
+<body class="bg-slate-50 text-slate-800 dark:bg-zinc-950 dark:text-slate-100 antialiased transition-colors duration-300">
     <!-- =================================================================
     NAVBAR
     ================================================================== -->
-    <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 dark:bg-zinc-900/90 border-b border-gray-100 dark:border-zinc-800/80 transition-colors duration-300">
-        <div class="max-w-6xl mx-auto px-4">
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-40 dark:bg-zinc-900/90 border-b border-slate-200/80 dark:border-zinc-800 transition-colors duration-300">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
             <div class="flex justify-between items-center h-16">
-                <a href="#home" class="text-xl font-bold gradient-text tracking-wide">PORTAFOLIO</a>
-                
-                <div class="flex items-center space-x-6">
+                <a href="#home" class="flex items-center gap-2.5 group">
+                    <span class="text-lg sm:text-xl font-bold gradient-text tracking-tight">EDUARDO CAYÚN M.</span>
+                    <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100 dark:bg-indigo-950/70 dark:text-indigo-300 dark:border-indigo-900">
+                        MBA · IT Leader
+                    </span>
+                </a>
+
+                <div class="flex items-center gap-3 lg:gap-5">
                     <!-- Desktop Menu -->
-                    <div class="hidden md:flex space-x-8">
-                        <a href="#home" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Inicio</a>
-                        <a href="#about" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Sobre mí</a>
-                        <a href="#education" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Educación</a>
-                        <a href="#portfolio" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Portafolio</a>
-                        <a href="#" id="show-music-player" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Música</a>
-                        <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition dark:text-gray-300 dark:hover:text-indigo-400 font-medium">Contacto</a>
+                    <div class="hidden lg:flex items-center space-x-6 text-sm font-medium">
+                        <a href="#home" class="text-slate-600 hover:text-indigo-600 transition dark:text-slate-300 dark:hover:text-indigo-400">Inicio</a>
+                        <a href="#solutions" class="text-slate-600 hover:text-indigo-600 transition dark:text-slate-300 dark:hover:text-indigo-400">Soluciones</a>
+                        <a href="#experience" class="text-slate-600 hover:text-indigo-600 transition dark:text-slate-300 dark:hover:text-indigo-400">Trayectoria</a>
+                        <a href="#portfolio" class="text-slate-600 hover:text-indigo-600 transition dark:text-slate-300 dark:hover:text-indigo-400">Proyectos</a>
+                        <a href="#education" class="text-slate-600 hover:text-indigo-600 transition dark:text-slate-300 dark:hover:text-indigo-400">Formación</a>
+                        <a href="#lab" class="text-slate-600 hover:text-indigo-600 transition dark:text-slate-300 dark:hover:text-indigo-400">Lab IA</a>
+                        <a href="#contact" class="text-slate-600 hover:text-indigo-600 transition dark:text-slate-300 dark:hover:text-indigo-400">Contacto</a>
                     </div>
-                    
-                    <!-- Dark Mode Toggle Button (Sleek design in navbar) -->
-                    <button id="dark-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-lg transition duration-200 focus:outline-none flex items-center justify-center w-10 h-10" title="Cambiar tema">
+
+                    <!-- CTA Agendar Reunión -->
+                    <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Agendar Reunión
+                    </a>
+
+                    <!-- Dark Mode Toggle Button -->
+                    <button id="dark-toggle" type="button" aria-label="Cambiar tema claro u oscuro" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-base transition duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 flex items-center justify-center w-9 h-9" title="Cambiar tema">
                         🌙
                     </button>
-                    
+
                     <!-- Mobile Menu Button -->
-                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 focus:outline-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button id="mobile-menu-button" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-700 dark:text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                         </svg>
                     </button>
                 </div>
             </div>
         </div>
+
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-zinc-900 border-t border-gray-100 dark:border-zinc-800 py-2 transition-all duration-300">
-            <a href="#home" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Inicio</a>
-            <a href="#about" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Sobre mí</a>
-            <a href="#education" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Educación</a>
-            <a href="#portfolio" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Portafolio</a>
-            <a href="#" id="show-music-player-mobile" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Música</a>
-            <a href="#contact" class="block py-2.5 px-6 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition">Contacto</a>
+        <div id="mobile-menu" class="hidden lg:hidden bg-white dark:bg-zinc-900 border-t border-slate-100 dark:border-zinc-800 py-3 px-4 space-y-1 shadow-lg">
+            <a href="#home" class="block py-2 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800">Inicio</a>
+            <a href="#solutions" class="block py-2 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800">Soluciones</a>
+            <a href="#experience" class="block py-2 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800">Trayectoria</a>
+            <a href="#portfolio" class="block py-2 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800">Proyectos</a>
+            <a href="#education" class="block py-2 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800">Formación</a>
+            <a href="#lab" class="block py-2 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800">Lab IA</a>
+            <a href="#contact" class="block py-2 px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-zinc-800">Contacto</a>
+            <div class="pt-2 border-t border-slate-100 dark:border-zinc-800">
+                <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Agendar Reunión (Meet)
+                </a>
+            </div>
         </div>
     </nav>
 
     <!-- =================================================================
-    HERO SECTION
+    HERO SECTION + KPI BAR
     ================================================================== -->
-    <section id="home" class="pt-32 pb-16 md:pt-40 md:pb-24 dark:bg-zinc-900 transition-colors duration-300">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">Hola, soy <span class="gradient-text">Eduardo Cayún M.</span></h1>
-                    <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-gray-600 dark:text-gray-400">MBA e Ingeniero en Informática</h2>
-                    <p class="text-gray-500 mb-8 max-w-lg dark:text-gray-400 text-lg">Estoy aquí para mejorar tu empresa con tecnología y procesos eficientes.</p>
-                    <div class="flex space-x-4 justify-center md:justify-start">
-                        <a href="#contact" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-md shadow-indigo-200 dark:shadow-none">Contáctame</a>
-                        <a href="#portfolio" class="px-6 py-3 border border-indigo-600 text-indigo-600 font-medium rounded-lg hover:bg-indigo-50 transition dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-indigo-900/30">Ver proyectos</a>
+    <section id="home" class="pt-28 pb-16 md:pt-36 md:pb-20 bg-gradient-to-b from-white via-slate-50 to-slate-100/70 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900 transition-colors duration-300">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col-reverse md:flex-row items-center gap-12">
+                <div class="md:w-7/12 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-medium mb-5 dark:bg-emerald-950/60 dark:border-emerald-800/70 dark:text-emerald-300">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Disponible para Liderazgo de Proyectos TI y Consultoría B2B · Latam &amp; Global
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl font-bold mb-4 leading-tight tracking-tight text-slate-900 dark:text-white">
+                        Hola, soy <span class="gradient-text">Eduardo Cayún M.</span>
+                    </h1>
+
+                    <h2 class="text-xl sm:text-2xl font-semibold mb-4 text-slate-700 dark:text-slate-300">
+                        MBA e Ingeniero en Informática | Dirección de Proyectos TI, Transformación Digital &amp; IA Aplicada
+                    </h2>
+
+                    <p class="text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed mb-8 max-w-2xl mx-auto md:mx-0">
+                        +15 años liderando la arquitectura, integración y ejecución de soluciones tecnológicas críticas para los sectores público, banca, energía y telecomunicaciones en Chile, Paraguay y Uruguay.
+                    </p>
+
+                    <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+                        <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md shadow-indigo-500/20 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Agendar Reunión (Meet)
+                        </a>
+                        <a href="#contact" class="inline-flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold rounded-xl transition dark:bg-zinc-900 dark:text-slate-100 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            Escribir Mensaje
+                        </a>
+                        <a href="https://www.linkedin.com/in/eduardocayun/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-3 border border-indigo-200 text-indigo-700 bg-indigo-50/70 hover:bg-indigo-100 font-semibold rounded-xl transition dark:bg-indigo-950/50 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-900/60">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                            </svg>
+                            LinkedIn
+                        </a>
                     </div>
                 </div>
-                <div class="md:w-1/2 flex justify-center">
+
+                <div class="md:w-5/12 flex justify-center">
                     <div class="relative">
-                        <div class="w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-indigo-500 to-emerald-400 rounded-full overflow-hidden shadow-xl p-1">
+                        <div class="w-64 h-64 sm:w-80 sm:h-80 bg-gradient-to-br from-indigo-500 via-indigo-600 to-emerald-400 rounded-full overflow-hidden shadow-2xl p-1.5">
                             <div class="w-full h-full bg-white dark:bg-zinc-900 rounded-full overflow-hidden">
-                                <img src="images/perfil_pro_eduf.jpg" alt="Foto profesional de Eduardo" class="w-full h-full object-cover" />
+                                <img src="images/perfil_pro_eduf.jpg" alt="Eduardo Cayún M. — MBA y Líder de Proyectos TI" class="w-full h-full object-cover object-top" />
                             </div>
                         </div>
-                        <div class="absolute -bottom-2 -right-2 bg-white px-4 py-2 rounded-xl shadow-lg dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 animate-bounce">
-                            <div class="text-sm font-semibold">👋 ¡Hola!</div>
+                        <div class="absolute -bottom-3 -right-2 bg-white px-4 py-2.5 rounded-xl shadow-lg dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700">
+                            <div class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Formación Ejecutiva</div>
+                            <div class="text-sm font-bold text-slate-800 dark:text-white">MBA · UDD</div>
+                        </div>
+                        <div class="absolute -top-2 -left-3 bg-white px-4 py-2 rounded-xl shadow-lg dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700">
+                            <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400">+15 años en TI</div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- KPIs de Respaldo -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-14">
+                <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-2xl sm:text-3xl font-bold gradient-text mb-1">+15 Años</div>
+                    <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Liderando proyectos TI de alto impacto</div>
+                </div>
+                <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-2xl sm:text-3xl font-bold gradient-text mb-1">3 Países</div>
+                    <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Implementaciones en Chile, Paraguay y Uruguay</div>
+                </div>
+                <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-2xl sm:text-3xl font-bold gradient-text mb-1">Multi-Industria</div>
+                    <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Estado, Banca, Energía/Utilities y Telco</div>
+                </div>
+                <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                    <div class="text-2xl sm:text-3xl font-bold gradient-text mb-1">MBA + IA / Cloud</div>
+                    <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">Especialización MIT, Cloud y Ciberseguridad</div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- =================================================================
-    ABOUT SECTION
+    SOLUTIONS & ABOUT SECTION
     ================================================================== -->
-    <section id="about" class="py-16 bg-white dark:bg-zinc-800">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Sobre Mí</h2>
-            <div class="flex flex-col md:flex-row">
-                <div class="md:w-1/3 mb-8 md:mb-0 md:pr-8">
-                    <h3 class="text-xl font-semibold mb-4">Información Personal</h3>
-                    <ul class="space-y-2">
-                            <li><strong>Nombre:</strong> Eduardo A. Cayún M.</li>
-                            <li><strong>Ubicación:</strong> Chile, Paraguay</li>
-                            <li><strong>Email:</strong> eduardocayun@gmail.com</li> 
+    <section id="solutions" class="py-20 bg-white dark:bg-zinc-900 border-t border-slate-100 dark:border-zinc-800/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-3xl mx-auto mb-14">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Propuesta de Valor</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-4 gradient-text">Cómo aporto valor a tu organización</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-base sm:text-lg">Combino visión de negocio (MBA), liderazgo técnico y foco en ejecución para transformar desafíos complejos en plataformas estables, seguras y eficientes.</p>
+            </div>
+
+            <!-- 3 Pilares de Valor -->
+            <div class="grid md:grid-cols-3 gap-6 mb-14">
+                <div class="p-7 rounded-2xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200/70 dark:border-zinc-700/80 hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Dirección de Proyectos TI y Transformación Digital</h3>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Liderazgo de equipos multidisciplinarios bajo marcos PMO, metodologías PMI y agilidad. Optimización de procesos core, relación con stakeholders ejecutivos y control de calidad.</p>
+                </div>
+
+                <div class="p-7 rounded-2xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200/70 dark:border-zinc-700/80 hover:border-emerald-300 dark:hover:border-emerald-700 transition">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Arquitectura de Software, Cloud &amp; Soluciones GIS</h3>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Diseño e integración de plataformas empresariales (Java JEE / Spring Boot, SOA/REST), despliegue en nube (AWS, GCP, OCI) y sistemas geoespaciales para utilities (GE Smallworld).</p>
+                </div>
+
+                <div class="p-7 rounded-2xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200/70 dark:border-zinc-700/80 hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-950 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Inteligencia Artificial, Data Science &amp; Ciberseguridad</h3>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Automatización inteligente de procesos, modelado analítico con Python, estándares de seguridad de la información (ISO 27001, INCIBE, ISC2) y mitigación de vulnerabilidades financieras.</p>
+                </div>
+            </div>
+
+            <!-- Resumen Ejecutivo + Competencias + Idiomas -->
+            <div class="grid lg:grid-cols-3 gap-8 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl p-8 border border-slate-200/80 dark:border-zinc-800">
+                <div class="lg:col-span-2">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Perfil Ejecutivo</h3>
+                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                        Soy Líder de Proyectos TI e Ingeniero en Informática con MBA, especializado en llevar iniciativas tecnológicas desde la definición arquitectónica hasta la operación productiva. A lo largo de mi carrera he trabajado directamente con gerencias y equipos técnicos en clientes exigentes del sector público, financiero, energético y de telecomunicaciones.
+                    </p>
+                    <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Mi diferencial está en unir la gestión estratégica y financiera con la capacidad técnica real para resolver cuellos de botella, liderar entrevistas técnicas y selección de talento, asegurar calidad y seguridad, e incorporar Inteligencia Artificial y analítica de datos en la operación diaria.
+                    </p>
+                </div>
+
+                <div class="space-y-6 lg:border-l lg:border-slate-200 lg:dark:border-zinc-700 lg:pl-8">
+                    <div>
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Idiomas</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-900">Español (Nativo)</span>
+                            <span class="px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-900">Inglés (Profesional Intermedio)</span>
+                            <span class="px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-900">Portugués (Básico)</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Competencias Clave</h4>
+                        <ul class="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Gobierno de Proyectos &amp; Equipos Ágiles</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>Integración Empresarial &amp; Cloud</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Seguridad Aplicativa &amp; QA</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Relacionamiento Ejecutivo y B2B</li>
                         </ul>
-                    
-                    <h3 class="text-xl font-semibold mt-8 mb-4">Habilidades</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span>Transformación Digital</span>
-                                <span>100%</span>
-                            </div>
-                            <div class="skill-bar dark:bg-zinc-700">
-                                <div class="skill-progress" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span>Mejora de procesos</span>
-                                <span>100%</span>
-                            </div>
-                            <div class="skill-bar dark:bg-zinc-700">
-                                <div class="skill-progress" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span>IA</span>
-                                <span>95%</span>
-                            </div>
-                            <div class="skill-bar dark:bg-zinc-700">
-                                <div class="skill-progress" style="width: 100%"></div>
-                            </div>
-                        </div>
                     </div>
-                </div>
-                <div class="md:w-2/3 md:pl-8 border-l border-gray-200 dark:border-zinc-700">
-                    <h3 class="text-xl font-semibold mb-4">Presentación Personal</h3>
-                    <p class="mb-6 text-gray-700 dark:text-gray-300">Soy Eduardo, líder de proyectos de TI con una sólida trayectoria en la ejecución de soluciones tecnológicas de alto impacto para los sectores público y privado. Mi carrera se ha definido por la resolución de problemas complejos y una fuerte orientación a la gestión de equipos y al cliente.</p>
-                    
-                    <h3 class="text-xl font-semibold mb-4 mt-8">Idiomas</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50 font-medium">Español (Nativo)</div>
-                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50 font-medium">Inglés Profesional (Intermedio)</div>
-                        <div class="bg-indigo-50 px-4 py-2 rounded-full dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50 font-medium">Portugués (Básico)</div>
-                    </div>
-                    
-                    <h3 class="text-xl font-semibold mb-4 mt-8">Intereses</h3>
-                    <div class="flex flex-wrap gap-6">
-                        <div class="flex items-center text-gray-700 dark:text-gray-300">
-                            <div class="w-3 h-3 bg-indigo-500 mr-2.5 rounded-full shadow shadow-indigo-400"></div>
-                            Tecnología
-                        </div>
-                        <div class="flex items-center text-gray-700 dark:text-gray-300">
-                            <div class="w-3 h-3 bg-emerald-500 mr-2.5 rounded-full shadow shadow-emerald-400"></div>
-                            Viajes
-                        </div>
-                        <div class="flex items-center text-gray-700 dark:text-gray-300">
-                            <div class="w-3 h-3 bg-amber-500 mr-2.5 rounded-full shadow shadow-amber-400"></div>
-                            Fotografía
-                        </div>
-                        <div class="flex items-center text-gray-700 dark:text-gray-300">
-                            <div class="w-3 h-3 bg-fuchsia-500 mr-2.5 rounded-full shadow shadow-fuchsia-400"></div>
-                            Música
-                        </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Presencia</h4>
+                        <p class="text-sm text-slate-700 dark:text-slate-300 font-medium">Santiago, Chile / Asunción, Paraguay</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Modalidad Presencial o Remota (Latam y Global)</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-
-
     <!-- =================================================================
-    EDUCATION SECTION
+    EXPERIENCE SECTION
     ================================================================== -->
-    <section id="education" class="py-16 bg-white dark:bg-zinc-800">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Educación y Cursos</h2>
-            
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Educación Formal -->
-                <div>
-                    <h3 class="text-2xl font-semibold mb-6 border-b pb-2 dark:border-zinc-700">Educación</h3>
-                    <div class="space-y-6">
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700">
-                            <h4 class="font-medium text-lg">MBA en Emprendimiento e Innovación</h4>
-                            <div class="text-gray-500 mb-2 dark:text-gray-400">Universidad del Desarrollo | Titulación: 2016</div>
-                            <p class="text-gray-700 dark:text-gray-300">Programa de posgrado con foco en negocios y tecnología.</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700">
-                            <h4 class="font-medium text-lg">Ingeniería de Ejecución en Informática</h4>
-                            <div class="text-gray-500 mb-2 dark:text-gray-400">Universidad de Las Américas | Titulación: 2010</div>
-                            <p class="text-gray-700 dark:text-gray-300">Carrera profesional con sólida formación en desarrollo y arquitectura de software.</p>
-                        </div>
+    <section id="experience" class="py-20 bg-slate-50 dark:bg-zinc-950">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-3xl mx-auto mb-14">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Experiencia Comprobada</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-4 gradient-text">Trayectoria e Hitos Relevantes</h2>
+                <p class="text-slate-600 dark:text-slate-400">Evolución desde el desarrollo e integración empresarial hasta el liderazgo de áreas tecnológicas y consultoría regional.</p>
+            </div>
 
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700 transition duration-200 hover:shadow-sm">
-                            <h4 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">Diplomado en Gestión de Proyectos</h4>
-                            <div class="text-gray-500 mb-2 dark:text-gray-400">DUOC UC | 2013</div>
-                            <p class="text-gray-700 dark:text-gray-300 text-sm">Especialización basada en metodologías PMI para una dirección de proyectos tecnológica y ágil.</p>
+            <div class="space-y-8 relative">
+                <!-- Item 1 -->
+                <div class="timeline-item relative pl-8">
+                    <span class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-indigo-600 ring-4 ring-indigo-100 dark:ring-indigo-950"></span>
+                    <div class="bg-white dark:bg-zinc-900 p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                        <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Jefe de Proyectos (Líder de Área de Proyectos Informáticos)</h3>
+                                <p class="text-indigo-600 dark:text-indigo-400 font-semibold text-sm">Tierra Ayni Ltda. · Consultoría Cloud &amp; GIS</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">2018 – Actualidad</span>
                         </div>
-
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700 transition duration-200 hover:shadow-sm">
-                            <h4 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">Diplomado en Arquitectura de la Información</h4>
-                            <div class="text-gray-500 mb-2 dark:text-gray-400">DUOC UC | 2013</div>
-                            <p class="text-gray-700 dark:text-gray-300 text-sm">Enfoque centrado en la usabilidad, experiencia de usuario (UX/UI) y estructuración estratégica de datos.</p>
-                        </div>
-
-                        <div class="bg-gray-50 p-5 rounded-lg dark:bg-zinc-700 transition duration-200 hover:shadow-sm">
-                            <h4 class="font-medium text-lg text-indigo-600 dark:text-indigo-400">Diplomado en Business Intelligence</h4>
-                            <div class="text-gray-500 mb-2 dark:text-gray-400">IEDE Business School, U. Europea de Madrid | 2012</div>
-                            <p class="text-gray-700 dark:text-gray-300 text-sm">Formación avanzada en minería de datos, modelado analítico y toma de decisiones corporativas.</p>
-                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc pl-5">
+                            <li>Liderazgo de proyectos estratégicos, soluciones técnicas y arquitectura Cloud (AWS) y GIS (GE Smallworld) para compañías líderes como <strong>ANDE Paraguay, Entel Chile, Gasvalpo, Chilquinta y Gasco Magallanes</strong>.</li>
+                            <li>Dirección del equipo de desarrollo del sistema geoespacial <strong>UNIS</strong> (solicitudes LLAE e interrupciones de servicio) implementado en el sector energético.</li>
+                            <li>Creador del primer desarrollo in-house y arquitectura backend JEE 8 en la compañía para la integración de servicios de <strong>Entel Chile</strong>, destacando la aplicación operativa <strong>MPC</strong>.</li>
+                        </ul>
                     </div>
                 </div>
-                
-                <!-- Cursos y Certificaciones -->
-                <div>
-                    <h3 class="text-2xl font-semibold mb-6 border-b pb-2 dark:border-zinc-700">Cursos y Certificaciones</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-start p-4 hover:bg-gray-50 rounded-lg transition dark:hover:bg-zinc-700">
-                            <div>
-                                <h4 class="font-medium">Oracle Next Education - Data Science</h4>
-                                <div class="text-gray-500 text-sm dark:text-gray-400">Tech Foundation G8 (307 horas) | 2025-2026</div>
-                            </div>
-                            <div class="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs rounded dark:bg-emerald-900 dark:text-emerald-300">Completado</div>
-                        </div>
-                        
-                        <div class="flex justify-between items-start p-4 hover:bg-gray-50 rounded-lg transition dark:hover:bg-zinc-700">
-                            <div>
-                                <h4 class="font-medium">Ciberseguridad INCIBE</h4>
-                                <div class="text-gray-500 text-sm dark:text-gray-400">Universidad de Málaga (315 horas) | 2025-2026</div>
-                            </div>
-                            <div class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded dark:bg-indigo-900 dark:text-indigo-300">Certificado</div>
-                        </div>
 
-                        <div class="flex justify-between items-start p-4 hover:bg-gray-50 rounded-lg transition dark:hover:bg-zinc-700">
+                <!-- Item 2 -->
+                <div class="timeline-item relative pl-8">
+                    <span class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-100 dark:ring-emerald-950"></span>
+                    <div class="bg-white dark:bg-zinc-900 p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                        <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
                             <div>
-                                <h4 class="font-medium">Oracle Cloud Infrastructure</h4>
-                                <div class="text-gray-500 text-sm dark:text-gray-400">Oracle | 2025</div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ingeniero de Software Senior (Arquitectura, Integración y Seguridad)</h3>
+                                <p class="text-indigo-600 dark:text-indigo-400 font-semibold text-sm">Sentra Software House · Banca, Retail Financiero y Telco</p>
                             </div>
-                            <div class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded dark:bg-indigo-900 dark:text-indigo-300">Certificado</div>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-slate-300">2016 – 2018</span>
                         </div>
-                        
-                        <div class="flex justify-between items-start p-4 hover:bg-gray-50 rounded-lg transition dark:hover:bg-zinc-700">
-                            <div>
-                                <h4 class="font-medium">ISC2 Certified in Cybersecurity</h4>
-                                <div class="text-gray-500 text-sm dark:text-gray-400">ISC2 | 2026</div>
-                            </div>
-                            <div class="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded dark:bg-amber-900 dark:text-amber-300">En Proceso</div>
-                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc pl-5">
+                            <li>Consultoría en arquitectura, integración y desarrollo de alto impacto para clientes como <strong>BCI, Falabella Financiero Argentina, BancoEstado y WOM</strong>.</li>
+                            <li>Mitigación de vulnerabilidades críticas de seguridad en el motor de pagos de <strong>BCI</strong> y desarrollo de solución Java/OSB contra ataques de diccionario en <strong>Falabella Financiero</strong>.</li>
+                            <li>Levantamiento y programación de automatización operativa para <strong>BancoEstado</strong>, capacitación en células ágiles (JMeter, SoapUI) y adaptación open-source de TestLink.</li>
+                        </ul>
                     </div>
-                    
-                    <!-- Skills Section -->
-                    <h3 class="text-2xl font-semibold mt-8 mb-4 border-b pb-2 dark:border-zinc-700">Stack Tecnológico</h3>
-                    <div class="flex flex-wrap gap-3">
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">Java (JEE) / Spring Boot</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">Node.js / Angular</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">AWS / GCP / OCI</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">ISO 27001 / Ciberseguridad</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">Python / Data Science / IA</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">Docker / Linux</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">Git / GitHub / CI-CD</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">Oracle / PostgreSQL / SQL Server</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">GE Smallworld</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">Alfresco / ECM</div>
-                        <div class="px-3 py-1 bg-indigo-50 text-indigo-800 rounded-full text-sm dark:bg-indigo-900 dark:text-indigo-300">QA (Selenium / JMeter)</div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="timeline-item relative pl-8">
+                    <span class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-indigo-500 ring-4 ring-indigo-100 dark:ring-indigo-950"></span>
+                    <div class="bg-white dark:bg-zinc-900 p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                        <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Analista de Arquitectura y Programador JEE</h3>
+                                <p class="text-indigo-600 dark:text-indigo-400 font-semibold text-sm">Aseguradora Porvenir / L&amp;E Inversiones · Sector Seguros</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-slate-300">2016</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc pl-5">
+                            <li>Diseño de arquitectura núcleo en JEE (proyecto SISEG), modelado de bases de datos PostgreSQL e implementación de ERP sobre infraestructura cloud <strong>AWS</strong>, reportando directamente a gerencia.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="timeline-item relative pl-8">
+                    <span class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-100 dark:ring-emerald-950"></span>
+                    <div class="bg-white dark:bg-zinc-900 p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                        <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Consultor e Ingeniero de Integración Sector Público</h3>
+                                <p class="text-indigo-600 dark:text-indigo-400 font-semibold text-sm">GST (Contraloría General de la República) &amp; Everis Chile S.A.</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-slate-300">2010 – 2015</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc pl-5">
+                            <li>Análisis, desarrollo e integración SOA (Oracle ADF, JEE, Oracle SOA Suite) para el sistema <strong>SICA</strong> (v3 y v4 en Chile) y adaptaciones tecnológicas para las Contralorías de <strong>Paraguay y Uruguay</strong>.</li>
+                            <li>Participación en el desarrollo del módulo de Administración de Contenidos del sistema financiero estatal <strong>SIGFE 2</strong> en Everis Chile (J2EE, Oracle ADF, Oracle UCM y OSB).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="timeline-item relative pl-8">
+                    <span class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-slate-400 ring-4 ring-slate-200 dark:bg-zinc-600 dark:ring-zinc-800"></span>
+                    <div class="bg-white dark:bg-zinc-900 p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                        <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Ingeniero de Software &amp; QA</h3>
+                                <p class="text-indigo-600 dark:text-indigo-400 font-semibold text-sm">Accenture (Xinergía / Tm-más) · Telecomunicaciones</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-slate-300">2011 – 2012</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc pl-5">
+                            <li>Aseguramiento de calidad de arquitectura, mitigación de riesgos técnicos, elaboración de requerimientos maestros y desarrollo de plataforma JEE/UNIX para automatización de ambientes de prueba.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -277,81 +379,262 @@
     <!-- =================================================================
     PORTFOLIO SECTION
     ================================================================== -->
-    <section id="portfolio" class="py-16 bg-gray-50 dark:bg-zinc-900">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-3xl font-bold mb-8 text-center gradient-text">Portafolio de Proyectos Relevantes</h2>
-            
-            <!-- Projects Grid -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
+    <section id="portfolio" class="py-20 bg-white dark:bg-zinc-900 border-t border-slate-100 dark:border-zinc-800/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-3xl mx-auto mb-14">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Casos Destacados</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-4 gradient-text">Portafolio de Proyectos Relevantes</h2>
+                <p class="text-slate-600 dark:text-slate-400">Iniciativas de alcance nacional e internacional en control gubernamental, finanzas públicas y gestión geoespacial de infraestructura crítica.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Project 1: SICA -->
-                <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300 dark:bg-zinc-800">
-                    <div class="project-image h-48 overflow-hidden">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/cf11fe82-0b14-46f2-9e1b-1c9528e964ea.png" alt="SICA Contraloría" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                <article class="project-card bg-slate-50 dark:bg-zinc-800/70 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-zinc-700/80 shadow-sm transition duration-300 flex flex-col">
+                    <div class="h-52 overflow-hidden bg-slate-200 dark:bg-zinc-900">
+                        <img src="images/project-sica.png" alt="Sistema Integrado de Control de Auditorías SICA" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
                     </div>
-                    <div class="p-6 flex flex-col h-full">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-semibold">SICA</h3>
-                            <div class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded dark:bg-indigo-900 dark:text-indigo-300">Contraloría</div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">SICA — Control de Auditorías</h3>
+                            <span class="px-2.5 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full dark:bg-indigo-950 dark:text-indigo-300 shrink-0">CL · PY · UY</span>
                         </div>
-                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm flex-grow">Participación en el Sistema Integrado de Control de Auditorías (SICA) para la Contraloría General de la República, enfocado en optimizar los procesos de control y auditoría del Estado.</p>
-                        <div class="flex space-x-2 mt-auto pt-4 border-t border-gray-100 dark:border-zinc-700">
-                            <a href="https://www.youtube.com/watch?v=_sANAct5NVI" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center gap-1">
+                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4 flex-grow">
+                            Desarrollo e integración SOA del Sistema Integrado de Control de Auditorías (v3 y v4) para la Contraloría General de la República de Chile y adaptaciones regionales para Paraguay y Uruguay.
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">Java EE / EJB3</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">Oracle SOA Suite</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">Oracle ADF</span>
+                        </div>
+                        <div class="pt-4 border-t border-slate-200/80 dark:border-zinc-700">
+                            <a href="https://www.youtube.com/watch?v=_sANAct5NVI" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 text-sm font-semibold dark:text-indigo-400 dark:hover:text-indigo-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                                Ver Video
+                                Ver Presentación Oficial
                             </a>
                         </div>
                     </div>
-                </div>
-                
+                </article>
+
                 <!-- Project 2: SIGFE 2 -->
-                <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300 dark:bg-zinc-800">
-                    <div class="project-image h-48 overflow-hidden">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/901f5b9f-fee2-458e-82be-4f6fa6a4b984.png" alt="SIGFE 2" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                <article class="project-card bg-slate-50 dark:bg-zinc-800/70 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-zinc-700/80 shadow-sm transition duration-300 flex flex-col">
+                    <div class="h-52 overflow-hidden bg-slate-200 dark:bg-zinc-900">
+                        <img src="images/project-sigfe2.png" alt="Sistema de Información para la Gestión Financiera del Estado SIGFE 2" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
                     </div>
-                    <div class="p-6 flex flex-col h-full">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-semibold">SIGFE 2</h3>
-                            <div class="px-2 py-1 bg-emerald-100 text-emerald-800 text-xs rounded dark:bg-emerald-900 dark:text-emerald-300">Min. Hacienda</div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">SIGFE 2 — Gestión Financiera</h3>
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full dark:bg-emerald-950 dark:text-emerald-300 shrink-0">Min. Hacienda</span>
                         </div>
-                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm flex-grow">Desarrollo y gestión para el Sistema de Información para la Gestión Financiera del Estado (SIGFE 2) en el Ministerio de Hacienda, modernizando la administración financiera pública.</p>
-                        <div class="flex space-x-2 mt-auto pt-4 border-t border-gray-100 dark:border-zinc-700">
-                            <a href="https://dipres.gob.cl/590/w3-channel.html" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium dark:text-indigo-400 dark:hover:text-indigo-300">Más Información</a>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4 flex-grow">
+                            Diseño y programación en el módulo de Administración de Contenidos para el Sistema de Información para la Gestión Financiera del Estado (DIPRES), modernizando el control documental público.
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">J2EE / Oracle ADF</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">Oracle UCM &amp; OSB</span>
+                        </div>
+                        <div class="pt-4 border-t border-slate-200/80 dark:border-zinc-700">
+                            <a href="https://dipres.gob.cl/590/w3-channel.html" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm font-semibold dark:text-indigo-400 dark:hover:text-indigo-300">
+                                Más Información en DIPRES
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            </a>
                         </div>
                     </div>
-                </div>
-                
+                </article>
+
                 <!-- Project 3: UNIS -->
-                <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300 dark:bg-zinc-800">
-                    <div class="project-image h-48 overflow-hidden">
-                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7c775294-557a-4e60-9b5b-edc88f389a55.png" alt="Proyecto UNIS" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
+                <article class="project-card bg-slate-50 dark:bg-zinc-800/70 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-zinc-700/80 shadow-sm transition duration-300 flex flex-col">
+                    <div class="h-52 overflow-hidden bg-slate-200 dark:bg-zinc-900">
+                        <img src="images/project-unis.png" alt="Proyecto UNIS Gestión Geoespacial" class="w-full h-full object-cover hover:scale-105 transition duration-500" />
                     </div>
-                    <div class="p-6 flex flex-col h-full">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-semibold">Proyecto UNIS</h3>
-                            <div class="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded dark:bg-amber-900 dark:text-amber-300">Tierra-Ayni</div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Proyecto UNIS — Gestión GIS</h3>
+                            <span class="px-2.5 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full dark:bg-amber-950 dark:text-amber-300 shrink-0">Tierra-Ayni</span>
                         </div>
-                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm flex-grow">Solución de software para la gestión geoespacial de activos y redes de distribución, administrando obras subterráneas, planificación, y captura de datos en terreno.</p>
-                        <div class="flex space-x-2 mt-auto pt-4 border-t border-gray-100 dark:border-zinc-700">
-                            <a href="https://tierra-ayni.com/?page_id=1977" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium dark:text-indigo-400 dark:hover:text-indigo-300">Ver Detalles</a>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4 flex-grow">
+                            Liderazgo de desarrollo en solución geoespacial para gestión de activos y redes de distribución, administrando obras subterráneas, planificación, solicitudes LLAE y captura en terreno.
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">GE Smallworld</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">Liderazgo Técnico</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">Utilities</span>
+                        </div>
+                        <div class="pt-4 border-t border-slate-200/80 dark:border-zinc-700">
+                            <a href="https://tierra-ayni.com/?page_id=1977" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm font-semibold dark:text-indigo-400 dark:hover:text-indigo-300">
+                                Ver Detalles del Producto
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Project 4: ANDE -->
+                <article class="project-card bg-slate-50 dark:bg-zinc-800/70 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-zinc-700/80 shadow-sm transition duration-300 flex flex-col">
+                    <div class="h-52 overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-emerald-500 relative flex items-center justify-center p-6">
+                        <div class="absolute inset-0 opacity-15" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
+                        <div class="text-center relative z-10">
+                            <div class="text-4xl sm:text-5xl font-extrabold text-white tracking-wider">ANDE</div>
+                            <div class="text-xs sm:text-sm font-medium text-indigo-100 mt-1 uppercase tracking-widest">Energía · Paraguay</div>
+                        </div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Proyecto ANDE Paraguay</h3>
+                            <span class="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full dark:bg-blue-950 dark:text-blue-300 shrink-0">Energía · AWS</span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4 flex-grow">
+                            Asesoría tecnológica, implementación y corrección de soluciones GIS y Cloud sobre AWS para la Administración Nacional de Electricidad (ANDE), impulsando la eficiencia operativa.
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">AWS Cloud</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">GE Smallworld</span>
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700">Arquitectura TI</span>
+                        </div>
+                        <div class="pt-4 border-t border-slate-200/80 dark:border-zinc-700">
+                            <a href="https://www.ande.gov.py/interna.php?id=15134" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 text-sm font-semibold dark:text-indigo-400 dark:hover:text-indigo-300">
+                                Más Información Institucional
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================================================================
+    EDUCATION, CERTIFICATIONS & TECH STACK SECTION
+    ================================================================== -->
+    <section id="education" class="py-20 bg-slate-50 dark:bg-zinc-950">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-3xl mx-auto mb-14">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Respaldo Académico &amp; Técnico</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-4 gradient-text">Formación, Certificaciones y Stack</h2>
+                <p class="text-slate-600 dark:text-slate-400">Actualización continua en negocios, dirección de proyectos, cloud computing, inteligencia artificial y ciberseguridad.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-10">
+                <!-- Educación Formal y Posgrados -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 pb-3 border-b border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">Educación Formal y Posgrados</h3>
+                    <div class="space-y-4">
+                        <div class="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="font-bold text-lg text-slate-900 dark:text-white">MBA en Emprendimiento e Innovación</h4>
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">2016</span>
+                            </div>
+                            <div class="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-1">Universidad del Desarrollo</div>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">Programa de posgrado orientado a dirección estratégica, negocios y tecnología.</p>
+                        </div>
+
+                        <div class="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="font-bold text-lg text-slate-900 dark:text-white">Ingeniería de Ejecución en Informática</h4>
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-slate-300">2010</span>
+                            </div>
+                            <div class="text-sm text-indigo-600 dark:text-indigo-400 font-medium mb-1">Universidad de Las Américas</div>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm">Carrera profesional con sólida base en ingeniería de software, bases de datos y arquitectura.</p>
+                        </div>
+
+                        <div class="grid sm:grid-cols-1 gap-3">
+                            <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200/80 dark:border-zinc-800">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-semibold text-slate-900 dark:text-white">Diplomado en Gestión de Proyectos (PMI)</h4>
+                                    <span class="text-xs text-slate-500 dark:text-slate-400">DUOC UC · 2013</span>
+                                </div>
+                                <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Metodologías PMI para dirección tecnológica y ágil de proyectos.</p>
+                            </div>
+                            <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200/80 dark:border-zinc-800">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-semibold text-slate-900 dark:text-white">Diplomado en Arquitectura de la Información</h4>
+                                    <span class="text-xs text-slate-500 dark:text-slate-400">DUOC UC · 2013</span>
+                                </div>
+                                <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Usabilidad, UX/UI y estructuración estratégica de plataformas de datos.</p>
+                            </div>
+                            <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200/80 dark:border-zinc-800">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-semibold text-slate-900 dark:text-white">Diplomado en Business Intelligence</h4>
+                                    <span class="text-xs text-slate-500 dark:text-slate-400">IEDE / U. Europea de Madrid · 2012</span>
+                                </div>
+                                <p class="text-slate-600 dark:text-slate-400 text-xs mt-1">Minería de datos, modelado analítico y toma de decisiones corporativas.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Project 4: ANDE -->
-                <div class="project-card bg-white rounded-lg overflow-hidden shadow-sm transition duration-300 dark:bg-zinc-800">
-                    <div class="project-image h-48 overflow-hidden bg-gradient-to-br from-indigo-500 to-emerald-400">
-                        <div class="w-full h-full flex items-center justify-center text-white text-5xl font-bold opacity-50 hover:scale-105 transition duration-500 hover:opacity-75">
-                            ANDE
+                <!-- Certificaciones y Capacitaciones Relevantes -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 pb-3 border-b border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">Certificaciones y Especializaciones</h3>
+                    <div class="space-y-3">
+                        <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-indigo-200 dark:border-indigo-900/60 flex justify-between items-start gap-3">
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">MIT — IA Generativa, Transformación Digital &amp; IoT</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Massachusetts Institute of Technology · Cursos de especialización</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded-full dark:bg-indigo-950 dark:text-indigo-300 shrink-0">MIT · 2025</span>
+                        </div>
+
+                        <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/60 flex justify-between items-start gap-3">
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white">Inmersión IA Google &amp; Alura Latam</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Reconocido en el <strong>Top 8 de 3.000 proyectos</strong> de Inteligencia Artificial presentados</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full dark:bg-emerald-950 dark:text-emerald-300 shrink-0">Top 8 / 3.000</span>
+                        </div>
+
+                        <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex justify-between items-start gap-3">
+                            <div>
+                                <h4 class="font-semibold text-slate-900 dark:text-white">Ciberseguridad INCIBE &amp; ISC2 Certified in Cybersecurity</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Universidad de Málaga (315 hrs) · ISC2</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full dark:bg-indigo-950 dark:text-indigo-300 shrink-0">2025–2026</span>
+                        </div>
+
+                        <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex justify-between items-start gap-3">
+                            <div>
+                                <h4 class="font-semibold text-slate-900 dark:text-white">Oracle Next Education — Data Science &amp; Oracle Cloud (OCI)</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tech Foundation G8 (307 hrs) &amp; Certificación OCI</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full dark:bg-emerald-950 dark:text-emerald-300 shrink-0">Completado</span>
+                        </div>
+
+                        <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex justify-between items-start gap-3">
+                            <div>
+                                <h4 class="font-semibold text-slate-900 dark:text-white">Cloud &amp; Estándares: AWS, Google Cloud, SFIA y GE</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">AWS Cloud Practitioner · GCP Core Infrastructure, Big Data &amp; ML · SFIA Foundation · GE Mobile Enterprise Web</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full dark:bg-zinc-800 dark:text-slate-300 shrink-0">Certificado</span>
                         </div>
                     </div>
-                    <div class="p-6 flex flex-col h-full">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-semibold">Proyecto ANDE</h3>
-                            <div class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded dark:bg-blue-900 dark:text-blue-300">Tierra-Ayni</div>
+
+                    <!-- Stack Tecnológico por Categorías -->
+                    <h3 class="text-xl font-bold mt-8 mb-4 text-slate-900 dark:text-white">Stack Tecnológico</h3>
+                    <div class="space-y-3 bg-white dark:bg-zinc-900 p-5 rounded-xl border border-slate-200/80 dark:border-zinc-800 text-xs">
+                        <div>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 block mb-1.5 uppercase tracking-wider text-[11px]">Backend, Frontend &amp; Integración</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-800 rounded-full dark:bg-indigo-950 dark:text-indigo-300">Java (JEE) / Spring Boot</span>
+                                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-800 rounded-full dark:bg-indigo-950 dark:text-indigo-300">Node.js / Angular</span>
+                                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-800 rounded-full dark:bg-indigo-950 dark:text-indigo-300">SOA / REST / OSB</span>
+                                <span class="px-2.5 py-1 bg-indigo-50 text-indigo-800 rounded-full dark:bg-indigo-950 dark:text-indigo-300">Alfresco / ECM</span>
+                            </div>
                         </div>
-                        <p class="text-gray-600 mb-4 dark:text-gray-400 text-sm flex-grow">Solución tecnológica estratégica y gestión de procesos desarrollada para la Administración Nacional de Electricidad (ANDE), con foco en transformación y eficiencia operativa.</p>
-                        <div class="flex space-x-2 mt-auto pt-4 border-t border-gray-100 dark:border-zinc-700">
-                            <a href="https://www.ande.gov.py/interna.php?id=15134" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium dark:text-indigo-400 dark:hover:text-indigo-300">Más Información</a>
+                        <div>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 block mb-1.5 uppercase tracking-wider text-[11px]">Cloud, DevOps, Datos &amp; IA</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-full dark:bg-emerald-950 dark:text-emerald-300">AWS / GCP / OCI</span>
+                                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-full dark:bg-emerald-950 dark:text-emerald-300">Python / Data Science / IA</span>
+                                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-full dark:bg-emerald-950 dark:text-emerald-300">Docker / Linux / CI-CD</span>
+                                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-full dark:bg-emerald-950 dark:text-emerald-300">Oracle / PostgreSQL / SQL Server</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="font-bold text-slate-700 dark:text-slate-300 block mb-1.5 uppercase tracking-wider text-[11px]">Seguridad, QA &amp; GIS</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full dark:bg-amber-950 dark:text-amber-300">ISO 27001 / Ciberseguridad</span>
+                                <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full dark:bg-amber-950 dark:text-amber-300">GE Smallworld</span>
+                                <span class="px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full dark:bg-amber-950 dark:text-amber-300">QA (Selenium / JMeter / SoapUI)</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -360,122 +643,249 @@
     </section>
 
     <!-- =================================================================
-    CONTACT SECTION
+    CREATIVE LAB & AI SECTION
     ================================================================== -->
-    <section id="contact" class="py-16 bg-indigo-50 dark:bg-zinc-900">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-3xl font-bold mb-2 text-center gradient-text">Contacto</h2>
-            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto dark:text-gray-400">Si estás interesado en trabajar conmigo o quieres más información sobre mis proyectos, no dudes en contactarme.</p>
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2">
-                    <div class="bg-white p-8 rounded-lg shadow-sm dark:bg-zinc-800">
-                        <h3 class="text-xl font-semibold mb-4">Envíame un mensaje</h3>
-                        <form action="https://formsubmit.co/d0b7036e47711b369cb182e140653fa5 " method="POST">
-                            <div class="mb-4">
-                                <label for="name" class="block text-gray-700 mb-2 dark:text-gray-300">Nombre</label>
-                                <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600" placeholder="Tu nombre" required>
+    <section id="lab" class="py-20 bg-white dark:bg-zinc-900 border-t border-slate-100 dark:border-zinc-800/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Exploración &amp; Prototipado</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-4 gradient-text">Laboratorio Creativo &amp; IA</h2>
+                <p class="text-slate-600 dark:text-slate-400">Espacio experimental donde combino herramientas de Inteligencia Artificial Generativa, Web Audio API y desarrollo interactivo en Canvas.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Card 1: Composición Musical con IA -->
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-7 shadow-lg border border-indigo-900/50 flex flex-col justify-between">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-200 text-xs font-semibold mb-4">
+                            🎵 Audio &amp; IA Generativa
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Composición Musical con IA</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-5">
+                            Prototipo de reproductor web con visualizador de partículas en HTML5 Canvas, creado para exhibir pistas producidas mediante flujos asistidos por Inteligencia Artificial.
+                        </p>
+                        <ul class="space-y-2 text-xs text-slate-300 mb-6 bg-white/5 p-4 rounded-xl border border-white/10">
+                            <li class="flex justify-between"><span>1. Cruzando Cielos</span><span class="text-indigo-300">Eduardo Cayún M. / IA</span></li>
+                            <li class="flex justify-between"><span>2. Maxi y Luka, para su Opa</span><span class="text-indigo-300">Eduardo Cayún M. / IA</span></li>
+                            <li class="flex justify-between"><span>3. Together</span><span class="text-indigo-300">Eduardo Cayún M. / IA</span></li>
+                        </ul>
+                    </div>
+                    <button id="show-music-player" type="button" class="w-full py-3 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-semibold text-sm transition flex items-center justify-center gap-2 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Abrir Reproductor Interactivo
+                    </button>
+                </div>
+
+                <!-- Card 2: Edu Tetris -->
+                <div class="bg-gradient-to-br from-slate-900 to-emerald-950 text-white rounded-2xl p-7 shadow-lg border border-emerald-900/50 flex flex-col justify-between">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-200 text-xs font-semibold mb-4">
+                            🎮 HTML5 Canvas &amp; JavaScript
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Edu Tetris — Motor Arcade</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-5">
+                            Implementación en JavaScript puro sin librerías externas: físicas de partículas al impacto y explosión de líneas, ghost piece, pentominós y detección de T-Spins con música integrada.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="px-2.5 py-1 rounded-md bg-white/10 text-xs text-emerald-200">60 FPS Canvas</span>
+                            <span class="px-2.5 py-1 rounded-md bg-white/10 text-xs text-emerald-200">T-Spin Detection</span>
+                            <span class="px-2.5 py-1 rounded-md bg-white/10 text-xs text-emerald-200">Audio Engine</span>
+                        </div>
+                    </div>
+                    <a href="tetris.html" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition flex items-center justify-center gap-2 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Jugar Edu Tetris (Nueva Pestaña)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =================================================================
+    CONTACT & SCHEDULING SECTION (PRIVACY FIRST)
+    ================================================================== -->
+    <section id="contact" class="py-20 bg-indigo-50/70 dark:bg-zinc-950 border-t border-slate-200/60 dark:border-zinc-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Contacto Directo</span>
+                <h2 class="text-3xl sm:text-4xl font-bold mt-2 mb-3 gradient-text">Conversemos sobre tu próximo desafío</h2>
+                <p class="text-slate-600 dark:text-slate-400">Agenda una videollamada directa en Google Calendar o envíame un mensaje privado a través del formulario seguro.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-start">
+                <!-- Columna Canales Directos -->
+                <div class="lg:col-span-5 space-y-5">
+                    <!-- Tarjeta Destacada: Google Calendar -->
+                    <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 text-white p-7 rounded-2xl shadow-lg">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
                             </div>
-                            <div class="mb-4">
-                                <label for="email" class="block text-gray-700 mb-2 dark:text-gray-300">Email</label>
-                                <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600" placeholder="tu@email.com" required>
+                            <div>
+                                <h3 class="text-lg font-bold">Agendar Reunión</h3>
+                                <p class="text-xs text-indigo-200">Google Calendar · Google Meet automático</p>
                             </div>
-                            <div class="mb-4">
-                                <label for="subject" class="block text-gray-700 mb-2 dark:text-gray-300">Asunto</label>
-                                <input type="text" id="subject" name="subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600" placeholder="Asunto del mensaje" required>
+                        </div>
+                        <p class="text-sm text-indigo-100 leading-relaxed mb-5">
+                            Selecciona un bloque horario disponible para conversar sobre liderazgo TI, consultoría empresarial o proyectos tecnológicos.
+                        </p>
+                        <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 rounded-xl bg-white text-indigo-700 hover:bg-indigo-50 font-bold text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                            Elegir Horario en Google Calendar
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <!-- Tarjeta Redes y Ubicación -->
+                    <div class="bg-white dark:bg-zinc-900 p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-5">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Canales Profesionales</h3>
+
+                        <a href="https://www.linkedin.com/in/eduardocayun/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200/70 dark:bg-zinc-800/70 dark:hover:bg-indigo-950/50 dark:border-zinc-700 transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-sm text-slate-900 dark:text-white">LinkedIn</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">Perfil ejecutivo y red de contactos</div>
+                                </div>
                             </div>
-                            <div class="mb-4">
-                                <label for="message" class="block text-gray-700 mb-2 dark:text-gray-300">Mensaje</label>
-                                <textarea id="message" name="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-zinc-700 dark:border-zinc-600" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                            <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:translate-x-0.5 transition">Conectar →</span>
+                        </a>
+
+                        <a href="https://github.com/educhile1" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/70 dark:bg-zinc-800/70 dark:hover:bg-zinc-800 dark:border-zinc-700 transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-slate-200 dark:bg-zinc-700 flex items-center justify-center text-slate-800 dark:text-slate-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-sm text-slate-900 dark:text-white">GitHub</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">Repositorios y prototipos públicos</div>
+                                </div>
                             </div>
-                            <button type="submit" class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition dark:bg-indigo-500 dark:hover:bg-indigo-600">Enviar Mensaje</button>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 group-hover:translate-x-0.5 transition">Ver →</span>
+                        </a>
+
+                        <div class="pt-3 border-t border-slate-100 dark:border-zinc-800 space-y-2 text-sm text-slate-600 dark:text-slate-400">
+                            <div class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>Santiago, Chile / Asunción, Paraguay</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                </svg>
+                                <span>Presencial o Remoto (Latam y Global)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Formulario Encriptado -->
+                <div class="lg:col-span-7">
+                    <div class="bg-white dark:bg-zinc-900 p-7 sm:p-8 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Envíame un mensaje directo</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tu mensaje llega directamente a mi bandeja sin exponer direcciones personales.</p>
+                            </div>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium dark:bg-emerald-950 dark:text-emerald-300">
+                                🔒 Formulario Privado
+                            </span>
+                        </div>
+
+                        <form id="contact-form" action="https://formsubmit.co/d0b7036e47711b369cb182e140653fa5" method="POST" class="space-y-4">
+                            <!-- Honeypot anti-bots -->
+                            <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off">
+                            <input type="hidden" name="_template" value="table">
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nombre completo *</label>
+                                    <input type="text" id="name" name="name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="Tu nombre">
+                                </div>
+                                <div>
+                                    <label for="company" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Empresa / Organización</label>
+                                    <input type="text" id="company" name="company" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="Nombre de tu empresa (opcional)">
+                                </div>
+                            </div>
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tu correo para responderte *</label>
+                                    <input type="email" id="email" name="email" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="nombre@empresa.com">
+                                </div>
+                                <div>
+                                    <label for="subject" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Motivo de contacto *</label>
+                                    <select id="subject" name="subject" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                                        <option value="Consultoría B2B">Consultoría B2B</option>
+                                        <option value="Oportunidad de Liderazgo TI">Oportunidad de Liderazgo TI</option>
+                                        <option value="Proyecto IA / Transformación Digital">Proyecto IA / Transformación Digital</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mensaje *</label>
+                                <textarea id="message" name="message" rows="4" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="Cuéntame brevemente sobre el proyecto, cargo o necesidad de tu organización..."></textarea>
+                            </div>
+
+                            <div id="form-status" class="hidden rounded-xl p-4 text-sm font-medium" role="status" aria-live="polite"></div>
+
+                            <button id="contact-submit-btn" type="submit" class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition shadow-md shadow-indigo-500/20 disabled:opacity-60 disabled:cursor-not-allowed">
+                                Enviar Mensaje Privado
+                            </button>
                         </form>
                     </div>
                 </div>
-                <div class="md:w-1/2">
-                    <div class="bg-white p-8 rounded-lg shadow-sm h-full dark:bg-zinc-800">
-                        <h3 class="text-xl font-semibold mb-4">Información de Contacto</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 dark:bg-indigo-900">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-800 dark:text-gray-200">Correo Electrónico</h4>
-                                    <a href="mailto:eduardocayun@gmail.com" class="text-indigo-600 dark:text-indigo-400 hover:underline">eduardocayun@gmail.com</a>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 dark:bg-indigo-900">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-800 dark:text-gray-200">Ubicación</h4>
-                                    <p class="text-gray-600 dark:text-gray-400">Santiago, Chile / Asunción, Paraguay</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 dark:bg-indigo-900">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium text-gray-800 dark:text-gray-200">Modalidad</h4>
-                                    <p class="text-gray-600 dark:text-gray-400">Presencial / Remoto (Latam y Global)</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <h3 class="text-xl font-semibold mt-8 mb-4">Redes Sociales</h3>
-                        <div class="flex space-x-4">
-                            <a href="https://www.linkedin.com/in/eduardocayun/" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 hover:bg-indigo-100 transition dark:bg-zinc-700 dark:text-gray-300 dark:hover:bg-indigo-900">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
-                                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
-                                </svg>
-                            </a>
-                            <a href="https://github.com/educhile1" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 hover:bg-indigo-100 transition dark:bg-zinc-700 dark:text-gray-300 dark:hover:bg-indigo-900">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
-                                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 
     <!-- =================================================================
-    MUSIC PLAYER CONTAINER
+    MUSIC PLAYER MODAL CONTAINER
     ================================================================== -->
-    <div id="music-player-container" class="hidden"></div>
+    <div id="music-player-container" class="hidden" role="dialog" aria-modal="true" aria-label="Reproductor de música con IA"></div>
 
     <!-- =================================================================
     FOOTER
     ================================================================== -->
-    <footer class="py-8 bg-indigo-900 text-white dark:bg-zinc-800">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <a href="#home" class="text-xl font-bold gradient-text">MI PORTAFOLIO</a>
-                    <p class="mt-2 text-indigo-200 dark:text-indigo-400">© 2025 Todos los derechos reservados</p>
+    <footer class="py-10 bg-slate-900 text-slate-300 dark:bg-zinc-950 border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <a href="#home" class="text-lg font-bold gradient-text tracking-wide">EDUARDO CAYÚN M.</a>
+                    <p class="mt-1 text-xs text-slate-400">© 2026 Eduardo Cayún M. · MBA &amp; Líder de Proyectos TI</p>
                 </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-indigo-200 hover:text-white transition dark:text-indigo-400 dark:hover:text-white">Privacidad</a>
-                    <a href="#" class="text-indigo-200 hover:text-white transition dark:text-indigo-400 dark:hover:text-white">Términos</a>
-                    <a href="#" class="text-indigo-200 hover:text-white transition dark:text-indigo-400 dark:hover:text-white">FAQ</a>
+                <div class="flex flex-wrap justify-center gap-6 text-sm">
+                    <a href="#solutions" class="text-slate-400 hover:text-white transition">Soluciones</a>
+                    <a href="#experience" class="text-slate-400 hover:text-white transition">Trayectoria</a>
+                    <a href="#portfolio" class="text-slate-400 hover:text-white transition">Proyectos</a>
+                    <a href="#contact" class="text-slate-400 hover:text-white transition">Contacto</a>
+                    <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 font-medium transition">Agendar Meet</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Back to Top Button -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg hidden items-center justify-center dark:bg-indigo-500 dark:hover:bg-indigo-600">
+    <button id="back-to-top" type="button" aria-label="Volver arriba" class="fixed bottom-6 right-6 w-11 h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg hidden items-center justify-center transition z-30">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>

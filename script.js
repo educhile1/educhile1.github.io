@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Crear elementos de audio
     const sounds = {
         move: new Audio('sounds/move.wav'),
-        rotate: new Audio('sounds/move.wav'),
+        rotate: new Audio('sounds/rotate.wav'),
         drop: new Audio('sounds/drop.wav'),
         clear: new Audio('sounds/clear.wav'),
         gameOver: new Audio('sounds/gameover.wav'),
@@ -38,10 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const musicTracks = [
-        new Audio('music/music1.wav'),
-        new Audio('music/music2.wav'),
-        new Audio('music/music3.wav'),
-        new Audio('music/music4.wav')
+        new Audio(encodeURI('music/Cruzando Cielos.mp3')),
+        new Audio(encodeURI('music/Opa Amor.mp3')),
+        new Audio(encodeURI('music/Together.mp3'))
     ];
     musicTracks.forEach(track => track.loop = true);
 
