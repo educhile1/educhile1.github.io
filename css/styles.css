@@ -1191,6 +1191,71 @@ body.full-scroll-active #stage-arcade-cta {
 }
 
 /* =================================================================
+   3D PARTY MODE & DISCO BALL HUD STYLES
+================================================================== */
+#party-music-hud {
+    background: rgba(14, 10, 24, 0.92);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 0, 127, 0.35), 0 0 15px rgba(0, 240, 255, 0.25);
+    border: 1px solid rgba(255, 0, 127, 0.45);
+    animation: partyBorderGlow 4s linear infinite;
+}
+
+@keyframes partyBorderGlow {
+    0% { border-color: rgba(255, 0, 127, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 0, 127, 0.4); }
+    33% { border-color: rgba(0, 240, 255, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 240, 255, 0.4); }
+    66% { border-color: rgba(245, 158, 11, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(245, 158, 11, 0.4); }
+    100% { border-color: rgba(255, 0, 127, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 0, 127, 0.4); }
+}
+
+.party-eq-visualizer span.bar {
+    width: 3.5px;
+    height: 4px;
+    border-radius: 2px;
+    transition: height 0.15s ease;
+}
+
+.party-eq-visualizer span.bar-1 { background: #ff007f; }
+.party-eq-visualizer span.bar-2 { background: #f43f5e; }
+.party-eq-visualizer span.bar-3 { background: #a855f7; }
+.party-eq-visualizer span.bar-4 { background: #38bdf8; }
+.party-eq-visualizer span.bar-5 { background: #00f0ff; }
+.party-eq-visualizer span.bar-6 { background: #10b981; }
+.party-eq-visualizer span.bar-7 { background: #fbbf24; }
+
+.is-playing .party-eq-visualizer span.bar-1 { animation: partyEqBounce 0.7s ease-in-out infinite alternate 0.05s; }
+.is-playing .party-eq-visualizer span.bar-2 { animation: partyEqBounce 0.5s ease-in-out infinite alternate 0.15s; }
+.is-playing .party-eq-visualizer span.bar-3 { animation: partyEqBounce 0.85s ease-in-out infinite alternate 0.25s; }
+.is-playing .party-eq-visualizer span.bar-4 { animation: partyEqBounce 0.6s ease-in-out infinite alternate 0.1s; }
+.is-playing .party-eq-visualizer span.bar-5 { animation: partyEqBounce 0.9s ease-in-out infinite alternate 0.3s; }
+.is-playing .party-eq-visualizer span.bar-6 { animation: partyEqBounce 0.55s ease-in-out infinite alternate 0.2s; }
+.is-playing .party-eq-visualizer span.bar-7 { animation: partyEqBounce 0.75s ease-in-out infinite alternate 0.08s; }
+
+@keyframes partyEqBounce {
+    0% { height: 3px; }
+    50% { height: 20px; }
+    100% { height: 6px; }
+}
+
+.animate-spin-slow {
+    animation: spinSlow 8s linear infinite;
+}
+
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Party active state on spotify pill */
+#spotify-mini-pill.is-party-mode {
+    border-color: rgba(255, 0, 127, 0.7) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), 0 0 28px rgba(255, 0, 127, 0.45) !important;
+}
+
+body.full-scroll-active #party-music-hud {
+    top: 5rem !important;
+}
+
+/* =================================================================
    SCENIC WINDOW VIEW SWITCHER HUD
 ================================================================== */
 #stage-scenic-pill {
@@ -1252,4 +1317,69 @@ body.full-scroll-active #spotify-mini-pill {
 
 body.full-scroll-active #stage-arcade-cta {
     display: none !important;
+}
+
+/* =================================================================
+   3D PARTY MODE & DISCO BALL HUD STYLES
+================================================================== */
+#party-music-hud {
+    background: rgba(14, 10, 24, 0.92);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 0, 127, 0.35), 0 0 15px rgba(0, 240, 255, 0.25);
+    border: 1px solid rgba(255, 0, 127, 0.45);
+    animation: partyBorderGlow 4s linear infinite;
+}
+
+@keyframes partyBorderGlow {
+    0% { border-color: rgba(255, 0, 127, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 0, 127, 0.4); }
+    33% { border-color: rgba(0, 240, 255, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 240, 255, 0.4); }
+    66% { border-color: rgba(245, 158, 11, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(245, 158, 11, 0.4); }
+    100% { border-color: rgba(255, 0, 127, 0.65); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 0, 127, 0.4); }
+}
+
+.party-eq-visualizer span.bar {
+    width: 3.5px;
+    height: 4px;
+    border-radius: 2px;
+    transition: height 0.15s ease;
+}
+
+.party-eq-visualizer span.bar-1 { background: #ff007f; }
+.party-eq-visualizer span.bar-2 { background: #f43f5e; }
+.party-eq-visualizer span.bar-3 { background: #a855f7; }
+.party-eq-visualizer span.bar-4 { background: #38bdf8; }
+.party-eq-visualizer span.bar-5 { background: #00f0ff; }
+.party-eq-visualizer span.bar-6 { background: #10b981; }
+.party-eq-visualizer span.bar-7 { background: #fbbf24; }
+
+.is-playing .party-eq-visualizer span.bar-1 { animation: partyEqBounce 0.7s ease-in-out infinite alternate 0.05s; }
+.is-playing .party-eq-visualizer span.bar-2 { animation: partyEqBounce 0.5s ease-in-out infinite alternate 0.15s; }
+.is-playing .party-eq-visualizer span.bar-3 { animation: partyEqBounce 0.85s ease-in-out infinite alternate 0.25s; }
+.is-playing .party-eq-visualizer span.bar-4 { animation: partyEqBounce 0.6s ease-in-out infinite alternate 0.1s; }
+.is-playing .party-eq-visualizer span.bar-5 { animation: partyEqBounce 0.9s ease-in-out infinite alternate 0.3s; }
+.is-playing .party-eq-visualizer span.bar-6 { animation: partyEqBounce 0.55s ease-in-out infinite alternate 0.2s; }
+.is-playing .party-eq-visualizer span.bar-7 { animation: partyEqBounce 0.75s ease-in-out infinite alternate 0.08s; }
+
+@keyframes partyEqBounce {
+    0% { height: 3px; }
+    50% { height: 20px; }
+    100% { height: 6px; }
+}
+
+.animate-spin-slow {
+    animation: spinSlow 8s linear infinite;
+}
+
+@keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Party active state on spotify pill */
+#spotify-mini-pill.is-party-mode {
+    border-color: rgba(255, 0, 127, 0.7) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), 0 0 28px rgba(255, 0, 127, 0.45) !important;
+}
+
+body.full-scroll-active #party-music-hud {
+    top: 5rem !important;
 }

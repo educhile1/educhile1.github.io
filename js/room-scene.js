@@ -580,7 +580,8 @@
         --------------------------------------------------------- */
         const hemiLight = new THREE.HemisphereLight(SCENIC_LOCATIONS[0].hemiSky, SCENIC_LOCATIONS[0].hemiGround, 0.58);
         scene.add(hemiLight);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.12);
+        scene.add(ambientLight);
 
         const sunLight = new THREE.DirectionalLight(SCENIC_LOCATIONS[0].sunColor, SCENIC_LOCATIONS[0].sunIntensity);
         sunLight.position.set(1.8, 5.2, -4.4);
@@ -601,6 +602,12 @@
         const fillLight = new THREE.DirectionalLight(0x9db4ff, 0.35);
         fillLight.position.set(8, 9, 8);
         scene.add(fillLight);
+
+        let deskLightRef = null;
+        let lampLightRef = null;
+        let shelfLightRef = null;
+        let pegLightRef = null;
+        let ledMatRef = null;
 
         /* ---------------------------------------------------------
            SCENIC LOCATION CONTROLLER & CROSS-FADE SYSTEM
@@ -758,9 +765,11 @@
         addMesh(new THREE.BoxGeometry(3.3, 0.94, 1.3), std(0x2b2d34, 0.55, 0.15), [0, 0.47, 0], desk);
         addMesh(new THREE.BoxGeometry(3.7, 0.1, 1.72), std(0x111215, 0.3, 0.35), [0, 1.0, 0], desk);
         const ledMat = basic({ color: 0xffb066 });
+        ledMatRef = ledMat;
         addMesh(new THREE.BoxGeometry(3.74, 0.025, 1.76), ledMat, [0, 0.945, 0], desk, { cast: false, receive: false });
         glowPlane(6.4, 4.6, '255,160,80', 0.55, [0, 0.012, 0.05], [-Math.PI / 2, 0, 0], desk);
         const deskLight = new THREE.PointLight(0xffa24d, 1.25, 5.5, 2);
+        deskLightRef = deskLight;
         deskLight.position.set(0, 0.55, 1.3);
         desk.add(deskLight);
 
@@ -1038,16 +1047,16 @@
         }
 
         const BITMAPS_5X7 = {
-            '0': [1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1],
-            '1': [0,0,1,0,0, 0,1,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,1,1,1,0],
-            '2': [1,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 1,1,1,1,1, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,1],
-            '3': [1,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 0,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 1,1,1,1,1],
-            '4': [1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 0,0,0,0,1],
-            '5': [1,1,1,1,1, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 1,1,1,1,1],
-            '6': [1,1,1,1,1, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1],
-            '7': [1,1,1,1,1, 0,0,0,0,1, 0,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 0,1,0,0,0, 0,1,0,0,0],
-            '8': [1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1],
-            '9': [1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 1,1,1,1,1]
+            '0': [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+            '1': [0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0],
+            '2': [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+            '3': [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+            '4': [1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            '5': [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+            '6': [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+            '7': [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+            '8': [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+            '9': [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1]
         };
 
         const phoneTex = canvasTexture(768, 1536, (ctx, w, h) => {
@@ -1521,6 +1530,7 @@
         });
         addMesh(new THREE.SphereGeometry(0.07, 16, 16), basic({ color: 0xffe4f1 }), [0.7, 0.86, 0], lamp, { cast: false, receive: false });
         const lampLight = new THREE.PointLight(0xff8fc8, 1.1, 4.5, 2);
+        lampLightRef = lampLight;
         lampLight.position.set(0.72, 0.8, 0);
         lamp.add(lampLight);
         glowPlane(1.6, 1.6, '255,150,200', 0.35, [0.85, 0.008, 0.05], [-Math.PI / 2, 0, 0], lamp);
@@ -1656,6 +1666,7 @@
         addMesh(new THREE.BoxGeometry(0.03, 0.02, 2.8), basic({ color: 0xffb066 }), [0.18, -0.04, 0], shelf, { cast: false, receive: false });
         glowPlane(3.6, 1.6, '255,170,90', 0.4, [-0.2, -0.55, 0], [0, Math.PI / 2, 0], shelf);
         const shelfLight = new THREE.PointLight(0xffb066, 0.6, 3.2, 2);
+        shelfLightRef = shelfLight;
         shelfLight.position.set(0.1, -0.3, 0);
         shelf.add(shelfLight);
 
@@ -1700,6 +1711,7 @@
         glowPlane(4.3, 2.9, '210,225,255', 0.85, [0, 0, -0.012], null, pegboard, true);
         addMesh(new THREE.BoxGeometry(3.1, 1.75, 0.05), std(0xffffff, 0.8, 0.1, { map: pegTex }), [0, 0, 0.025], pegboard, { station: 'credentials' });
         const pegLight = new THREE.PointLight(0xdbeafe, 0.8, 4.5, 2);
+        pegLightRef = pegLight;
         pegLight.position.set(0, 0, 0.9);
         pegboard.add(pegLight);
 
@@ -1855,34 +1867,62 @@
         speaker.position.set(-0.55, 0.78, 0);
         cabinet.add(speaker);
         addMesh(new THREE.BoxGeometry(0.55, 0.66, 0.45), std(0x111216, 0.5, 0.3), [0, 0.33, 0], speaker, { station: 'music' });
-        
-        // Spotify OLED Screen on front-top band of speaker
+
+        // Spotify OLED Screen on front-top band of speaker (reacts to party mode)
+        let isOledParty = false;
         const oledTex = canvasTexture(256, 80, (ctx, w, h) => {
             ctx.fillStyle = '#06080d';
             ctx.fillRect(0, 0, w, h);
-            // Spotify icon
-            ctx.fillStyle = '#1ed760';
-            ctx.beginPath();
-            ctx.arc(28, 40, 15, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#06080d';
-            ctx.font = 'bold 16px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('≈', 28, 46);
-            // Text
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 15px "JetBrains Mono", monospace';
-            ctx.textAlign = 'left';
-            ctx.fillText('SPOTIFY HI-FI', 54, 34);
-            ctx.fillStyle = '#1ed760';
-            ctx.font = '11px "JetBrains Mono", monospace';
-            ctx.fillText('● CONNECTED', 54, 54);
-            // Mini Green Equalizer Bars on right
-            ctx.fillStyle = '#1ed760';
-            ctx.fillRect(206, 26, 4, 30);
-            ctx.fillRect(216, 18, 4, 38);
-            ctx.fillRect(226, 32, 4, 24);
-            ctx.fillRect(236, 22, 4, 34);
+            if (isOledParty) {
+                // Party Mode Banner
+                ctx.fillStyle = '#ff007f';
+                ctx.fillRect(0, 0, 4, h);
+                ctx.fillStyle = '#00f0ff';
+                ctx.font = 'bold 18px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('🪩', 26, 46);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 13px "JetBrains Mono", monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText('MODO FIESTA 3D', 48, 33);
+
+                ctx.fillStyle = '#00f0ff';
+                ctx.font = '10px "JetBrains Mono", monospace';
+                ctx.fillText('● BOLA DISCO & LUCES', 48, 53);
+
+                // Multi-color dynamic equalizer bars on right
+                const colors = ['#ff007f', '#00f0ff', '#1ed760', '#f59e0b'];
+                const heights = [28, 38, 24, 34];
+                heights.forEach((barH, bi) => {
+                    ctx.fillStyle = colors[bi];
+                    ctx.fillRect(198 + bi * 11, 56 - barH, 6, barH);
+                });
+            } else {
+                // Spotify icon
+                ctx.fillStyle = '#1ed760';
+                ctx.beginPath();
+                ctx.arc(28, 40, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#06080d';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('≈', 28, 46);
+                // Text
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 15px "JetBrains Mono", monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText('SPOTIFY HI-FI', 54, 34);
+                ctx.fillStyle = '#1ed760';
+                ctx.font = '11px "JetBrains Mono", monospace';
+                ctx.fillText('● CONNECTED', 54, 54);
+                // Mini Green Equalizer Bars on right
+                ctx.fillStyle = '#1ed760';
+                ctx.fillRect(206, 26, 4, 30);
+                ctx.fillRect(216, 18, 4, 38);
+                ctx.fillRect(226, 32, 4, 24);
+                ctx.fillRect(236, 22, 4, 34);
+            }
         });
         addMesh(new THREE.PlaneGeometry(0.34, 0.11), basic({ map: oledTex }), [0, 0.55, 0.23], speaker, { station: 'music', cast: false });
         glowPlane(0.7, 0.35, '30,215,96', 0.4, [0, 0.55, 0.235], null, speaker);
@@ -1972,9 +2012,14 @@
         addMesh(new THREE.PlaneGeometry(0.274, 0.274), albumCoverMat, [0, 0, 0.007], albumJacket, { station: 'music', cast: false });
         glowPlane(0.65, 0.65, '30,215,96', 0.4, [0, 0, -0.012], null, albumJacket);
 
-        // Listen for track changes to dynamically update the 3D album cover
+        // Listen for track & play state changes to dynamically update the 3D album cover and OLED
         if (window.eduSpotifyPlayer && window.eduSpotifyPlayer.onStateChange) {
             window.eduSpotifyPlayer.onStateChange((state) => {
+                const playing = !!(state && state.isPlaying);
+                if (isOledParty !== playing) {
+                    isOledParty = playing;
+                    if (oledTex.userData && oledTex.userData.redraw) oledTex.userData.redraw();
+                }
                 if (state && state.currentTrack && state.currentTrack.cover) {
                     loadImage(state.currentTrack.cover, (newImg) => {
                         coverImg = newImg;
@@ -2688,6 +2733,311 @@
         dustMesh = dust;
 
         /* ---------------------------------------------------------
+           DISCO BALL & STAGE PARTY LIGHTING SYSTEM (→ Fiesta 3D)
+        --------------------------------------------------------- */
+        const discoCenterX = 0.2;
+        const discoCenterZ = -0.6;
+        const discoRetractedY = 8.85; // Tucked into upper ceiling (walls reach 9.05)
+        const discoPartyY = 4.85;     // Lowered into stage center above desk
+        let discoCurrentY = discoRetractedY;
+        let partyModeLerp = 0.0;
+
+        // 1. Ceiling mount flange & eyelet hook
+        addMesh(
+            new THREE.CylinderGeometry(0.24, 0.24, 0.04, 24),
+            std(0x27272a, 0.3, 0.9),
+            [discoCenterX, 8.98, discoCenterZ],
+            scene,
+            { cast: false }
+        );
+        addMesh(
+            new THREE.TorusGeometry(0.045, 0.012, 10, 20),
+            std(0xd4d4d8, 0.2, 0.95),
+            [discoCenterX, 8.94, discoCenterZ],
+            scene,
+            { cast: false }
+        );
+
+        // 2. Dynamic hanging metallic chain/cable
+        const chainMesh = addMesh(
+            new THREE.CylinderGeometry(0.014, 0.014, 1, 12),
+            std(0xd4d4d8, 0.2, 0.95),
+            [discoCenterX, 7.0, discoCenterZ],
+            scene,
+            { cast: false }
+        );
+        chainMesh.visible = false;
+
+        // 3. Disco Ball Root Group (moves vertically)
+        const discoBallGroup = new THREE.Group();
+        discoBallGroup.position.set(discoCenterX, discoRetractedY, discoCenterZ);
+        scene.add(discoBallGroup);
+
+        // 4. Disco Ball Rotating Body
+        const discoBallBody = new THREE.Group();
+        discoBallGroup.add(discoBallBody);
+
+        // Procedural Faceted Mirror Mosaic Texture (512x512)
+        const discoTileTex = canvasTexture(512, 512, (ctx, w, h) => {
+            ctx.fillStyle = '#0f1117';
+            ctx.fillRect(0, 0, w, h);
+            const cols = 24, rows = 24;
+            const tw = w / cols, th = h / rows;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const x = c * tw, y = r * th;
+                    const grad = ctx.createLinearGradient(x, y, x + tw, y + th);
+                    const b = 0.65 + Math.random() * 0.35;
+                    const rC = Math.floor(b * 220 + Math.random() * 35);
+                    const gC = Math.floor(b * 230 + Math.random() * 25);
+                    const bC = Math.floor(b * 255);
+                    grad.addColorStop(0, `rgb(${rC}, ${gC}, ${bC})`);
+                    grad.addColorStop(0.45, '#ffffff');
+                    grad.addColorStop(1, `rgb(${Math.floor(rC * 0.5)}, ${Math.floor(gC * 0.5)}, ${Math.floor(bC * 0.6)})`);
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(x + 1, y + 1, tw - 2, th - 2);
+
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
+                    ctx.lineWidth = 0.8;
+                    ctx.strokeRect(x + 1.5, y + 1.5, tw - 3, th - 3);
+                }
+            }
+        });
+
+        // Mirror sphere with flat shading for sharp specular facet gleams
+        const discoBallMat = std(0xffffff, 0.05, 0.98, {
+            map: discoTileTex,
+            roughness: 0.08,
+            metalness: 0.98,
+            flatShading: true,
+            envMapIntensity: 2.8
+        });
+        addMesh(
+            new THREE.SphereGeometry(0.44, 28, 20),
+            discoBallMat,
+            [0, 0, 0],
+            discoBallBody,
+            { cast: false, receive: false }
+        );
+
+        // Top suspension cap & loop
+        addMesh(new THREE.CylinderGeometry(0.1, 0.04, 0.05, 16), std(0xd4d4d8, 0.2, 0.95), [0, 0.44, 0], discoBallBody, { cast: false });
+        addMesh(new THREE.TorusGeometry(0.04, 0.01, 8, 16), std(0xd4d4d8, 0.2, 0.95), [0, 0.48, 0], discoBallBody, { cast: false });
+        // Bottom chrome finial cap
+        addMesh(new THREE.CylinderGeometry(0.03, 0.08, 0.04, 16), std(0xd4d4d8, 0.2, 0.95), [0, -0.44, 0], discoBallBody, { cast: false });
+
+        // 5. Volumetric Sweeping Party Light Beams
+        const partyBeamGroup = new THREE.Group();
+        discoBallBody.add(partyBeamGroup);
+
+        const beamColors = [0xff007f, 0x00e5ff, 0xf59e0b, 0xa855f7, 0x10b981, 0xec4899];
+        const beamMeshes = [];
+        for (let i = 0; i < 6; i++) {
+            const angle = (i / 6) * Math.PI * 2;
+            const tilt = 0.44 + (i % 2) * 0.16;
+            const beamGeo = new THREE.ConeGeometry(0.48, 4.4, 16, 1, true);
+            beamGeo.translate(0, -2.2, 0);
+            const beamMat = new THREE.MeshBasicMaterial({
+                color: beamColors[i],
+                transparent: true,
+                opacity: 0.0,
+                side: THREE.DoubleSide,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const beamMesh = new THREE.Mesh(beamGeo, beamMat);
+            beamMesh.rotation.set(Math.sin(angle) * tilt, angle, Math.cos(angle) * tilt);
+            partyBeamGroup.add(beamMesh);
+            beamMeshes.push(beamMesh);
+        }
+
+        // 6. Saturated Dynamic Orbiting Stage Party PointLights (Magenta, Cyan, Gold, Violet, Emerald)
+        const partyPointLights = [
+            { light: new THREE.PointLight(0xff007f, 0, 14.0, 1.4), color: 0xff007f, baseInt: 3.5, beatAmp: 3.0, offset: 0, speed: 2.2, r: 3.0, yAmp: 0.8 },
+            { light: new THREE.PointLight(0x00f0ff, 0, 14.0, 1.4), color: 0x00f0ff, baseInt: 3.5, beatAmp: 3.0, offset: Math.PI * 0.5, speed: 2.5, r: 2.7, yAmp: 0.7 },
+            { light: new THREE.PointLight(0xf59e0b, 0, 13.0, 1.4), color: 0xf59e0b, baseInt: 3.0, beatAmp: 2.5, offset: Math.PI, speed: 1.9, r: 3.2, yAmp: 0.9 },
+            { light: new THREE.PointLight(0xa855f7, 0, 14.0, 1.4), color: 0xa855f7, baseInt: 3.2, beatAmp: 2.8, offset: Math.PI * 1.5, speed: 2.7, r: 2.6, yAmp: 0.75 },
+            { light: new THREE.PointLight(0x10b981, 0, 13.0, 1.4), color: 0x10b981, baseInt: 2.8, beatAmp: 2.4, offset: Math.PI * 0.8, speed: 2.1, r: 2.9, yAmp: 0.6 }
+        ];
+        partyPointLights.forEach(p => {
+            scene.add(p.light);
+        });
+
+        // 7. Dynamic Stage Moving-Head Spotlights (Magenta, Cyan, Gold) with Focused Sweeping Pools
+        const stageSpotlights = [
+            {
+                spot: new THREE.SpotLight(0xff007f, 0, 14.0, 0.44, 0.85, 1.3),
+                target: new THREE.Object3D(),
+                baseInt: 6.5,
+                beatAmp: 5.5,
+                origin: [discoCenterX - 1.8, 7.8, discoCenterZ - 1.4],
+                speed: 1.7,
+                phase: 0,
+                rX: 3.4,
+                rZ: 2.6
+            },
+            {
+                spot: new THREE.SpotLight(0x00e5ff, 0, 14.0, 0.44, 0.85, 1.3),
+                target: new THREE.Object3D(),
+                baseInt: 6.5,
+                beatAmp: 5.5,
+                origin: [discoCenterX + 1.8, 7.8, discoCenterZ - 1.4],
+                speed: 2.1,
+                phase: Math.PI * 0.65,
+                rX: 3.2,
+                rZ: 2.3
+            },
+            {
+                spot: new THREE.SpotLight(0xfacc15, 0, 13.0, 0.42, 0.85, 1.3),
+                target: new THREE.Object3D(),
+                baseInt: 5.5,
+                beatAmp: 4.5,
+                origin: [discoCenterX, 8.0, discoCenterZ + 1.6],
+                speed: 2.4,
+                phase: Math.PI * 1.3,
+                rX: 2.8,
+                rZ: 3.0
+            }
+        ];
+        stageSpotlights.forEach(sp => {
+            sp.spot.position.set(sp.origin[0], sp.origin[1], sp.origin[2]);
+            scene.add(sp.spot);
+            scene.add(sp.target);
+            sp.spot.target = sp.target;
+        });
+
+        // 8. Overhead Beat Strobe Point Light (flashes on kick/snare impacts)
+        const strobeLight = new THREE.PointLight(0xffffff, 0, 14.0, 1.5);
+        strobeLight.position.set(discoCenterX, 5.8, discoCenterZ);
+        scene.add(strobeLight);
+
+        // 9. Saturated Moving Neon Light Pools on the Dance Floor (splashes de color nítidos)
+        const floorPoolsCount = 6;
+        const floorPoolMeshes = [];
+        const floorPoolColors = [0xff007f, 0x00e5ff, 0xa855f7, 0xf59e0b, 0x10b981, 0xec4899];
+        const poolAlphaTex = canvasTexture(256, 256, (ctx, w, h) => {
+            const grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.75)');
+            grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.48)');
+            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.12)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+        });
+
+        for (let i = 0; i < floorPoolsCount; i++) {
+            const mat = new THREE.MeshBasicMaterial({
+                map: poolAlphaTex,
+                color: floorPoolColors[i],
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 2.5), mat);
+            mesh.rotation.x = -Math.PI / 2;
+            mesh.position.set(0, 0.022 + i * 0.001, 0);
+            scene.add(mesh);
+            floorPoolMeshes.push({
+                mesh,
+                mat,
+                speed: 1.3 + (i % 3) * 0.4,
+                phase: (i / floorPoolsCount) * Math.PI * 2,
+                radX: 2.4 + (i % 2) * 1.3,
+                radZ: 1.8 + ((i + 1) % 2) * 1.1,
+                baseScale: 1.0 + (i % 3) * 0.25
+            });
+        }
+
+        // 10. Dynamic Concert Stage Laser Beams (cutting through the air and hitting surfaces)
+        const laserBeams = [];
+        const laserColors = [0xff007f, 0x00f0ff, 0x22c55e, 0xa855f7, 0x00f0ff, 0xff007f];
+        const laserGroup = new THREE.Group();
+        scene.add(laserGroup);
+
+        for (let i = 0; i < 6; i++) {
+            const laserGeo = new THREE.CylinderGeometry(0.008, 0.012, 11, 8);
+            laserGeo.translate(0, -5.5, 0);
+            const laserMat = new THREE.MeshBasicMaterial({
+                color: laserColors[i],
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const laserMesh = new THREE.Mesh(laserGeo, laserMat);
+            laserMesh.position.set(discoCenterX, 7.8, discoCenterZ);
+            laserGroup.add(laserMesh);
+            laserBeams.push({
+                mesh: laserMesh,
+                mat: laserMat,
+                speedX: 2.0 + (i % 3) * 0.6,
+                speedZ: 2.4 + ((i + 1) % 3) * 0.5,
+                phase: (i / 6) * Math.PI * 2,
+                baseTilt: 0.54 + (i % 2) * 0.24
+            });
+        }
+
+        // 11. Specular Disco Ball Reflection Sparkles (crisp spots covering floor, walls, desk)
+        const sparkleCount = mobileAtStart ? 120 : 240;
+        const sparklePos = new Float32Array(sparkleCount * 3);
+        const sparkleColors = new Float32Array(sparkleCount * 3);
+        const sparkleRand = seededRandom(42);
+        const colorPalette = [
+            [1.0, 0.0, 0.55],  // neon magenta
+            [0.0, 0.95, 1.0],  // electric cyan
+            [1.0, 0.85, 0.2],  // gold
+            [0.7, 0.3, 1.0],   // violet
+            [0.15, 0.95, 0.4], // emerald
+            [1.0, 1.0, 1.0]    // pure specular white
+        ];
+        for (let i = 0; i < sparkleCount; i++) {
+            const theta = sparkleRand() * Math.PI * 2;
+            const phi = (sparkleRand() - 0.5) * Math.PI * 0.9;
+            const rad = 2.4 + sparkleRand() * 5.4;
+            sparklePos[i * 3] = discoCenterX + Math.cos(theta) * Math.cos(phi) * rad;
+            sparklePos[i * 3 + 1] = Math.max(0.08, Math.min(8.8, 3.8 + Math.sin(phi) * rad));
+            sparklePos[i * 3 + 2] = discoCenterZ + Math.sin(theta) * Math.cos(phi) * rad;
+
+            const c = colorPalette[Math.floor(sparkleRand() * colorPalette.length)];
+            sparkleColors[i * 3] = c[0];
+            sparkleColors[i * 3 + 1] = c[1];
+            sparkleColors[i * 3 + 2] = c[2];
+        }
+        const sparklesGeo = new THREE.BufferGeometry();
+        sparklesGeo.setAttribute('position', new THREE.BufferAttribute(sparklePos, 3));
+        sparklesGeo.setAttribute('color', new THREE.BufferAttribute(sparkleColors, 3));
+        const sparklesMat = new THREE.PointsMaterial({
+            size: 0.09,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const sparklesGroup = new THREE.Group();
+        sparklesGroup.position.set(discoCenterX, 0, discoCenterZ);
+        const sparklesPoints = new THREE.Points(sparklesGeo, sparklesMat);
+        sparklesGroup.add(sparklesPoints);
+        scene.add(sparklesGroup);
+
+        // 12. Dynamic Stage Rug Glow
+        const floorPartyGlowMat = new THREE.MeshBasicMaterial({
+            color: 0xff007f,
+            transparent: true,
+            opacity: 0.0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const floorPartyGlow = new THREE.Mesh(
+            new THREE.RingGeometry(1.2, 3.2, 32),
+            floorPartyGlowMat
+        );
+        floorPartyGlow.rotation.x = -Math.PI / 2;
+        floorPartyGlow.position.set(discoCenterX, 0.016, discoCenterZ);
+        scene.add(floorPartyGlow);
+
+        /* ---------------------------------------------------------
            HOTSPOTS (DIAMOND MARKERS) & CAMERA TARGETS
         --------------------------------------------------------- */
         const UP = new THREE.Vector3(0, 1, 0);
@@ -3076,6 +3426,126 @@
                     speakerLight.intensity = 0.25;
                     if (speakerGreenLight) speakerGreenLight.intensity = 0.2;
                     if (albumJacket) albumJacket.position.y = 0.94;
+                }
+
+                // DISCO BALL & STAGE PARTY ANIMATION LOOP
+                const targetParty = isAudioPlaying ? 1.0 : 0.0;
+                partyModeLerp += (targetParty - partyModeLerp) * (1 - Math.exp(-dt * 2.6));
+
+                if (partyModeLerp > 0.001) {
+                    discoCurrentY = THREE.MathUtils.lerp(discoRetractedY, discoPartyY, partyModeLerp);
+                    discoBallGroup.position.y = discoCurrentY;
+
+                    const chainTop = 8.94;
+                    const chainBottom = discoCurrentY + 0.44;
+                    const chainLength = Math.max(0.01, chainTop - chainBottom);
+                    chainMesh.position.set(discoCenterX, (chainTop + chainBottom) / 2, discoCenterZ);
+                    chainMesh.scale.set(1, chainLength, 1);
+                    chainMesh.visible = true;
+
+                    discoBallBody.rotation.y += dt * 1.85;
+
+                    // 1. High-impact volumetric light beams
+                    const beamOp = partyModeLerp * (0.24 + beat * 0.18);
+                    beamMeshes.forEach((bm) => {
+                        bm.material.opacity = beamOp;
+                    });
+
+                    // 2. High-power stage point lights orbiting
+                    const pT = t * 2.2;
+                    partyPointLights.forEach((p, idx) => {
+                        const angle = pT * (p.speed * 0.5) + p.offset;
+                        const lx = discoCenterX + Math.cos(angle) * p.r;
+                        const lz = discoCenterZ + Math.sin(angle) * p.r;
+                        const ly = discoCurrentY + Math.sin(pT * 1.4 + idx) * p.yAmp;
+                        p.light.position.set(lx, ly, lz);
+                        p.light.intensity = partyModeLerp * (p.baseInt + beat * p.beatAmp);
+                    });
+
+                    // 3. Stage Moving-Head Spotlights sweeping across stage
+                    stageSpotlights.forEach(sp => {
+                        sp.target.position.set(
+                            discoCenterX + Math.cos(t * sp.speed + sp.phase) * sp.rX,
+                            0.4 + Math.sin(t * sp.speed * 1.4) * 0.3,
+                            discoCenterZ + Math.sin(t * sp.speed * 0.85 + sp.phase) * sp.rZ
+                        );
+                        sp.spot.intensity = partyModeLerp * (sp.baseInt + beat * sp.beatAmp);
+                    });
+
+                    // 4. Strobe light flashing on heavy beats
+                    if (beat > 0.75) {
+                        strobeLight.intensity = partyModeLerp * 3.5;
+                    } else {
+                        strobeLight.intensity = 0;
+                    }
+
+                    // 5. Dynamic moving neon light pools on the floor (splashes de luz en el piso)
+                    floorPoolMeshes.forEach(fp => {
+                        fp.mesh.position.x = discoCenterX + Math.cos(t * fp.speed + fp.phase) * fp.radX;
+                        fp.mesh.position.z = discoCenterZ + Math.sin(t * fp.speed * 1.15 + fp.phase) * fp.radZ;
+                        fp.mat.opacity = partyModeLerp * (0.35 + beat * 0.2);
+                        fp.mesh.scale.setScalar(fp.baseScale * (1 + beat * 0.25));
+                    });
+
+                    // 6. Laser beams sweeping rhythmically
+                    laserBeams.forEach(lb => {
+                        lb.mesh.rotation.x = Math.sin(t * lb.speedX + lb.phase) * lb.baseTilt;
+                        lb.mesh.rotation.z = Math.cos(t * lb.speedZ + lb.phase) * lb.baseTilt;
+                        lb.mat.opacity = partyModeLerp * (0.6 + (beat > 0.4 ? 0.3 : 0));
+                    });
+
+                    // 7. Specular reflection sparkles on surfaces
+                    sparklesGroup.visible = true;
+                    sparklesGroup.rotation.y += dt * 0.95;
+                    sparklesMat.opacity = partyModeLerp * (0.75 + beat * 0.35);
+
+                    // 8. Dance floor pulsing ring
+                    floorPartyGlow.material.opacity = partyModeLerp * (0.16 + beat * 0.25);
+                    floorPartyGlow.rotation.z += dt * 0.6;
+                    const glowHue = (t * 0.15) % 1;
+                    floorPartyGlowMat.color.setHSL(glowHue, 0.95, 0.55);
+
+                    // 9. DRAMATIC STAGE DARKENING: Dim daytime/office lights to create true nightclub contrast!
+                    ambientLight.intensity = THREE.MathUtils.lerp(0.12, 0.015, partyModeLerp);
+                    hemiLight.intensity = THREE.MathUtils.lerp(0.58, 0.035, partyModeLerp);
+                    fillLight.intensity = THREE.MathUtils.lerp(0.35, 0.015, partyModeLerp);
+                    if (!isCrossFading) {
+                        const currLoc = SCENIC_LOCATIONS[currentScenicIdx];
+                        sunLight.intensity = THREE.MathUtils.lerp(currLoc.sunIntensity, 0.04, partyModeLerp);
+                        windowFloorGlow.material.opacity = THREE.MathUtils.lerp(currLoc.floorGlowOpacity, 0.02, partyModeLerp);
+                    }
+                    if (deskLightRef) {
+                        deskLightRef.color.setHSL((t * 0.25) % 1, 1.0, 0.5);
+                        deskLightRef.intensity = THREE.MathUtils.lerp(1.25, 0.25 + beat * 1.5, partyModeLerp);
+                    }
+                    if (lampLightRef) lampLightRef.intensity = THREE.MathUtils.lerp(1.1, 0.08, partyModeLerp);
+                    if (shelfLightRef) shelfLightRef.intensity = THREE.MathUtils.lerp(0.6, 0.05, partyModeLerp);
+                    if (pegLightRef) pegLightRef.intensity = THREE.MathUtils.lerp(0.8, 0.08, partyModeLerp);
+                    if (ledMatRef) ledMatRef.color.setHSL((t * 0.25) % 1, 1.0, 0.5);
+                } else {
+                    discoBallGroup.position.y = discoRetractedY;
+                    chainMesh.visible = false;
+                    partyPointLights.forEach(p => { p.light.intensity = 0; });
+                    stageSpotlights.forEach(sp => { sp.spot.intensity = 0; });
+                    strobeLight.intensity = 0;
+                    floorPoolMeshes.forEach(fp => { fp.mat.opacity = 0; });
+                    laserBeams.forEach(lb => { lb.mat.opacity = 0; });
+                    beamMeshes.forEach(bm => { bm.material.opacity = 0; });
+                    sparklesGroup.visible = false;
+                    floorPartyGlow.material.opacity = 0;
+
+                    // Restore daytime office lighting
+                    ambientLight.intensity = 0.12;
+                    hemiLight.intensity = 0.58;
+                    fillLight.intensity = 0.35;
+                    if (deskLightRef) {
+                        deskLightRef.color.setHex(0xffa24d);
+                        deskLightRef.intensity = 1.15 + Math.sin(t * 1.4) * 0.12;
+                    }
+                    if (lampLightRef) lampLightRef.intensity = 1.1;
+                    if (shelfLightRef) shelfLightRef.intensity = 0.6;
+                    if (pegLightRef) pegLightRef.intensity = 0.8;
+                    if (ledMatRef) ledMatRef.color.setHex(0xffb066);
                 }
 
                 // Badges sway & cat breathing

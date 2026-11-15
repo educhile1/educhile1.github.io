@@ -1875,6 +1875,63 @@
     <!-- =================================================================
     SPOTIFY HI-FI MINI-PLAYER & FLOATING CONTROLLER
     ================================================================== -->
+    <!-- 3D Party Music HUD (Appears when music is playing in 3D environment) -->
+    <div id="party-music-hud"
+        class="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-40 hidden items-center gap-3 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl glass-card backdrop-blur-xl border border-pink-500/40 shadow-[0_0_35px_rgba(255,0,127,0.35)] transition-all duration-300 pointer-events-auto select-none max-w-[95vw]">
+        
+        <!-- Disco Ball / Party Status Icon & Track Info -->
+        <div class="flex items-center gap-2.5 cursor-pointer" id="party-hud-expand" title="Ver reproductor completo">
+            <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 p-[2px] shadow-lg animate-spin-slow shrink-0">
+                <div class="w-full h-full rounded-full bg-black/85 flex items-center justify-center text-sm">
+                    🪩
+                </div>
+            </div>
+            <div class="flex flex-col min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-mono-tech text-[10px] font-bold text-pink-400 tracking-wider uppercase flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
+                        Modo Fiesta 3D
+                    </span>
+                    <span class="text-[9px] font-mono-tech text-cyan-300 bg-cyan-950/70 border border-cyan-500/30 px-1.5 py-0.2 rounded hidden sm:inline">
+                        Bola Disco &amp; Luces ON
+                    </span>
+                </div>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                    <span class="spotify-track-title text-xs font-bold text-white max-w-[130px] sm:max-w-[200px] truncate">Cruzando cielos</span>
+                    <span class="text-[11px] text-slate-400">·</span>
+                    <span class="spotify-track-artist text-[11px] text-slate-300 max-w-[90px] sm:max-w-[120px] truncate">Eduardo Cayún</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Multi-Color Party Equalizer Bars -->
+        <div class="party-eq-visualizer flex items-end gap-1 h-5 px-1 sm:px-2 shrink-0" aria-hidden="true">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+            <span class="bar bar-4"></span>
+            <span class="bar bar-5"></span>
+            <span class="bar bar-6"></span>
+            <span class="bar bar-7"></span>
+        </div>
+
+        <!-- Quick Playback Controls & Minimize -->
+        <div class="flex items-center gap-1.5 border-l border-white/15 pl-2 sm:pl-3 shrink-0">
+            <button type="button" class="spotify-prev-btn p-1.5 text-slate-300 hover:text-white transition cursor-pointer" title="Canción anterior">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button type="button" class="spotify-play-btn !w-7 !h-7 sm:!w-8 sm:!h-8 rounded-full bg-gradient-to-r from-pink-500 to-[#1ed760] text-slate-950 flex items-center justify-center hover:scale-105 transition cursor-pointer" title="Reproducir / Pausar">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button type="button" class="spotify-next-btn p-1.5 text-slate-300 hover:text-white transition cursor-pointer" title="Siguiente canción">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+            <button type="button" id="party-hud-close" class="p-1 text-slate-400 hover:text-white text-xs transition cursor-pointer ml-1" title="Minimizar HUD">
+                ✕
+            </button>
+        </div>
+    </div>
+
     <!-- Minimized Floating Pill (Accessible anytime in 3D and 2D) -->
     <div id="spotify-mini-pill"
         class="fixed bottom-20 sm:bottom-24 right-4 sm:right-8 z-40 flex items-center gap-2.5 px-3 py-2 rounded-full cursor-pointer select-none"
@@ -1923,6 +1980,14 @@
                     −
                 </button>
             </div>
+        </div>
+
+        <!-- Party Mode Active Ribbon inside Expanded Spotify Card -->
+        <div class="spotify-party-banner hidden px-4 py-1.5 bg-gradient-to-r from-pink-950/80 via-purple-950/80 to-cyan-950/80 border-b border-pink-500/30 items-center justify-between text-[11px] font-mono-tech">
+            <span class="text-pink-300 flex items-center gap-1.5">
+                <span class="animate-bounce">🪩</span> MODO FIESTA 3D ACTIVO
+            </span>
+            <span class="text-cyan-300 text-[10px] bg-cyan-950/70 border border-cyan-400/30 px-1.5 py-0.5 rounded">Bola Disco &amp; Luces ON</span>
         </div>
 
         <!-- Mode Tabs -->

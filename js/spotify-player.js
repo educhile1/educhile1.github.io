@@ -47,6 +47,7 @@
     let isExpanded = false;
     let isMinimized = true;
     let activeTab = 'local'; // 'local' | 'spotify'
+    let partyHudDismissed = false;
     let listeners = [];
 
     // Global state object accessible by 3D room-scene.js
@@ -169,6 +170,7 @@
     }
 
     function play() {
+        partyHudDismissed = false;
         initAudio();
         if (!audio.src) {
             loadTrack(currentIndex, true);
@@ -268,11 +270,29 @@
         const widget = document.getElementById('spotify-widget');
         if (widget) {
             widget.classList.toggle('is-playing', isPlaying);
+            const partyBanner = widget.querySelector('.spotify-party-banner');
+            if (partyBanner) {
+                partyBanner.classList.toggle('hidden', !isPlaying);
+                partyBanner.classList.toggle('flex', isPlaying);
+            }
         }
 
         const pill = document.getElementById('spotify-mini-pill');
         if (pill) {
             pill.classList.toggle('is-playing', isPlaying);
+            pill.classList.toggle('is-party-mode', isPlaying);
+        }
+
+        const partyHud = document.getElementById('party-music-hud');
+        if (partyHud) {
+            partyHud.classList.toggle('is-playing', isPlaying);
+            if (isPlaying && !partyHudDismissed) {
+                partyHud.classList.remove('hidden');
+                partyHud.classList.add('flex');
+            } else {
+                partyHud.classList.remove('flex');
+                partyHud.classList.add('hidden');
+            }
         }
 
         // Toggle play/pause SVGs
@@ -413,6 +433,25 @@
                     togglePlay();
                     return;
                 }
+                expandWidget();
+            };
+        }
+
+        // Party Music HUD Controls
+        const partyCloseBtn = document.getElementById('party-hud-close');
+        if (partyCloseBtn) {
+            partyCloseBtn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                partyHudDismissed = true;
+                syncUIState();
+            };
+        }
+
+        const partyExpandEl = document.getElementById('party-hud-expand');
+        if (partyExpandEl) {
+            partyExpandEl.onclick = (e) => {
+                e.preventDefault();
                 expandWidget();
             };
         }
