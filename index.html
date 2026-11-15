@@ -45,18 +45,39 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body class="bg-[#04060c] text-slate-100 font-sans antialiased selection:bg-sky-400 selection:text-slate-950 relative overflow-x-hidden">
-    <!-- Real-Time 60 FPS Cinematic Canvas Backdrop -->
-    <canvas id="cinematic-canvas" class="fixed inset-0 w-full h-full pointer-events-none -z-20" aria-hidden="true"></canvas>
+<body class="bg-[#04060c] text-slate-100 font-sans antialiased selection:bg-sky-400 selection:text-slate-950 relative overflow-x-hidden pb-14">
+    <!-- =================================================================
+    BOOT SEQUENCE OVERLAY (1.2s EXECUTIVE SYSTEM INIT)
+    ================================================================== -->
+    <div id="boot-screen" role="status" aria-live="polite" aria-label="Inicializando portafolio ejecutivo">
+        <div class="w-full max-w-md space-y-4">
+            <div class="flex items-center justify-between font-mono-tech text-[11px] uppercase tracking-[0.18em] text-sky-300">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    EC_COMMAND_OS v2.6
+                </span>
+                <span id="boot-percent">0%</span>
+            </div>
+            <div class="boot-progress-track">
+                <div id="boot-progress-bar" class="boot-progress-fill"></div>
+            </div>
+            <div class="font-mono-tech text-[11px] sm:text-xs tracking-[0.14em] text-slate-300 text-center">
+                INITIALIZING EXECUTIVE ARCHITECTURE · CLOUD / GIS / SECURITY
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-Time Three.js Executive Command Center Backdrop -->
+    <canvas id="webgl-stage" class="fixed inset-0 w-full h-full pointer-events-none -z-20" aria-hidden="true"></canvas>
     <!-- Soft Obsidian Vignette for WCAG AA+ Text Contrast -->
-    <div class="fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.08)_0%,rgba(4,6,12,0.45)_55%,rgba(4,6,12,0.88)_100%)] pointer-events-none -z-10" aria-hidden="true"></div>
+    <div class="fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.07)_0%,rgba(4,6,12,0.5)_58%,rgba(4,6,12,0.9)_100%)] pointer-events-none -z-10" aria-hidden="true"></div>
     <!-- Subtle Studio Film Grain -->
     <div class="film-grain pointer-events-none fixed inset-0 -z-10" aria-hidden="true"></div>
 
     <!-- =================================================================
-    DYNAMIC ISLAND FLOATING CAPSULE NAVBAR
+    NUMBERED FLOATING NAVBAR (DYNAMIC ISLAND)
     ================================================================== -->
-    <header class="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-5xl">
+    <header class="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.25rem)] max-w-6xl">
         <nav aria-label="Navegación principal" class="dynamic-island-nav rounded-full px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
             <!-- Brand -->
             <a href="#home" class="flex items-center gap-2.5 pl-2 pr-1 py-1 rounded-full group shrink-0">
@@ -67,20 +88,32 @@
             </a>
 
             <!-- Center Desktop Links with Sliding Active Pill -->
-            <div id="nav-links-container" class="hidden lg:flex items-center gap-1 text-xs sm:text-sm font-medium text-slate-300">
+            <div id="nav-links-container" class="hidden lg:flex items-center gap-1 text-xs font-medium text-slate-300">
                 <span id="nav-active-pill" aria-hidden="true"></span>
-                <a href="#home" data-section="home" class="nav-link is-active px-3.5 py-1.5 rounded-full hover:text-white transition">Inicio</a>
-                <a href="#credentials" data-section="credentials" class="nav-link px-3.5 py-1.5 rounded-full hover:text-white transition">Credenciales</a>
-                <a href="#projects" data-section="projects" class="nav-link px-3.5 py-1.5 rounded-full hover:text-white transition">Proyectos</a>
-                <a href="#contact" data-section="contact" class="nav-link px-3.5 py-1.5 rounded-full hover:text-white transition">Contacto</a>
+                <a href="#home" data-section="home" data-index="01" class="nav-link is-active px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                    <span class="font-mono-tech text-[10px] text-sky-400">01</span>
+                    <span>Inicio</span>
+                </a>
+                <a href="#credentials" data-section="credentials" data-index="02" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                    <span class="font-mono-tech text-[10px] text-sky-400">02</span>
+                    <span>Credenciales</span>
+                </a>
+                <a href="#projects" data-section="projects" data-index="03" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                    <span class="font-mono-tech text-[10px] text-sky-400">03</span>
+                    <span>Proyectos</span>
+                </a>
+                <a href="#contact" data-section="contact" data-index="04" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                    <span class="font-mono-tech text-[10px] text-sky-400">04</span>
+                    <span>Contacto</span>
+                </a>
+                <a href="tetris.html" class="px-3 py-1.5 rounded-full hover:text-sky-300 transition flex items-center gap-1.5 text-slate-300">
+                    <span class="font-mono-tech text-[10px] text-emerald-400">05</span>
+                    <span>Arcade</span>
+                </a>
             </div>
 
             <!-- Right Actions -->
             <div class="flex items-center gap-2 shrink-0">
-                <a href="tetris.html" class="hidden sm:inline-flex items-center px-3 py-1.5 rounded-full text-xs font-mono-tech font-semibold text-slate-300 hover:text-sky-300 bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 transition">
-                    Arcade
-                </a>
-
                 <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="magnetic-btn hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-slate-950 hover:bg-sky-300 text-xs font-bold shadow-[0_0_24px_-4px_rgba(56,189,248,0.45)] transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -99,11 +132,21 @@
 
         <!-- Mobile Capsule Dropdown -->
         <div id="mobile-menu" class="mobile-capsule-menu lg:hidden mt-2.5 dynamic-island-nav rounded-3xl px-4 py-4 space-y-1.5">
-            <a href="#home" class="block py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">Inicio</a>
-            <a href="#credentials" class="block py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">Credenciales</a>
-            <a href="#projects" class="block py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">Proyectos</a>
-            <a href="#contact" class="block py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">Contacto</a>
-            <a href="tetris.html" class="block py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-sky-300 hover:bg-white/[0.06] transition">Edu Tetris Arcade</a>
+            <a href="#home" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">01</span> Inicio
+            </a>
+            <a href="#credentials" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">02</span> Credenciales
+            </a>
+            <a href="#projects" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">03</span> Proyectos
+            </a>
+            <a href="#contact" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">04</span> Contacto
+            </a>
+            <a href="tetris.html" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-emerald-300 hover:bg-white/[0.06] transition">
+                <span class="text-xs text-emerald-400">05</span> Edu Tetris Arcade
+            </a>
             <div class="pt-2.5 mt-1 border-t border-white/10">
                 <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-white text-slate-950 hover:bg-sky-300 text-sm font-bold shadow-md transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -116,7 +159,7 @@
     </header>
 
     <!-- =================================================================
-    HERO SECTION (CINEMATIC STAGGER REVEAL)
+    01. HERO SECTION (EXECUTIVE COMMAND CENTER)
     ================================================================== -->
     <section id="home" class="pt-32 pb-14 sm:pt-40 sm:pb-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,19 +213,29 @@
                     </div>
                 </div>
 
-                <!-- Photo Column -->
+                <!-- Photo OS Window -->
                 <div class="hero-reveal lg:col-span-5 flex justify-center lg:justify-end">
                     <div class="relative w-72 sm:w-80">
-                        <div class="bento-card rounded-3xl p-2 border border-white/15">
-                            <div class="aspect-square rounded-2xl overflow-hidden bg-slate-900 relative">
-                                <img src="images/perfil_pro_eduf.jpg" alt="Eduardo Cayún M." class="w-full h-full object-cover object-top">
-                                <div class="absolute inset-0 bg-gradient-to-t from-[#04060c]/85 via-transparent to-transparent"></div>
-                                <div class="absolute bottom-3 left-3 right-3 px-3.5 py-2.5 rounded-xl bg-[#04060c]/85 backdrop-blur-md border border-white/15 flex items-center justify-between">
-                                    <div>
-                                        <div class="text-xs font-bold text-white">Consultoría B2B · Dirección TI</div>
-                                        <div class="text-[11px] font-mono-tech text-sky-300">Cloud · GIS · IA · Ciberseguridad</div>
+                        <div class="os-window bento-card rounded-3xl border border-white/15">
+                            <div class="os-window-bar">
+                                <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/perfil/eduardo-cayun.exec</span>
+                                <div class="os-ctrl-group" aria-hidden="true">
+                                    <span class="os-ctrl-btn">−</span>
+                                    <span class="os-ctrl-btn">□</span>
+                                    <span class="os-ctrl-btn is-close">×</span>
+                                </div>
+                            </div>
+                            <div class="p-2.5">
+                                <div class="aspect-square rounded-2xl overflow-hidden bg-slate-900 relative">
+                                    <img src="images/perfil_pro_eduf.jpg" alt="Eduardo Cayún M." class="w-full h-full object-cover object-top">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-[#04060c]/85 via-transparent to-transparent"></div>
+                                    <div class="absolute bottom-3 left-3 right-3 px-3.5 py-2.5 rounded-xl bg-[#04060c]/85 backdrop-blur-md border border-white/15 flex items-center justify-between">
+                                        <div>
+                                            <div class="text-xs font-bold text-white">Consultoría B2B · Dirección TI</div>
+                                            <div class="text-[11px] font-mono-tech text-sky-300">Cloud · GIS · IA · Ciberseguridad</div>
+                                        </div>
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" aria-hidden="true"></span>
                                     </div>
-                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" aria-hidden="true"></span>
                                 </div>
                             </div>
                         </div>
@@ -231,7 +284,6 @@
                 </div>
                 <div class="marquee-mask py-2">
                     <div class="marquee-track items-center gap-3">
-                        <!-- Track 1 -->
                         <div class="flex items-center gap-3 pr-3">
                             <span class="bento-pill px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-slate-200 whitespace-nowrap">BCI</span>
                             <span class="text-sky-400/60" aria-hidden="true">·</span>
@@ -252,7 +304,6 @@
                             <span class="bento-pill px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-slate-200 whitespace-nowrap">Entel</span>
                             <span class="text-sky-400/60" aria-hidden="true">·</span>
                         </div>
-                        <!-- Track 2 (Duplicate for seamless infinite loop) -->
                         <div class="flex items-center gap-3 pr-3" aria-hidden="true">
                             <span class="bento-pill px-4 py-2 rounded-full text-xs sm:text-sm font-medium text-slate-200 whitespace-nowrap">BCI</span>
                             <span class="text-sky-400/60">·</span>
@@ -282,13 +333,13 @@
     <div class="section-divider max-w-7xl mx-auto"></div>
 
     <!-- =================================================================
-    CREDENCIALES & ESPECIALIZACIÓN (BENTO GRID)
+    02. CREDENCIALES & ESPECIALIZACIÓN (OS WINDOWS)
     ================================================================== -->
     <section id="credentials" class="py-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="reveal-up max-w-3xl mb-12">
                 <span class="font-mono-tech text-xs font-semibold uppercase tracking-[0.2em] text-sky-400">
-                    Perfil &amp; Respaldo Académico
+                    02 · Perfil &amp; Respaldo Académico
                 </span>
                 <h2 class="font-display text-3xl sm:text-4xl font-bold mt-2 mb-3 text-white tracking-tight">
                     Credenciales Ejecutivas &amp; Especialización
@@ -299,121 +350,141 @@
             </div>
 
             <div class="grid lg:grid-cols-12 gap-6 items-stretch">
-                <!-- Bento Card 1: Grados y Formación Ejecutiva -->
-                <div class="reveal-up lg:col-span-5 bento-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <span class="font-mono-tech text-xs uppercase tracking-wider px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-400/25">
-                                Grados &amp; Posgrado
-                            </span>
-                            <span class="text-xs font-mono-tech text-slate-400">Dirección &amp; TI</span>
+                <!-- OS Window 1: Grados y Formación Ejecutiva -->
+                <div class="reveal-up lg:col-span-5 os-window bento-card rounded-3xl flex flex-col">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/credenciales/grados-posgrado.yml</span>
+                        <div class="os-ctrl-group">
+                            <button type="button" class="os-ctrl-btn os-minimize-btn" title="Minimizar / Restaurar ventana" aria-label="Minimizar ventana">−</button>
+                            <span class="os-ctrl-btn" aria-hidden="true">□</span>
+                            <span class="os-ctrl-btn is-close" aria-hidden="true">×</span>
                         </div>
-
-                        <div class="space-y-4">
-                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-                                <h3 class="font-display text-lg font-bold text-white">MBA en Emprendimiento e Innovación</h3>
-                                <p class="text-sm text-sky-300 font-medium mt-0.5">Universidad del Desarrollo (UDD)</p>
-                                <p class="text-xs text-slate-300 mt-2 leading-relaxed">
-                                    Estrategia corporativa, evaluación de negocios, liderazgo ejecutivo y transformación organizacional.
-                                </p>
+                    </div>
+                    <div class="os-window-body p-6 sm:p-7 flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="font-mono-tech text-xs uppercase tracking-wider px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-400/25">
+                                    Grados &amp; Posgrado
+                                </span>
+                                <span class="text-xs font-mono-tech text-slate-400">Dirección &amp; TI</span>
                             </div>
 
-                            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-                                <h3 class="font-display text-lg font-bold text-white">Ingeniero en Informática</h3>
-                                <p class="text-sm text-sky-300 font-medium mt-0.5">Universidad de Las Américas</p>
-                                <p class="text-xs text-slate-300 mt-2 leading-relaxed">
-                                    Ingeniería de software, arquitectura empresarial, integración de sistemas y bases de datos.
-                                </p>
-                            </div>
-
-                            <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
-                                <div class="text-xs font-mono-tech uppercase tracking-wider text-slate-300 mb-1.5">
-                                    Diplomados DUOC UC &amp; IEDE
+                            <div class="space-y-4">
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                                    <h3 class="font-display text-lg font-bold text-white">MBA en Emprendimiento e Innovación</h3>
+                                    <p class="text-sm text-sky-300 font-medium mt-0.5">Universidad del Desarrollo (UDD)</p>
+                                    <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                                        Estrategia corporativa, evaluación de negocios, liderazgo ejecutivo y transformación organizacional.
+                                    </p>
                                 </div>
-                                <p class="text-sm text-slate-200 leading-relaxed">
-                                    Gestión de Proyectos (PMI), Arquitectura de la Información (UX/Datos) y Business Intelligence.
-                                </p>
+
+                                <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                                    <h3 class="font-display text-lg font-bold text-white">Ingeniero en Informática</h3>
+                                    <p class="text-sm text-sky-300 font-medium mt-0.5">Universidad de Las Américas</p>
+                                    <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                                        Ingeniería de software, arquitectura empresarial, integración de sistemas y bases de datos.
+                                    </p>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+                                    <div class="text-xs font-mono-tech uppercase tracking-wider text-slate-300 mb-1.5">
+                                        Diplomados DUOC UC &amp; IEDE
+                                    </div>
+                                    <p class="text-sm text-slate-200 leading-relaxed">
+                                        Gestión de Proyectos (PMI), Arquitectura de la Información (UX/Datos) y Business Intelligence.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bento Card 2: Especializaciones Internacionales & Certificaciones -->
-                <div class="reveal-up lg:col-span-7 bento-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
-                            <span class="font-mono-tech text-xs uppercase tracking-wider px-3 py-1 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/25">
-                                Especializaciones Internacionales &amp; Certificaciones
-                            </span>
-                            <span class="text-xs font-mono-tech text-slate-400">IA · Seguridad · Cloud</span>
-                        </div>
-
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            <!-- MIT -->
-                            <div class="p-5 rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/15">
-                                <div class="flex items-center justify-between gap-2 mb-2">
-                                    <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-white/10 text-white">MIT</span>
-                                    <span class="font-mono-tech text-xs text-sky-300">2025 – 2026</span>
-                                </div>
-                                <h3 class="font-display text-base font-bold text-white mb-1.5">
-                                    IA Generativa, Transformación Digital &amp; IoT
-                                </h3>
-                                <p class="text-xs text-slate-300 leading-relaxed">
-                                    Cursos de especialización en el Massachusetts Institute of Technology enfocados en innovación aplicada y adopción tecnológica.
-                                </p>
-                            </div>
-
-                            <!-- Google & Alura -->
-                            <div class="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-white/[0.02] border border-emerald-400/30">
-                                <div class="flex items-center justify-between gap-2 mb-2">
-                                    <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300">Google &amp; Alura IA</span>
-                                    <span class="font-mono-tech text-xs text-emerald-300">Top 8</span>
-                                </div>
-                                <h3 class="font-display text-base font-bold text-white mb-1.5">
-                                    Inmersión en Inteligencia Artificial
-                                </h3>
-                                <p class="text-xs text-slate-200 leading-relaxed">
-                                    Reconocido en el <strong class="text-emerald-300">Top 8 entre +3.000 proyectos</strong> presentados a nivel latinoamericano.
-                                </p>
-                            </div>
-
-                            <!-- Ciberseguridad -->
-                            <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10">
-                                <div class="flex items-center justify-between gap-2 mb-2">
-                                    <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-rose-500/15 text-rose-300">Ciberseguridad</span>
-                                    <span class="font-mono-tech text-xs text-slate-300">ISC2 · INCIBE</span>
-                                </div>
-                                <h3 class="font-display text-base font-bold text-white mb-1.5">
-                                    ISC2 CC &amp; Especialización INCIBE
-                                </h3>
-                                <p class="text-xs text-slate-300 leading-relaxed">
-                                    Certified in Cybersecurity (ISC2) y programa INCIBE / Universidad de Málaga (315 hrs) en defensa, auditoría y gestión de riesgos.
-                                </p>
-                            </div>
-
-                            <!-- Cloud & Data Science -->
-                            <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10">
-                                <div class="flex items-center justify-between gap-2 mb-2">
-                                    <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300">Cloud &amp; Datos</span>
-                                    <span class="font-mono-tech text-xs text-slate-300">OCI · AWS</span>
-                                </div>
-                                <h3 class="font-display text-base font-bold text-white mb-1.5">
-                                    OCI Cloud, AWS &amp; Data Science
-                                </h3>
-                                <p class="text-xs text-slate-300 leading-relaxed">
-                                    Oracle Cloud Infrastructure (OCI), arquitectura sobre AWS Cloud y Oracle Next Education Data Science (307 hrs).
-                                </p>
-                            </div>
+                <!-- OS Window 2: Especializaciones Internacionales & Certificaciones -->
+                <div class="reveal-up lg:col-span-7 os-window bento-card rounded-3xl flex flex-col">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/credenciales/certificaciones-internacionales.yml</span>
+                        <div class="os-ctrl-group">
+                            <button type="button" class="os-ctrl-btn os-minimize-btn" title="Minimizar / Restaurar ventana" aria-label="Minimizar ventana">−</button>
+                            <span class="os-ctrl-btn" aria-hidden="true">□</span>
+                            <span class="os-ctrl-btn is-close" aria-hidden="true">×</span>
                         </div>
                     </div>
+                    <div class="os-window-body p-6 sm:p-7 flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex items-center justify-between mb-5 flex-wrap gap-2">
+                                <span class="font-mono-tech text-xs uppercase tracking-wider px-3 py-1 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/25">
+                                    Especializaciones Internacionales &amp; Certificaciones
+                                </span>
+                                <span class="text-xs font-mono-tech text-slate-400">IA · Seguridad · Cloud</span>
+                            </div>
 
-                    <!-- Focus strip -->
-                    <div class="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-                        <span class="text-xs text-slate-300">Áreas de aporte estratégico:</span>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="bento-pill px-3 py-1 rounded-full text-xs text-slate-100 font-medium">Dirección de Proyectos &amp; PMO</span>
-                            <span class="bento-pill px-3 py-1 rounded-full text-xs text-slate-100 font-medium">Arquitectura Cloud &amp; GIS</span>
-                            <span class="bento-pill px-3 py-1 rounded-full text-xs text-slate-100 font-medium">IA Aplicada &amp; Ciberseguridad</span>
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <!-- MIT -->
+                                <div class="p-5 rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/15">
+                                    <div class="flex items-center justify-between gap-2 mb-2">
+                                        <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-white/10 text-white">MIT</span>
+                                        <span class="font-mono-tech text-xs text-sky-300">2025 – 2026</span>
+                                    </div>
+                                    <h3 class="font-display text-base font-bold text-white mb-1.5">
+                                        IA Generativa, Transformación Digital &amp; IoT
+                                    </h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Cursos de especialización en el Massachusetts Institute of Technology enfocados en innovación aplicada y adopción tecnológica.
+                                    </p>
+                                </div>
+
+                                <!-- Google & Alura -->
+                                <div class="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-white/[0.02] border border-emerald-400/30">
+                                    <div class="flex items-center justify-between gap-2 mb-2">
+                                        <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300">Google &amp; Alura IA</span>
+                                        <span class="font-mono-tech text-xs text-emerald-300">Top 8</span>
+                                    </div>
+                                    <h3 class="font-display text-base font-bold text-white mb-1.5">
+                                        Inmersión en Inteligencia Artificial
+                                    </h3>
+                                    <p class="text-xs text-slate-200 leading-relaxed">
+                                        Reconocido en el <strong class="text-emerald-300">Top 8 entre +3.000 proyectos</strong> presentados a nivel latinoamericano.
+                                    </p>
+                                </div>
+
+                                <!-- Ciberseguridad -->
+                                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10">
+                                    <div class="flex items-center justify-between gap-2 mb-2">
+                                        <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-rose-500/15 text-rose-300">Ciberseguridad</span>
+                                        <span class="font-mono-tech text-xs text-slate-300">ISC2 · INCIBE</span>
+                                    </div>
+                                    <h3 class="font-display text-base font-bold text-white mb-1.5">
+                                        ISC2 CC &amp; Especialización INCIBE
+                                    </h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Certified in Cybersecurity (ISC2) y programa INCIBE / Universidad de Málaga (315 hrs) en defensa, auditoría y gestión de riesgos.
+                                    </p>
+                                </div>
+
+                                <!-- Cloud & Data Science -->
+                                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10">
+                                    <div class="flex items-center justify-between gap-2 mb-2">
+                                        <span class="font-mono-tech text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300">Cloud &amp; Datos</span>
+                                        <span class="font-mono-tech text-xs text-slate-300">OCI · AWS</span>
+                                    </div>
+                                    <h3 class="font-display text-base font-bold text-white mb-1.5">
+                                        OCI Cloud, AWS &amp; Data Science
+                                    </h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Oracle Cloud Infrastructure (OCI), arquitectura sobre AWS Cloud y Oracle Next Education Data Science (307 hrs).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Focus strip -->
+                        <div class="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                            <span class="text-xs text-slate-300">Áreas de aporte estratégico:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bento-pill px-3 py-1 rounded-full text-xs text-slate-100 font-medium">Dirección de Proyectos &amp; PMO</span>
+                                <span class="bento-pill px-3 py-1 rounded-full text-xs text-slate-100 font-medium">Arquitectura Cloud &amp; GIS</span>
+                                <span class="bento-pill px-3 py-1 rounded-full text-xs text-slate-100 font-medium">IA Aplicada &amp; Ciberseguridad</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -424,205 +495,285 @@
     <div class="section-divider max-w-7xl mx-auto"></div>
 
     <!-- =================================================================
-    PROYECTOS CLAVE (BENTO GRID — 5 CASOS DE ÉXITO + TETRIS DISCRETO)
+    03. PROYECTOS CLAVE (OS WINDOWS + EXPANDABLE README MODAL)
     ================================================================== -->
     <section id="projects" class="py-20 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="reveal-up max-w-3xl mb-12">
                 <span class="font-mono-tech text-xs font-semibold uppercase tracking-[0.2em] text-sky-400">
-                    Casos de Éxito
+                    03 · Casos de Éxito &amp; Arquitectura
                 </span>
                 <h2 class="font-display text-3xl sm:text-4xl font-bold mt-2 mb-3 text-white tracking-tight">
                     Proyectos de Alcance Crítico
                 </h2>
                 <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-                    Implementaciones estratégicas en banca, control gubernamental, hacienda pública, distribución eléctrica, gas y telecomunicaciones.
+                    Implementaciones estratégicas en banca, control gubernamental, hacienda pública, distribución eléctrica, gas y telecomunicaciones. Haz clic en cualquier ventana para inspeccionar su <code class="font-mono-tech text-sky-300">README.md</code> ejecutivo.
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
-                <!-- 1. FEATURED WIDE BENTO: BANCA & CIBERSEGURIDAD (SENTRA) -->
-                <article class="reveal-up md:col-span-2 bento-card rounded-3xl p-6 sm:p-8 border border-sky-400/25">
-                    <div class="grid lg:grid-cols-12 gap-8 items-center">
-                        <div class="lg:col-span-7">
-                            <div class="flex flex-wrap items-center gap-2.5 mb-4">
-                                <span class="font-mono-tech text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30">
-                                    Proyecto Destacado · Sentra
-                                </span>
-                                <span class="font-mono-tech text-[11px] font-semibold px-3 py-1 rounded-full bg-white/5 text-slate-200 border border-white/10">
-                                    Banca &amp; Retail Financiero
-                                </span>
-                            </div>
-
-                            <h3 class="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
-                                Banca &amp; Ciberseguridad Transaccional
-                            </h3>
-                            <p class="text-slate-200 text-sm sm:text-base leading-relaxed mb-6">
-                                Ingeniería de software senior, aseguramiento de plataformas de pago y automatización de pruebas críticas para instituciones financieras de primer nivel en Chile y Argentina.
-                            </p>
-
-                            <div class="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-                                <span class="font-mono-tech text-xs text-slate-300">
-                                    Java EE · Oracle OSB · Ciberseguridad · JMeter · SoapUI
-                                </span>
-                                <span class="font-mono-tech text-xs text-emerald-300 font-semibold">
-                                    Misión Crítica · Alta Disponibilidad
-                                </span>
-                            </div>
+                <!-- 1. FEATURED WIDE OS WINDOW: BANCA & CIBERSEGURIDAD (SENTRA) -->
+                <article class="reveal-up md:col-span-2 os-window bento-card rounded-3xl border border-sky-400/25">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-sky-300 truncate">~/proyectos/sentra-banca-ciberseguridad</span>
+                        <div class="os-ctrl-group">
+                            <button type="button" class="os-ctrl-btn os-minimize-btn" title="Minimizar / Restaurar" aria-label="Minimizar ventana">−</button>
+                            <button type="button" class="os-ctrl-btn" data-case-study="sentra" title="Expandir caso de estudio" aria-label="Expandir caso de estudio">□</button>
+                            <span class="os-ctrl-btn is-close" aria-hidden="true">×</span>
                         </div>
+                    </div>
+                    <div class="os-window-body p-6 sm:p-8">
+                        <div class="grid lg:grid-cols-12 gap-8 items-center">
+                            <div class="lg:col-span-7">
+                                <div class="flex flex-wrap items-center gap-2.5 mb-4">
+                                    <span class="font-mono-tech text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30">
+                                        Proyecto Destacado · Sentra
+                                    </span>
+                                    <span class="font-mono-tech text-[11px] font-semibold px-3 py-1 rounded-full bg-white/5 text-slate-200 border border-white/10">
+                                        Banca &amp; Retail Financiero
+                                    </span>
+                                </div>
 
-                        <div class="lg:col-span-5 space-y-3">
-                            <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10">
-                                <div class="text-xs font-mono-tech text-sky-300 font-bold mb-1">BCI · Motor de Pagos</div>
-                                <p class="text-xs sm:text-sm text-slate-200">Mitigación de vulnerabilidades de alto riesgo en infraestructura transaccional.</p>
+                                <h3 class="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
+                                    Banca &amp; Ciberseguridad Transaccional
+                                </h3>
+                                <p class="text-slate-200 text-sm sm:text-base leading-relaxed mb-6">
+                                    Ingeniería de software senior, aseguramiento de plataformas de pago y automatización de pruebas críticas para instituciones financieras de primer nivel en Chile y Argentina.
+                                </p>
+
+                                <div class="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                                    <span class="font-mono-tech text-xs text-slate-300">
+                                        Java EE · Oracle OSB · Ciberseguridad · JMeter · SoapUI
+                                    </span>
+                                    <button type="button" data-case-study="sentra" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-400 hover:text-slate-950 text-sky-300 border border-sky-400/30 font-mono-tech text-xs font-semibold transition">
+                                        Inspeccionar README.md →
+                                    </button>
+                                </div>
                             </div>
-                            <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10">
-                                <div class="text-xs font-mono-tech text-indigo-300 font-bold mb-1">Falabella Financiero Argentina</div>
-                                <p class="text-xs sm:text-sm text-slate-200">Arquitectura de defensa contra ataques de diccionario en capa Java + Oracle Service Bus.</p>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10">
-                                <div class="text-xs font-mono-tech text-emerald-300 font-bold mb-1">BancoEstado · QA &amp; Performance</div>
-                                <p class="text-xs sm:text-sm text-slate-200">Automatización operativa y pruebas de estrés/rendimiento con JMeter, SoapUI y TestLink.</p>
+
+                            <div class="lg:col-span-5 space-y-3">
+                                <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10">
+                                    <div class="text-xs font-mono-tech text-sky-300 font-bold mb-1">BCI · Motor de Pagos</div>
+                                    <p class="text-xs sm:text-sm text-slate-200">Mitigación de vulnerabilidades de alto riesgo en infraestructura transaccional.</p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10">
+                                    <div class="text-xs font-mono-tech text-indigo-300 font-bold mb-1">Falabella Financiero Argentina</div>
+                                    <p class="text-xs sm:text-sm text-slate-200">Arquitectura de defensa contra ataques de diccionario en capa Java + Oracle Service Bus.</p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/10">
+                                    <div class="text-xs font-mono-tech text-emerald-300 font-bold mb-1">BancoEstado · QA &amp; Performance</div>
+                                    <p class="text-xs sm:text-sm text-slate-200">Automatización operativa y pruebas de estrés/rendimiento con JMeter, SoapUI y TestLink.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </article>
 
                 <!-- 2. SICA -->
-                <article class="reveal-up bento-card rounded-3xl overflow-hidden flex flex-col">
-                    <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative">
-                        <img src="images/project-sica.png" alt="SICA Contraloría" class="w-full h-full object-cover hover:scale-105 transition duration-500">
-                    </div>
-                    <div class="p-6 sm:p-7 flex flex-col flex-grow">
-                        <div class="flex justify-between items-start gap-2 mb-3">
-                            <h3 class="font-display text-xl font-bold text-white">SICA — Control de Auditorías</h3>
-                            <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-400/25 shrink-0">
-                                CL · PY · UY
-                            </span>
+                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/sica-contraloria</span>
+                        <div class="os-ctrl-group">
+                            <button type="button" class="os-ctrl-btn os-minimize-btn" title="Minimizar / Restaurar" aria-label="Minimizar ventana">−</button>
+                            <button type="button" class="os-ctrl-btn" data-case-study="sica" title="Expandir caso de estudio" aria-label="Expandir caso de estudio">□</button>
+                            <span class="os-ctrl-btn is-close" aria-hidden="true">×</span>
                         </div>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
-                            Sistema Integrado de Control de Auditorías para la Contraloría General de la República (Chile) y adaptaciones regionales para Paraguay y Uruguay. Integración SOA y capas de servicio crítico.
-                        </p>
-                        <div class="pt-4 border-t border-white/10 flex justify-between items-center gap-3">
-                            <span class="text-xs font-mono-tech text-slate-300">Java EE · Oracle SOA · ADF</span>
-                            <a href="https://www.youtube.com/watch?v=_sANAct5NVI" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
-                                Ver Video Oficial →
-                            </a>
+                    </div>
+                    <div class="os-window-body flex flex-col flex-grow">
+                        <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative cursor-pointer" data-case-study="sica">
+                            <img src="images/project-sica.png" alt="SICA Contraloría" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-6 sm:p-7 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start gap-2 mb-3">
+                                <h3 class="font-display text-xl font-bold text-white">SICA — Control de Auditorías</h3>
+                                <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-400/25 shrink-0">
+                                    CL · PY · UY
+                                </span>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
+                                Sistema Integrado de Control de Auditorías para la Contraloría General de la República (Chile) y adaptaciones regionales para Paraguay y Uruguay. Integración SOA y capas de servicio crítico.
+                            </p>
+                            <div class="pt-4 border-t border-white/10 flex flex-wrap justify-between items-center gap-3">
+                                <span class="text-xs font-mono-tech text-slate-300">Java EE · Oracle SOA · ADF</span>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" data-case-study="sica" class="text-xs font-mono-tech text-slate-200 hover:text-white underline underline-offset-4">
+                                        README.md
+                                    </button>
+                                    <a href="https://www.youtube.com/watch?v=_sANAct5NVI" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
+                                        Ver Video Oficial →
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </article>
 
                 <!-- 3. SIGFE 2 -->
-                <article class="reveal-up bento-card rounded-3xl overflow-hidden flex flex-col">
-                    <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative">
-                        <img src="images/project-sigfe2.png" alt="SIGFE 2 DIPRES" class="w-full h-full object-cover hover:scale-105 transition duration-500">
-                    </div>
-                    <div class="p-6 sm:p-7 flex flex-col flex-grow">
-                        <div class="flex justify-between items-start gap-2 mb-3">
-                            <h3 class="font-display text-xl font-bold text-white">SIGFE 2 — Gestión Financiera del Estado</h3>
-                            <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-400/25 shrink-0">
-                                Min. Hacienda
-                            </span>
+                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/sigfe2-hacienda</span>
+                        <div class="os-ctrl-group">
+                            <button type="button" class="os-ctrl-btn os-minimize-btn" title="Minimizar / Restaurar" aria-label="Minimizar ventana">−</button>
+                            <button type="button" class="os-ctrl-btn" data-case-study="sigfe2" title="Expandir caso de estudio" aria-label="Expandir caso de estudio">□</button>
+                            <span class="os-ctrl-btn is-close" aria-hidden="true">×</span>
                         </div>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
-                            Módulo de Administración de Contenidos y gestión documental para el Ministerio de Hacienda (DIPRES), modernizando el flujo operativo del presupuesto nacional.
-                        </p>
-                        <div class="pt-4 border-t border-white/10 flex justify-between items-center gap-3">
-                            <span class="text-xs font-mono-tech text-slate-300">Oracle UCM · OSB · J2EE</span>
-                            <a href="https://dipres.gob.cl/590/w3-channel.html" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
-                                Sitio DIPRES →
-                            </a>
+                    </div>
+                    <div class="os-window-body flex flex-col flex-grow">
+                        <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative cursor-pointer" data-case-study="sigfe2">
+                            <img src="images/project-sigfe2.png" alt="SIGFE 2 DIPRES" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-6 sm:p-7 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start gap-2 mb-3">
+                                <h3 class="font-display text-xl font-bold text-white">SIGFE 2 — Gestión Financiera del Estado</h3>
+                                <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-400/25 shrink-0">
+                                    Min. Hacienda
+                                </span>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
+                                Módulo de Administración de Contenidos y gestión documental para el Ministerio de Hacienda (DIPRES), modernizando el flujo operativo del presupuesto nacional.
+                            </p>
+                            <div class="pt-4 border-t border-white/10 flex flex-wrap justify-between items-center gap-3">
+                                <span class="text-xs font-mono-tech text-slate-300">Oracle UCM · OSB · J2EE</span>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" data-case-study="sigfe2" class="text-xs font-mono-tech text-slate-200 hover:text-white underline underline-offset-4">
+                                        README.md
+                                    </button>
+                                    <a href="https://dipres.gob.cl/590/w3-channel.html" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
+                                        Sitio DIPRES →
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </article>
 
                 <!-- 4. UNIS -->
-                <article class="reveal-up bento-card rounded-3xl overflow-hidden flex flex-col">
-                    <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative">
-                        <img src="images/project-unis.png" alt="UNIS Tierra-Ayni" class="w-full h-full object-cover hover:scale-105 transition duration-500">
-                    </div>
-                    <div class="p-6 sm:p-7 flex flex-col flex-grow">
-                        <div class="flex justify-between items-start gap-2 mb-3">
-                            <h3 class="font-display text-xl font-bold text-white">UNIS — Gestión Geoespacial GIS</h3>
-                            <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-amber-500/15 text-amber-300 border border-amber-400/25 shrink-0">
-                                Tierra-Ayni
-                            </span>
+                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/unis-geoespacial-gis</span>
+                        <div class="os-ctrl-group">
+                            <button type="button" class="os-ctrl-btn os-minimize-btn" title="Minimizar / Restaurar" aria-label="Minimizar ventana">−</button>
+                            <button type="button" class="os-ctrl-btn" data-case-study="unis" title="Expandir caso de estudio" aria-label="Expandir caso de estudio">□</button>
+                            <span class="os-ctrl-btn is-close" aria-hidden="true">×</span>
                         </div>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
-                            Dirección de desarrollo y arquitectura JEE 8 en plataforma geoespacial de activos, obras subterráneas, solicitudes LLAE y captura en terreno implementada en Gasvalpo, Chilquinta, Gasco Magallanes y Entel.
-                        </p>
-                        <div class="pt-4 border-t border-white/10 flex justify-between items-center gap-3">
-                            <span class="text-xs font-mono-tech text-slate-300">GE Smallworld · Java EE 8 · GIS</span>
-                            <a href="https://tierra-ayni.com/?page_id=1977" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
-                                Detalles del Producto →
-                            </a>
+                    </div>
+                    <div class="os-window-body flex flex-col flex-grow">
+                        <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative cursor-pointer" data-case-study="unis">
+                            <img src="images/project-unis.png" alt="UNIS Tierra-Ayni" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-6 sm:p-7 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start gap-2 mb-3">
+                                <h3 class="font-display text-xl font-bold text-white">UNIS — Gestión Geoespacial GIS</h3>
+                                <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-amber-500/15 text-amber-300 border border-amber-400/25 shrink-0">
+                                    Tierra-Ayni
+                                </span>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
+                                Dirección de desarrollo y arquitectura JEE 8 en plataforma geoespacial de activos, obras subterráneas, solicitudes LLAE y captura en terreno implementada en Gasvalpo, Chilquinta, Gasco Magallanes y Entel.
+                            </p>
+                            <div class="pt-4 border-t border-white/10 flex flex-wrap justify-between items-center gap-3">
+                                <span class="text-xs font-mono-tech text-slate-300">GE Smallworld · Java EE 8 · GIS</span>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" data-case-study="unis" class="text-xs font-mono-tech text-slate-200 hover:text-white underline underline-offset-4">
+                                        README.md
+                                    </button>
+                                    <a href="https://tierra-ayni.com/?page_id=1977" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
+                                        Detalles del Producto →
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </article>
 
                 <!-- 5. ANDE PARAGUAY -->
-                <article class="reveal-up bento-card rounded-3xl overflow-hidden flex flex-col">
-                    <div class="h-52 bg-gradient-to-br from-[#0c1a3a] via-[#0f172a] to-[#082f49] border-b border-white/10 flex items-center justify-center p-6 relative overflow-hidden">
-                        <svg class="absolute inset-0 w-full h-full opacity-25" viewBox="0 0 400 200" fill="none" aria-hidden="true">
-                            <path d="M20 150 L95 80 L180 115 L270 45 L370 95" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4"/>
-                            <circle cx="95" cy="80" r="4" fill="#38bdf8"/>
-                            <circle cx="180" cy="115" r="4" fill="#818cf8"/>
-                            <circle cx="270" cy="45" r="5" fill="#34d399"/>
-                        </svg>
-                        <div class="relative text-center">
-                            <div class="font-mono-tech text-[11px] uppercase tracking-[0.25em] text-sky-300 mb-2">
-                                Infraestructura Eléctrica Nacional
-                            </div>
-                            <div class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                                ANDE PARAGUAY
-                            </div>
-                            <div class="text-xs text-slate-200 mt-1.5">
-                                Cloud AWS · Integración GIS Corporativa
-                            </div>
+                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/ande-paraguay-aws</span>
+                        <div class="os-ctrl-group">
+                            <button type="button" class="os-ctrl-btn os-minimize-btn" title="Minimizar / Restaurar" aria-label="Minimizar ventana">−</button>
+                            <button type="button" class="os-ctrl-btn" data-case-study="ande" title="Expandir caso de estudio" aria-label="Expandir caso de estudio">□</button>
+                            <span class="os-ctrl-btn is-close" aria-hidden="true">×</span>
                         </div>
                     </div>
-                    <div class="p-6 sm:p-7 flex flex-col flex-grow">
-                        <div class="flex justify-between items-start gap-2 mb-3">
-                            <h3 class="font-display text-xl font-bold text-white">Proyecto ANDE Paraguay</h3>
-                            <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-sky-500/15 text-sky-300 border border-sky-400/25 shrink-0">
-                                AWS · GIS
-                            </span>
+                    <div class="os-window-body flex flex-col flex-grow">
+                        <div class="h-52 bg-gradient-to-br from-[#0c1a3a] via-[#0f172a] to-[#082f49] border-b border-white/10 flex items-center justify-center p-6 relative overflow-hidden cursor-pointer" data-case-study="ande">
+                            <svg class="absolute inset-0 w-full h-full opacity-25" viewBox="0 0 400 200" fill="none" aria-hidden="true">
+                                <path d="M20 150 L95 80 L180 115 L270 45 L370 95" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 4"/>
+                                <circle cx="95" cy="80" r="4" fill="#38bdf8"/>
+                                <circle cx="180" cy="115" r="4" fill="#818cf8"/>
+                                <circle cx="270" cy="45" r="5" fill="#34d399"/>
+                            </svg>
+                            <div class="relative text-center">
+                                <div class="font-mono-tech text-[11px] uppercase tracking-[0.25em] text-sky-300 mb-2">
+                                    Infraestructura Eléctrica Nacional
+                                </div>
+                                <div class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                                    ANDE PARAGUAY
+                                </div>
+                                <div class="text-xs text-slate-200 mt-1.5">
+                                    Cloud AWS · Integración GIS Corporativa
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
-                            Asesoría técnica, soporte de arquitectura en la nube de Amazon Web Services (AWS) e integración de plataforma GIS para la Administración Nacional de Electricidad (ANDE).
-                        </p>
-                        <div class="pt-4 border-t border-white/10 flex justify-between items-center gap-3">
-                            <span class="text-xs font-mono-tech text-slate-300">AWS Cloud · GE Smallworld</span>
-                            <a href="https://www.ande.gov.py/interna.php?id=15134" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
-                                Web Institucional →
-                            </a>
+                        <div class="p-6 sm:p-7 flex flex-col flex-grow">
+                            <div class="flex justify-between items-start gap-2 mb-3">
+                                <h3 class="font-display text-xl font-bold text-white">Proyecto ANDE Paraguay</h3>
+                                <span class="px-2.5 py-1 rounded-full text-[11px] font-mono-tech font-bold bg-sky-500/15 text-sky-300 border border-sky-400/25 shrink-0">
+                                    AWS · GIS
+                                </span>
+                            </div>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-5 flex-grow">
+                                Asesoría técnica, soporte de arquitectura en la nube de Amazon Web Services (AWS) e integración de plataforma GIS para la Administración Nacional de Electricidad (ANDE).
+                            </p>
+                            <div class="pt-4 border-t border-white/10 flex flex-wrap justify-between items-center gap-3">
+                                <span class="text-xs font-mono-tech text-slate-300">AWS Cloud · GE Smallworld</span>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" data-case-study="ande" class="text-xs font-mono-tech text-slate-200 hover:text-white underline underline-offset-4">
+                                        README.md
+                                    </button>
+                                    <a href="https://www.ande.gov.py/interna.php?id=15134" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 text-xs font-bold flex items-center gap-1 shrink-0">
+                                        Web Institucional →
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </article>
             </div>
 
-            <!-- Discreet Interactive Demo Bento Strip (Edu Tetris) -->
-            <div class="reveal-up mt-8 bento-card rounded-2xl p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-400/30 text-sky-300 flex items-center justify-center font-mono-tech text-sm font-bold shrink-0">
-                        &lt;/&gt;
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h3 class="font-display text-base font-bold text-white">Laboratorio Interactivo · Edu Tetris Arcade</h3>
-                            <span class="inline-block font-mono-tech text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-400/25">
-                                Canvas 60 FPS
-                            </span>
-                        </div>
-                        <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
-                            Demo de ingeniería interactiva en HTML5 Canvas con físicas de partículas y síntesis de audio multicapa en Web Audio API.
-                        </p>
+            <!-- Discreet Interactive Demo Window (Edu Tetris) -->
+            <div class="reveal-up mt-8 os-window bento-card rounded-2xl">
+                <div class="os-window-bar py-2">
+                    <span class="font-mono-tech text-[11px] text-emerald-300 truncate">~/lab/edu-tetris-arcade</span>
+                    <div class="os-ctrl-group" aria-hidden="true">
+                        <span class="os-ctrl-btn">−</span>
+                        <span class="os-ctrl-btn">□</span>
+                        <span class="os-ctrl-btn is-close">×</span>
                     </div>
                 </div>
-                <a href="tetris.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.08] hover:bg-sky-400 hover:text-slate-950 text-white border border-white/15 font-semibold text-xs sm:text-sm transition shrink-0">
-                    Abrir Edu Tetris
-                    <span aria-hidden="true">→</span>
-                </a>
+                <div class="p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-400/30 text-sky-300 flex items-center justify-center font-mono-tech text-sm font-bold shrink-0">
+                            &lt;/&gt;
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-display text-base font-bold text-white">Laboratorio Interactivo · Edu Tetris Arcade</h3>
+                                <span class="inline-block font-mono-tech text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-400/25">
+                                    Canvas 60 FPS
+                                </span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
+                                Demo de ingeniería interactiva en HTML5 Canvas con físicas de partículas y síntesis de audio multicapa en Web Audio API.
+                            </p>
+                        </div>
+                    </div>
+                    <a href="tetris.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.08] hover:bg-sky-400 hover:text-slate-950 text-white border border-white/15 font-semibold text-xs sm:text-sm transition shrink-0">
+                        Abrir Edu Tetris
+                        <span aria-hidden="true">→</span>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -630,13 +781,13 @@
     <div class="section-divider max-w-7xl mx-auto"></div>
 
     <!-- =================================================================
-    CONTACT & SCHEDULING (GOOGLE CALENDAR + LINKEDIN + GITHUB)
+    04. CONTACT, EXECUTIVE AI BRIEF TERMINAL & SCHEDULING
     ================================================================== -->
     <section id="contact" class="py-20 relative">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="reveal-up max-w-2xl mb-12">
                 <span class="font-mono-tech text-xs font-semibold uppercase tracking-[0.2em] text-sky-400">
-                    Contacto Directo
+                    04 · Contacto Directo &amp; Executive Brief
                 </span>
                 <h2 class="font-display text-3xl sm:text-4xl font-bold mt-2 mb-3 text-white tracking-tight">
                     Conversemos sobre tu próximo desafío
@@ -647,39 +798,93 @@
             </div>
 
             <div class="grid lg:grid-cols-12 gap-6 items-stretch">
-                <!-- Google Calendar Primary Bento -->
-                <div class="reveal-up lg:col-span-7 bento-card rounded-3xl p-7 sm:p-9 border border-sky-400/30 flex flex-col justify-between">
-                    <div>
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-mono-tech font-semibold mb-5">
-                            Google Calendar · 30 min
+                <!-- Interactive Terminal: Executive AI Brief -->
+                <div id="ai-brief" class="reveal-up lg:col-span-6 os-window bento-card rounded-3xl flex flex-col">
+                    <div class="os-window-bar">
+                        <span class="font-mono-tech text-[11px] text-emerald-300 truncate">eduardo@executive-desk ~ $ ask</span>
+                        <div class="os-ctrl-group" aria-hidden="true">
+                            <span class="os-ctrl-btn">−</span>
+                            <span class="os-ctrl-btn">□</span>
+                            <span class="os-ctrl-btn is-close">×</span>
                         </div>
-                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-white mb-3">
-                            Agendar Reunión en Google Meet
-                        </h3>
-                        <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-8">
-                            Selecciona directamente el horario que mejor se adapte a tu agenda para conversar sobre asesorías, optimización de procesos, arquitectura TI o posiciones de liderazgo.
-                        </p>
                     </div>
-                    <div>
-                        <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="magnetic-btn inline-flex w-full sm:w-auto items-center justify-center gap-2.5 py-4 px-7 rounded-xl bg-white hover:bg-sky-300 text-slate-950 font-bold text-sm sm:text-base shadow-[0_0_28px_-6px_rgba(56,189,248,0.45)] transition">
-                            <span>Elegir Horario en Google Calendar</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                        </a>
+                    <div class="p-6 sm:p-7 flex flex-col justify-between flex-grow space-y-5">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="font-mono-tech text-[11px] uppercase tracking-wider text-sky-300 font-semibold">
+                                    Executive AI Brief · Consultas Rápidas
+                                </span>
+                                <span class="font-mono-tech text-[10px] text-emerald-300">ONLINE</span>
+                            </div>
+
+                            <!-- Prompt Chips -->
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <button type="button" class="prompt-chip is-selected px-3 py-1.5 rounded-xl text-xs font-medium text-left" data-ai-question="banca">
+                                    ¿Cuál es su experiencia en Banca y Ciberseguridad?
+                                </button>
+                                <button type="button" class="prompt-chip px-3 py-1.5 rounded-xl text-xs font-medium text-left" data-ai-question="gobierno">
+                                    ¿Qué impacto logró en proyectos de Gobierno y Utilities?
+                                </button>
+                                <button type="button" class="prompt-chip px-3 py-1.5 rounded-xl text-xs font-medium text-left" data-ai-question="credenciales">
+                                    ¿Qué formación y certificaciones posee?
+                                </button>
+                                <button type="button" class="prompt-chip px-3 py-1.5 rounded-xl text-xs font-medium text-left" data-ai-question="reunion">
+                                    ¿Cómo agendar una reunión?
+                                </button>
+                            </div>
+
+                            <!-- Terminal Output -->
+                            <div class="rounded-2xl bg-[#03050a]/90 border border-white/10 p-4 sm:p-5 min-h-[155px] font-mono-tech text-xs sm:text-[13px] leading-relaxed">
+                                <div class="text-slate-400 mb-2">
+                                    <span class="text-emerald-400">eduardo@executive-desk</span>:<span class="text-sky-400">~</span>$ <span id="terminal-command" class="text-slate-200">ask --topic "banca-ciberseguridad"</span>
+                                </div>
+                                <div class="text-slate-100">
+                                    <span id="terminal-output"></span><span class="terminal-cursor" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-[11px] font-mono-tech text-slate-400 flex items-center justify-between pt-2 border-t border-white/10">
+                            <span>Respuestas verificadas desde el portafolio oficial</span>
+                            <span class="text-sky-300">Ready</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Social Profiles Bento -->
-                <div class="reveal-up lg:col-span-5 bento-card rounded-3xl p-7 sm:p-8 flex flex-col justify-between">
-                    <div>
-                        <div class="font-mono-tech text-xs uppercase tracking-wider text-slate-300 mb-5">
+                <!-- Right Column: Google Calendar + Social Profiles -->
+                <div class="lg:col-span-6 grid gap-6">
+                    <!-- Google Calendar Primary Bento -->
+                    <div class="reveal-up bento-card rounded-3xl p-6 sm:p-8 border border-sky-400/30 flex flex-col justify-between">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs font-mono-tech font-semibold mb-4">
+                                Google Calendar · 30 min
+                            </div>
+                            <h3 class="font-display text-2xl sm:text-3xl font-bold text-white mb-2.5">
+                                Agendar Reunión en Google Meet
+                            </h3>
+                            <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                                Selecciona directamente el horario que mejor se adapte a tu agenda para conversar sobre asesorías, optimización de procesos, arquitectura TI o posiciones de liderazgo.
+                            </p>
+                        </div>
+                        <div>
+                            <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="magnetic-btn inline-flex w-full sm:w-auto items-center justify-center gap-2.5 py-3.5 px-6 rounded-xl bg-white hover:bg-sky-300 text-slate-950 font-bold text-sm sm:text-base shadow-[0_0_28px_-6px_rgba(56,189,248,0.45)] transition">
+                                <span>Elegir Horario en Google Calendar</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Social Profiles Bento -->
+                    <div class="reveal-up bento-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+                        <div class="font-mono-tech text-xs uppercase tracking-wider text-slate-300 mb-4">
                             Redes Profesionales
                         </div>
-                        <div class="space-y-4">
+                        <div class="grid sm:grid-cols-2 gap-3.5">
                             <a href="https://www.linkedin.com/in/eduardocayun/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.04] hover:bg-white/10 border border-white/10 hover:border-sky-400/40 transition group">
-                                <div class="flex items-center gap-3.5">
-                                    <span class="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-300 flex items-center justify-center font-display font-bold text-sm">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-300 flex items-center justify-center font-display font-bold text-sm">
                                         in
                                     </span>
                                     <div>
@@ -687,14 +892,12 @@
                                         <div class="text-xs text-slate-300">/in/eduardocayun</div>
                                     </div>
                                 </div>
-                                <span class="text-xs font-mono-tech font-bold text-sky-300 group-hover:translate-x-1 transition">
-                                    Conectar →
-                                </span>
+                                <span class="text-xs font-mono-tech font-bold text-sky-300 group-hover:translate-x-1 transition">→</span>
                             </a>
 
                             <a href="https://github.com/educhile1" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.04] hover:bg-white/10 border border-white/10 hover:border-sky-400/40 transition group">
-                                <div class="flex items-center gap-3.5">
-                                    <span class="w-10 h-10 rounded-xl bg-white/10 text-slate-100 flex items-center justify-center font-mono-tech font-bold text-xs">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-9 h-9 rounded-xl bg-white/10 text-slate-100 flex items-center justify-center font-mono-tech font-bold text-xs">
                                         &lt;/&gt;
                                     </span>
                                     <div>
@@ -702,15 +905,9 @@
                                         <div class="text-xs text-slate-300">@educhile1</div>
                                     </div>
                                 </div>
-                                <span class="text-xs font-mono-tech font-bold text-sky-300 group-hover:translate-x-1 transition">
-                                    Explorar →
-                                </span>
+                                <span class="text-xs font-mono-tech font-bold text-sky-300 group-hover:translate-x-1 transition">→</span>
                             </a>
                         </div>
-                    </div>
-
-                    <div class="mt-6 pt-5 border-t border-white/10 text-xs text-slate-300 leading-relaxed">
-                        Atención directa a empresas, directorios y reclutadores en Chile y Latinoamérica.
                     </div>
                 </div>
             </div>
@@ -727,23 +924,98 @@
                 <div class="text-xs text-slate-400 mt-1">© 2026 Eduardo Cayún M. · MBA &amp; Consultoría Estratégica TI</div>
             </div>
             <div class="flex flex-wrap justify-center gap-6 text-xs sm:text-sm font-medium">
-                <a href="#home" class="hover:text-white transition">Inicio</a>
-                <a href="#credentials" class="hover:text-white transition">Credenciales</a>
-                <a href="#projects" class="hover:text-white transition">Proyectos</a>
-                <a href="tetris.html" class="hover:text-sky-300 transition">Edu Tetris</a>
+                <a href="#home" class="hover:text-white transition">01 Inicio</a>
+                <a href="#credentials" class="hover:text-white transition">02 Credenciales</a>
+                <a href="#projects" class="hover:text-white transition">03 Proyectos</a>
+                <a href="tetris.html" class="hover:text-sky-300 transition">05 Edu Tetris</a>
                 <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:underline">Agendar Meet</a>
             </div>
         </div>
     </footer>
 
-    <!-- Back to top button -->
-    <button id="back-to-top" type="button" aria-label="Volver arriba" class="fixed bottom-6 right-6 w-11 h-11 rounded-full bg-white text-slate-950 hover:bg-sky-300 shadow-[0_0_25px_rgba(56,189,248,0.35)] hidden items-center justify-center transition z-40">
+    <!-- =================================================================
+    FIXED BOTTOM EXECUTIVE TELEMETRY HUD BAR
+    ================================================================== -->
+    <aside id="hud-telemetry" aria-label="Telemetría de sistema" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 w-[calc(100%-1.25rem)] max-w-4xl">
+        <div class="hud-bar rounded-full px-3.5 sm:px-5 py-2 flex items-center justify-between gap-3 font-mono-tech text-[11px] text-slate-300">
+            <!-- Availability -->
+            <div class="flex items-center gap-2 truncate">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] shrink-0" aria-hidden="true"></span>
+                <span class="hidden sm:inline truncate">Disponible para Consultoría B2B &amp; Dirección TI</span>
+                <span class="sm:hidden truncate">Disponible B2B &amp; TI</span>
+            </div>
+
+            <!-- Live Clock & 3D Camera State -->
+            <div class="flex items-center gap-3 shrink-0">
+                <span id="hud-camera-label" class="hidden md:inline text-indigo-300">CAM // ORBITAL-GIS</span>
+                <span class="hidden md:inline text-white/20" aria-hidden="true">|</span>
+                <span id="hud-clock" class="text-sky-300">--:--:-- CLT</span>
+            </div>
+
+            <!-- Section Counter Controls -->
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button id="hud-prev-btn" type="button" aria-label="Sección anterior" class="w-5 h-5 rounded-full hover:bg-white/10 text-slate-200 flex items-center justify-center transition">‹</button>
+                <span id="hud-section-indicator" class="text-white font-semibold tracking-wider">01 / 04</span>
+                <button id="hud-next-btn" type="button" aria-label="Siguiente sección" class="w-5 h-5 rounded-full hover:bg-white/10 text-slate-200 flex items-center justify-center transition">›</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Back to top button (positioned cleanly above HUD on mobile) -->
+    <button id="back-to-top" type="button" aria-label="Volver arriba" class="fixed bottom-16 right-4 sm:bottom-6 sm:right-6 w-11 h-11 rounded-full bg-white text-slate-950 hover:bg-sky-300 shadow-[0_0_25px_rgba(56,189,248,0.35)] hidden items-center justify-center transition z-40">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
     </button>
 
-    <!-- Lenis + GSAP + ScrollTrigger CDNs -->
+    <!-- =================================================================
+    EXPANDABLE CASE STUDY MODAL (EXECUTIVE README.MD VIEWER)
+    ================================================================== -->
+    <div id="case-study-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-[70] bg-[#020409]/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="modal-panel w-full max-w-2xl rounded-3xl bg-[#0a1020] border border-white/15 shadow-2xl overflow-hidden">
+            <div class="os-window-bar">
+                <span id="modal-path" class="font-mono-tech text-[11px] text-sky-300 truncate">~/proyectos/README.md</span>
+                <div class="os-ctrl-group">
+                    <span class="os-ctrl-btn" aria-hidden="true">−</span>
+                    <span class="os-ctrl-btn" aria-hidden="true">□</span>
+                    <button id="modal-close-btn" type="button" class="os-ctrl-btn is-close" aria-label="Cerrar detalle">×</button>
+                </div>
+            </div>
+            <div class="p-6 sm:p-8 space-y-5 max-h-[82vh] overflow-y-auto">
+                <div>
+                    <div id="modal-badge" class="inline-flex items-center px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 font-mono-tech text-[11px] font-semibold mb-3">
+                        Caso de Estudio
+                    </div>
+                    <h3 id="modal-title" class="font-display text-2xl sm:text-3xl font-bold text-white"></h3>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" class="case-tab-btn is-active px-3 py-1.5 rounded-xl font-mono-tech text-xs" data-case-tab="context">01 Contexto &amp; Desafío</button>
+                    <button type="button" class="case-tab-btn px-3 py-1.5 rounded-xl font-mono-tech text-xs" data-case-tab="architecture">02 Arquitectura &amp; Stack</button>
+                    <button type="button" class="case-tab-btn px-3 py-1.5 rounded-xl font-mono-tech text-xs" data-case-tab="impact">03 Impacto de Negocio</button>
+                </div>
+
+                <div class="p-4 sm:p-5 rounded-2xl bg-[#040711] border border-white/10 text-sm text-slate-200 leading-relaxed min-h-[120px]">
+                    <p id="modal-tab-content"></p>
+                </div>
+
+                <div id="modal-tags" class="flex flex-wrap gap-2"></div>
+
+                <div class="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                    <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-sky-300 text-slate-950 font-bold text-xs sm:text-sm transition">
+                        <span id="modal-external-label">Ver Referencia Oficial</span> →
+                    </a>
+                    <button id="modal-dismiss-btn" type="button" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-medium text-xs sm:text-sm border border-white/10 transition">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js + Lenis + GSAP + ScrollTrigger CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>

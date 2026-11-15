@@ -1,5 +1,5 @@
 /* =================================================================
-   VARIABLES & BASE — OBSIDIAN LUXURY PALETTE
+   VARIABLES & BASE — OBSIDIAN EXECUTIVE COMMAND CENTER
 ================================================================== */
 :root {
     --bg-canvas: #04060c;
@@ -30,6 +30,52 @@ body {
 }
 
 /* =================================================================
+   BOOT SEQUENCE OVERLAY (WITH FAIL-SAFE FADE)
+================================================================== */
+#boot-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: radial-gradient(circle at 50% 45%, #091124 0%, #04060c 72%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.55s ease;
+    animation: bootFallbackFade 0.5s ease 1.9s forwards;
+}
+
+#boot-screen.boot-complete {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@keyframes bootFallbackFade {
+    to {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
+.boot-progress-track {
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.boot-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-sky), var(--accent-indigo), var(--accent-emerald));
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.7);
+    transition: width 0.1s linear;
+}
+
+/* =================================================================
    FILM GRAIN OVERLAY (STUDIO FINISH)
 ================================================================== */
 .film-grain {
@@ -43,12 +89,12 @@ body {
    DYNAMIC ISLAND FLOATING CAPSULE NAVBAR
 ================================================================== */
 .dynamic-island-nav {
-    background: rgba(8, 12, 24, 0.72);
+    background: rgba(8, 12, 24, 0.74);
     backdrop-filter: blur(22px) saturate(180%);
     -webkit-backdrop-filter: blur(22px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow:
-        0 20px 50px -12px rgba(0, 0, 0, 0.8),
+        0 20px 50px -12px rgba(0, 0, 0, 0.85),
         0 0 0 1px rgba(255, 255, 255, 0.04),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
@@ -98,10 +144,23 @@ body {
 }
 
 .mobile-capsule-menu.is-open {
-    max-height: 440px;
+    max-height: 460px;
     opacity: 1;
     transform: translateY(0) scale(1);
     pointer-events: auto;
+}
+
+/* =================================================================
+   EXECUTIVE TELEMETRY HUD BAR
+================================================================== */
+.hud-bar {
+    background: rgba(8, 12, 24, 0.78);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 14px 36px -10px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* =================================================================
@@ -123,7 +182,7 @@ body {
 }
 
 /* =================================================================
-   BENTO CARDS — LINEAR-STYLE DUAL SPOTLIGHT (SURFACE + BORDER)
+   BENTO & OS WINDOW CARDS — LINEAR DUAL SPOTLIGHT + TILING CHROME
 ================================================================== */
 .bento-card {
     --mouse-x: -500px;
@@ -176,8 +235,8 @@ body {
     padding: 1px;
     background: radial-gradient(
         320px circle at var(--mouse-x) var(--mouse-y),
-        rgba(56, 189, 248, 0.7),
-        rgba(129, 140, 248, 0.38) 45%,
+        rgba(56, 189, 248, 0.72),
+        rgba(129, 140, 248, 0.4) 45%,
         transparent 75%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -199,6 +258,57 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
+/* OS Window Titlebar */
+.os-window-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 1.1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.os-ctrl-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.os-ctrl-btn {
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.os-ctrl-btn:hover {
+    color: #ffffff;
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(56, 189, 248, 0.15);
+}
+
+.os-ctrl-btn.is-close:hover {
+    border-color: rgba(244, 63, 94, 0.5);
+    background: rgba(244, 63, 94, 0.18);
+    color: #fda4af;
+}
+
+.os-window.is-minimized .os-window-body {
+    display: none;
+}
+
 .bento-pill {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.04);
@@ -207,6 +317,73 @@ body {
 .section-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.25), rgba(129, 140, 248, 0.25), transparent);
+}
+
+/* =================================================================
+   TERMINAL "EXECUTIVE AI BRIEF" & CASE STUDY MODAL
+================================================================== */
+.terminal-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 1em;
+    background-color: var(--accent-sky);
+    vertical-align: -2px;
+    margin-left: 3px;
+    animation: terminalBlink 1s step-end infinite;
+}
+
+@keyframes terminalBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.prompt-chip {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #cbd5e1;
+    transition: all 0.2s ease;
+}
+
+.prompt-chip:hover,
+.prompt-chip.is-selected {
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(56, 189, 248, 0.14);
+    color: #ffffff;
+}
+
+#case-study-modal {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+#case-study-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+#case-study-modal .modal-panel {
+    transform: translateY(16px) scale(0.97);
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#case-study-modal.is-open .modal-panel {
+    transform: translateY(0) scale(1);
+}
+
+.case-tab-btn {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: #94a3b8;
+    transition: all 0.2s ease;
+}
+
+.case-tab-btn.is-active {
+    border-color: rgba(56, 189, 248, 0.45);
+    background: rgba(56, 189, 248, 0.14);
+    color: #ffffff;
 }
 
 /* =================================================================
@@ -239,6 +416,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    #boot-screen {
+        display: none;
+    }
     .marquee-track {
         animation: none;
     }
