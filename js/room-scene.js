@@ -245,7 +245,23 @@
 
         const wallMatBack = std(0xffffff, 0.92, 0.02, { map: wallTexture(7, 3) });
         const wallMatLeft = std(0xffffff, 0.92, 0.02, { map: wallTexture(6, 3) });
-        addMesh(new THREE.BoxGeometry(12.6, 5.2, 0.3), wallMatBack, [0.0, 2.45, -5.15], scene, { cast: false });
+        // Back wall segmented with aperture for panoramic window
+        const backZ = -5.15;
+        const backDepth = 0.3;
+        // Left section: from x = -6.3 to x = -1.6 (width 4.7)
+        addMesh(new THREE.BoxGeometry(4.7, 5.2, backDepth), wallMatBack, [-3.95, 2.45, backZ], scene, { cast: false });
+        // Right section: from x = 2.8 to x = 6.3 (width 3.5)
+        addMesh(new THREE.BoxGeometry(3.5, 5.2, backDepth), wallMatBack, [4.55, 2.45, backZ], scene, { cast: false });
+        // Top header: from x = -1.6 to x = 2.8 (width 4.4), y from 4.2 to 5.05 (height 0.85)
+        addMesh(new THREE.BoxGeometry(4.4, 0.85, backDepth), wallMatBack, [0.6, 4.625, backZ], scene, { cast: false });
+        // Bottom sill-wall: from x = -1.6 to x = 2.8 (width 4.4), y from -0.15 to 1.6 (height 1.75)
+        addMesh(new THREE.BoxGeometry(4.4, 1.75, backDepth), wallMatBack, [0.6, 0.725, backZ], scene, { cast: false });
+        // Window opening architectural jamb trim
+        const jambMat = std(0x111318, 0.5, 0.3);
+        addMesh(new THREE.BoxGeometry(4.4, 0.025, backDepth), jambMat, [0.6, 4.2, backZ]);
+        addMesh(new THREE.BoxGeometry(4.4, 0.025, backDepth), jambMat, [0.6, 1.6, backZ]);
+        addMesh(new THREE.BoxGeometry(0.025, 2.6, backDepth), jambMat, [-1.6, 2.9, backZ]);
+        addMesh(new THREE.BoxGeometry(0.025, 2.6, backDepth), jambMat, [2.8, 2.9, backZ]);
         addMesh(new THREE.BoxGeometry(0.3, 5.2, 10.3), wallMatLeft, [-6.15, 2.45, 0.15], scene, { cast: false });
 
         // Baseboards
@@ -275,99 +291,249 @@
         });
 
         /* ---------------------------------------------------------
-           WINDOW WITH SANTIAGO SUNSET SKYLINE & ANDES
+           SCENIC WINDOW WITH REAL ICONIC WORLD LANDSCAPES & 3D PARALLAX
         --------------------------------------------------------- */
-        const cityTex = canvasTexture(1024, 640, (ctx, w, h) => {
-            const sky = ctx.createLinearGradient(0, 0, 0, h);
-            sky.addColorStop(0, '#1e1b4b');
-            sky.addColorStop(0.3, '#5b21b6');
-            sky.addColorStop(0.55, '#e8590c');
-            sky.addColorStop(0.75, '#fdba74');
-            sky.addColorStop(1, '#fde68a');
-            ctx.fillStyle = sky;
-            ctx.fillRect(0, 0, w, h);
-
-            const sun = ctx.createRadialGradient(w * 0.64, h * 0.6, 8, w * 0.64, h * 0.6, 300);
-            sun.addColorStop(0, 'rgba(255,240,190,1)');
-            sun.addColorStop(0.15, 'rgba(255,210,140,0.8)');
-            sun.addColorStop(1, 'rgba(255,170,90,0)');
-            ctx.fillStyle = sun;
-            ctx.fillRect(0, 0, w, h);
-
-            // Andes ranges
-            const rand = seededRandom(42);
-            function range(baseY, amp, colTop, colBottom, peaks) {
-                const g = ctx.createLinearGradient(0, baseY - amp, 0, baseY + 40);
-                g.addColorStop(0, colTop);
-                g.addColorStop(0.35, colBottom);
-                g.addColorStop(1, colBottom);
-                ctx.fillStyle = g;
-                ctx.beginPath();
-                ctx.moveTo(0, h);
-                ctx.lineTo(0, baseY);
-                for (let i = 0; i <= peaks; i++) {
-                    const x = (i / peaks) * w;
-                    const y = baseY - amp * (0.35 + rand() * 0.65);
-                    ctx.lineTo(x - w / peaks / 2, baseY - amp * 0.2 * rand());
-                    ctx.lineTo(x, y);
-                }
-                ctx.lineTo(w, h);
-                ctx.closePath();
-                ctx.fill();
+        const SCENIC_LOCATIONS = [
+            {
+                id: 'patagonia',
+                name: 'Torres del Paine',
+                region: 'Patagonia · Chile',
+                icon: '🏔️',
+                desc: 'Cuernos del Paine y lagos glaciares',
+                image: 'images/landscape-patagonia.jpg',
+                sunColor: 0xdbeafe,
+                sunIntensity: 1.25,
+                hemiSky: 0x93c5fd,
+                hemiGround: 0x1e293b,
+                dustColor: 0xe0f2fe,
+                beamColor: 0xbfdbfe,
+                beamOpacity: 0.26,
+                floorGlowColor: 0x93c5fd,
+                floorGlowOpacity: 0.22
+            },
+            {
+                id: 'fuji',
+                name: 'Monte Fuji',
+                region: 'Lago Kawaguchi · Japón',
+                icon: '🗻',
+                desc: 'Amanecer sereno y reflejo en el lago',
+                image: 'images/landscape-fuji.jpg',
+                sunColor: 0xfecdd3,
+                sunIntensity: 1.15,
+                hemiSky: 0xf472b6,
+                hemiGround: 0x2e1065,
+                dustColor: 0xfda4af,
+                beamColor: 0xfecdd3,
+                beamOpacity: 0.24,
+                floorGlowColor: 0xf472b6,
+                floorGlowOpacity: 0.26
+            },
+            {
+                id: 'alps',
+                name: 'Alpes Suizos',
+                region: 'Matterhorn · Zermatt, Suiza',
+                icon: '⛷️',
+                desc: 'Cumbre piramidal y luz dorada alpina',
+                image: 'images/landscape-alps.jpg',
+                sunColor: 0xfef08a,
+                sunIntensity: 1.32,
+                hemiSky: 0x7dd3fc,
+                hemiGround: 0x1f2937,
+                dustColor: 0xfef9c3,
+                beamColor: 0xfef08a,
+                beamOpacity: 0.32,
+                floorGlowColor: 0xfde047,
+                floorGlowOpacity: 0.28
+            },
+            {
+                id: 'dolomites',
+                name: 'Dolomitas & Braies',
+                region: 'Tirol del Sur · Italia',
+                icon: '🌲',
+                desc: 'Bosques esmeralda y paredones calcáreos',
+                image: 'images/landscape-dolomites.jpg',
+                sunColor: 0xa7f3d0,
+                sunIntensity: 1.2,
+                hemiSky: 0x34d399,
+                hemiGround: 0x134e4a,
+                dustColor: 0xd1fae5,
+                beamColor: 0xa7f3d0,
+                beamOpacity: 0.25,
+                floorGlowColor: 0x6ee7b7,
+                floorGlowOpacity: 0.24
+            },
+            {
+                id: 'santorini',
+                name: 'Santorini & Caldera',
+                region: 'Mar Egeo · Grecia',
+                icon: '🏛️',
+                desc: 'Cúpulas blancas y atardecer mediterráneo',
+                image: 'images/landscape-santorini.jpg',
+                sunColor: 0xffedd5,
+                sunIntensity: 1.35,
+                hemiSky: 0x38bdf8,
+                hemiGround: 0x3b1c12,
+                dustColor: 0xfed7aa,
+                beamColor: 0xfde047,
+                beamOpacity: 0.35,
+                floorGlowColor: 0xfb923c,
+                floorGlowOpacity: 0.32
             }
-            range(h * 0.6, 170, '#efe3ff', '#6b4f8f', 9);
-            range(h * 0.66, 110, '#a58bc7', '#3b2d58', 12);
+        ];
 
-            // Skyline
-            function skyline(minH, maxH, color, windowAlpha, seed) {
-                const r = seededRandom(seed);
-                let x = -20;
-                while (x < w) {
-                    const bw = 46 + r() * 90;
-                    const bh = minH + r() * (maxH - minH);
-                    ctx.fillStyle = color;
-                    ctx.fillRect(x, h - bh, bw, bh);
-                    for (let wy = h - bh + 14; wy < h - 10; wy += 18) {
-                        for (let wx = x + 8; wx < x + bw - 10; wx += 14) {
-                            if (r() > 0.52) {
-                                ctx.fillStyle = `rgba(255,${190 + Math.floor(r() * 50)},120,${windowAlpha})`;
-                                ctx.fillRect(wx, wy, 6, 9);
-                            }
-                        }
-                    }
-                    x += bw + 3 + r() * 6;
-                }
-            }
-            skyline(90, 260, '#1b1630', 0.55, 3);
-            skyline(150, 420, '#0d0b18', 0.85, 11);
-
-            // Costanera-like tower silhouette
-            ctx.fillStyle = '#0a0913';
-            ctx.beginPath();
-            ctx.moveTo(w * 0.28, h);
-            ctx.lineTo(w * 0.29, h * 0.12);
-            ctx.lineTo(w * 0.305, h * 0.08);
-            ctx.lineTo(w * 0.32, h * 0.12);
-            ctx.lineTo(w * 0.33, h);
-            ctx.closePath();
-            ctx.fill();
+        const textureLoader = new THREE.TextureLoader();
+        const scenicTextures = SCENIC_LOCATIONS.map((loc) => {
+            const tex = textureLoader.load(loc.image);
+            tex.encoding = THREE.sRGBEncoding;
+            tex.anisotropy = Math.min(8, renderer ? renderer.capabilities.getMaxAnisotropy() : 8);
+            tex.minFilter = THREE.LinearMipmapLinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            tex.generateMipmaps = true;
+            return tex;
         });
 
         const winCenter = [0.6, 2.9, -4.99];
         const winW = 4.4;
         const winH = 2.6;
-        const cityMesh = addMesh(new THREE.PlaneGeometry(winW, winH), basic({ map: cityTex }), [winCenter[0], winCenter[1], -4.985], scene, {
-            cast: false,
-            receive: false
+
+        // Group positioned behind aperture for authentic geometric parallax (z = -5.8 vs window at z = -4.96)
+        const scenicGroup = new THREE.Group();
+        scenicGroup.position.set(winCenter[0], winCenter[1], -5.8);
+        scene.add(scenicGroup);
+
+        const scenicGeo = new THREE.PlaneGeometry(7.8, 4.6);
+        const scenicMatA = basic({
+            map: scenicTextures[0],
+            transparent: true,
+            opacity: 1.0,
+            depthWrite: false
         });
-        cityMesh.renderOrder = 1;
+        const scenicMeshA = new THREE.Mesh(scenicGeo, scenicMatA);
+        scenicMeshA.renderOrder = 1;
+        scenicGroup.add(scenicMeshA);
+
+        const scenicMatB = basic({
+            map: scenicTextures[1],
+            transparent: true,
+            opacity: 0.0,
+            depthWrite: false
+        });
+        const scenicMeshB = new THREE.Mesh(scenicGeo, scenicMatB);
+        scenicMeshB.position.z = 0.005;
+        scenicMeshB.renderOrder = 1;
+        scenicGroup.add(scenicMeshB);
+
+        // Volumetric Sunbeams Streaming Through Window Aperture
+        const beamCanvas = document.createElement('canvas');
+        beamCanvas.width = 256;
+        beamCanvas.height = 512;
+        const beamCtx = beamCanvas.getContext('2d');
+        const vGrad = beamCtx.createLinearGradient(0, 0, 0, 512);
+        vGrad.addColorStop(0, 'rgba(255,255,255,0.7)');
+        vGrad.addColorStop(0.2, 'rgba(255,255,255,0.48)');
+        vGrad.addColorStop(0.6, 'rgba(255,255,255,0.15)');
+        vGrad.addColorStop(0.92, 'rgba(255,255,255,0.02)');
+        vGrad.addColorStop(1, 'rgba(255,255,255,0)');
+        beamCtx.fillStyle = vGrad;
+        beamCtx.fillRect(0, 0, 256, 512);
+
+        const hGrad = beamCtx.createLinearGradient(0, 0, 256, 0);
+        hGrad.addColorStop(0, 'rgba(0,0,0,1)');
+        hGrad.addColorStop(0.18, 'rgba(0,0,0,0)');
+        hGrad.addColorStop(0.82, 'rgba(0,0,0,0)');
+        hGrad.addColorStop(1, 'rgba(0,0,0,1)');
+        beamCtx.globalCompositeOperation = 'destination-out';
+        beamCtx.fillStyle = hGrad;
+        beamCtx.fillRect(0, 0, 256, 512);
+        beamCtx.globalCompositeOperation = 'source-over';
+
+        const beamTex = new THREE.CanvasTexture(beamCanvas);
+        beamTex.encoding = THREE.sRGBEncoding;
+
+        const sunbeamMat = new THREE.MeshBasicMaterial({
+            map: beamTex,
+            color: SCENIC_LOCATIONS[0].beamColor,
+            transparent: true,
+            opacity: SCENIC_LOCATIONS[0].beamOpacity,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide
+        });
+
+        const sunbeamGroup = new THREE.Group();
+        sunbeamGroup.position.set(winCenter[0], winCenter[1] + 0.2, -4.95);
+
+        // Shaft 1: Primary wide beam
+        const beam1 = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 6.2), sunbeamMat);
+        beam1.position.set(0, -1.8, 2.3);
+        beam1.rotation.set(-Math.PI / 4, 0.08, -0.06);
+        sunbeamGroup.add(beam1);
+
+        // Shaft 2: Crossed secondary angled beam for volumetric body
+        const beam2Mat = sunbeamMat.clone();
+        beam2Mat.opacity = SCENIC_LOCATIONS[0].beamOpacity * 0.7;
+        const beam2 = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 5.8), beam2Mat);
+        beam2.position.set(0.2, -1.7, 2.2);
+        beam2.rotation.set(-Math.PI / 3.7, -0.15, 0.1);
+        sunbeamGroup.add(beam2);
+
+        // Shaft 3: Grazing ambient sheet
+        const beam3Mat = sunbeamMat.clone();
+        beam3Mat.opacity = SCENIC_LOCATIONS[0].beamOpacity * 0.55;
+        const beam3 = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 5.2), beam3Mat);
+        beam3.position.set(-0.2, -1.6, 2.0);
+        beam3.rotation.set(-Math.PI / 4.4, 0.18, -0.08);
+        sunbeamGroup.add(beam3);
+
+        scene.add(sunbeamGroup);
+
+        // Architectural Double-Pane Glass with Specular Sheen
         const glass = new THREE.Mesh(
             new THREE.PlaneGeometry(winW, winH),
-            new THREE.MeshStandardMaterial({ color: 0x9fb4ff, transparent: true, opacity: 0.07, roughness: 0.05, metalness: 0.9 })
+            new THREE.MeshStandardMaterial({
+                color: 0xe0f2fe,
+                transparent: true,
+                opacity: 0.12,
+                roughness: 0.05,
+                metalness: 0.95
+            })
         );
         glass.position.set(winCenter[0], winCenter[1], -4.96);
+        glass.userData.stationId = 'scenic';
+        hitMeshes.push(glass);
         scene.add(glass);
 
+        // Diagonal Glass Sheen highlight
+        const glassSheenTex = canvasTexture(512, 512, (ctx, w, h) => {
+            ctx.clearRect(0, 0, w, h);
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            grad.addColorStop(0.36, 'rgba(255, 255, 255, 0)');
+            grad.addColorStop(0.48, 'rgba(255, 255, 255, 0.14)');
+            grad.addColorStop(0.52, 'rgba(255, 255, 255, 0.22)');
+            grad.addColorStop(0.56, 'rgba(255, 255, 255, 0.06)');
+            grad.addColorStop(0.72, 'rgba(255, 255, 255, 0)');
+            grad.addColorStop(0.82, 'rgba(255, 255, 255, 0.12)');
+            grad.addColorStop(0.86, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+        });
+        const glassSheen = new THREE.Mesh(
+            new THREE.PlaneGeometry(winW, winH),
+            new THREE.MeshBasicMaterial({
+                map: glassSheenTex,
+                transparent: true,
+                opacity: 0.35,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            })
+        );
+        glassSheen.position.set(winCenter[0], winCenter[1], -4.958);
+        glassSheen.userData.stationId = 'scenic';
+        hitMeshes.push(glassSheen);
+        scene.add(glassSheen);
+
+        // Window Frame & Sill
         const frameMat = std(0x101116, 0.4, 0.5);
         const ft = 0.1;
         addMesh(new THREE.BoxGeometry(winW + ft * 2, ft, 0.14), frameMat, [winCenter[0], winCenter[1] + winH / 2, -4.95]);
@@ -377,17 +543,35 @@
         addMesh(new THREE.BoxGeometry(0.07, winH, 0.12), frameMat, [winCenter[0], winCenter[1], -4.95]);
         addMesh(new THREE.BoxGeometry(winW + 0.5, 0.08, 0.4), std(0x1b1c22, 0.5, 0.2), [winCenter[0], winCenter[1] - winH / 2 - 0.06, -4.82]);
 
-        // Warm sunset light spill on floor
-        glowPlane(5.6, 4.2, '255,150,70', 0.32, [1.2, 0.014, -2.6], [-Math.PI / 2, 0, 0.25]);
-        glowPlane(6.2, 3.6, '255,140,70', 0.18, [winCenter[0], winCenter[1], -4.97], [0, 0, 0], null, true);
+        // Interactive Plaque on Window Sill
+        const plaqueCanvas = document.createElement('canvas');
+        plaqueCanvas.width = 512;
+        plaqueCanvas.height = 140;
+        const plaqueTex = new THREE.CanvasTexture(plaqueCanvas);
+        plaqueTex.encoding = THREE.sRGBEncoding;
+
+        const plaqueMesh = addMesh(
+            new THREE.PlaneGeometry(0.86, 0.24),
+            basic({ map: plaqueTex }),
+            [winCenter[0] + 1.35, winCenter[1] - winH / 2 + 0.18, -4.83],
+            scene,
+            { station: 'scenic' }
+        );
+        plaqueMesh.userData.stationId = 'scenic';
+        hitMeshes.push(plaqueMesh);
+
+        // Floor Light Spill from Window
+        const windowFloorGlow = glowPlane(5.6, 4.2, '180,210,255', SCENIC_LOCATIONS[0].floorGlowOpacity, [1.2, 0.014, -2.6], [-Math.PI / 2, 0, 0.25]);
+        const windowApertureGlow = glowPlane(6.2, 3.6, '180,210,255', 0.14, [winCenter[0], winCenter[1], -4.97], [0, 0, 0], null, true);
 
         /* ---------------------------------------------------------
            LIGHTING
         --------------------------------------------------------- */
-        scene.add(new THREE.HemisphereLight(0x8fa3ff, 0x221a14, 0.55));
+        const hemiLight = new THREE.HemisphereLight(SCENIC_LOCATIONS[0].hemiSky, SCENIC_LOCATIONS[0].hemiGround, 0.58);
+        scene.add(hemiLight);
         scene.add(new THREE.AmbientLight(0xffffff, 0.12));
 
-        const sunLight = new THREE.DirectionalLight(0xffb27a, 1.15);
+        const sunLight = new THREE.DirectionalLight(SCENIC_LOCATIONS[0].sunColor, SCENIC_LOCATIONS[0].sunIntensity);
         sunLight.position.set(1.8, 5.2, -4.4);
         sunLight.target.position.set(-0.6, 0, 2.2);
         sunLight.castShadow = true;
@@ -406,6 +590,150 @@
         const fillLight = new THREE.DirectionalLight(0x9db4ff, 0.35);
         fillLight.position.set(8, 9, 8);
         scene.add(fillLight);
+
+        /* ---------------------------------------------------------
+           SCENIC LOCATION CONTROLLER & CROSS-FADE SYSTEM
+        --------------------------------------------------------- */
+        let currentScenicIdx = 0;
+        let targetScenicIdx = 0;
+        let crossFadeProg = 1.0;
+        let isCrossFading = false;
+        let autoTourEnabled = false;
+        let lastAutoTourTime = 0;
+        let dustMesh = null; // Bound when dust motes are created
+
+        const colorLerpA = new THREE.Color();
+        const colorLerpB = new THREE.Color();
+
+        function redrawPlaque() {
+            const loc = SCENIC_LOCATIONS[targetScenicIdx !== undefined && isCrossFading ? targetScenicIdx : currentScenicIdx];
+            const w = 512, h = 140;
+            const ctx = plaqueCanvas.getContext('2d');
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.fillStyle = 'rgba(10, 12, 18, 0.92)';
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(3, 3, w - 6, h - 6);
+
+            ctx.fillStyle = '#f472b6';
+            ctx.fillRect(16, 20, 5, h - 40);
+
+            ctx.font = '600 20px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('✦ VISTA PANORÁMICA REAL · 3D', 32, 42);
+
+            ctx.font = '700 28px "Inter", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(`${loc.icon} ${loc.name}`, 32, 80);
+
+            ctx.font = '500 17px "Inter", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText(`${loc.region}  [ Clic para cambiar ]`, 32, 112);
+
+            plaqueTex.needsUpdate = true;
+        }
+
+        function updateScenicUI() {
+            const activeIdx = targetScenicIdx !== undefined && isCrossFading ? targetScenicIdx : currentScenicIdx;
+            const loc = SCENIC_LOCATIONS[activeIdx];
+            const iconEl = document.getElementById('scenic-icon');
+            const titleEl = document.getElementById('scenic-title');
+            const badgeEl = document.getElementById('scenic-badge');
+            const tourIconEl = document.getElementById('scenic-tour-icon');
+            const tourBtn = document.getElementById('scenic-tour-btn');
+
+            if (iconEl) iconEl.textContent = loc.icon;
+            if (titleEl) titleEl.textContent = loc.name;
+            if (badgeEl) badgeEl.textContent = `${activeIdx + 1}/${SCENIC_LOCATIONS.length}`;
+            if (tourIconEl) {
+                tourIconEl.textContent = autoTourEnabled ? '●' : '↻';
+                tourIconEl.classList.toggle('text-emerald-400', autoTourEnabled);
+            }
+            if (tourBtn) {
+                tourBtn.classList.toggle('bg-pink-500/20', autoTourEnabled);
+                tourBtn.classList.toggle('text-pink-300', autoTourEnabled);
+            }
+        }
+
+        function setScenicLocation(idx, immediate = false) {
+            const nextIdx = ((idx % SCENIC_LOCATIONS.length) + SCENIC_LOCATIONS.length) % SCENIC_LOCATIONS.length;
+            if (nextIdx === currentScenicIdx && !immediate && !isCrossFading) return;
+
+            if (immediate) {
+                currentScenicIdx = nextIdx;
+                targetScenicIdx = nextIdx;
+                isCrossFading = false;
+                crossFadeProg = 1.0;
+                scenicMeshA.material.map = scenicTextures[nextIdx];
+                scenicMeshA.material.opacity = 1.0;
+                scenicMeshB.material.opacity = 0.0;
+                const loc = SCENIC_LOCATIONS[nextIdx];
+                sunLight.color.setHex(loc.sunColor);
+                sunLight.intensity = loc.sunIntensity;
+                hemiLight.color.setHex(loc.hemiSky);
+                hemiLight.groundColor.setHex(loc.hemiGround);
+                if (dustMesh) dustMesh.material.color.setHex(loc.dustColor);
+                sunbeamMat.color.setHex(loc.beamColor);
+                sunbeamMat.opacity = loc.beamOpacity;
+                windowFloorGlow.material.color.setHex(loc.floorGlowColor);
+                windowFloorGlow.material.opacity = loc.floorGlowOpacity;
+                redrawPlaque();
+                updateScenicUI();
+                return;
+            }
+
+            if (isCrossFading) {
+                currentScenicIdx = targetScenicIdx;
+                scenicMeshA.material.map = scenicTextures[currentScenicIdx];
+                scenicMeshA.material.opacity = 1.0;
+            }
+
+            targetScenicIdx = nextIdx;
+            scenicMeshB.material.map = scenicTextures[targetScenicIdx];
+            scenicMeshB.material.opacity = 0.0;
+            crossFadeProg = 0.0;
+            isCrossFading = true;
+            redrawPlaque();
+            updateScenicUI();
+        }
+
+        // Initialize plaque and UI
+        redrawPlaque();
+        updateScenicUI();
+
+        // Wire DOM HUD buttons
+        const prevBtn = document.getElementById('scenic-prev-btn');
+        const nextBtn = document.getElementById('scenic-next-btn');
+        const labelBox = document.getElementById('scenic-label-container');
+        const tourBtn = document.getElementById('scenic-tour-btn');
+
+        if (prevBtn) prevBtn.addEventListener('click', (ev) => { ev.stopPropagation(); setScenicLocation(currentScenicIdx - 1); });
+        if (nextBtn) nextBtn.addEventListener('click', (ev) => { ev.stopPropagation(); setScenicLocation(currentScenicIdx + 1); });
+        if (labelBox) labelBox.addEventListener('click', (ev) => { ev.stopPropagation(); setScenicLocation(currentScenicIdx + 1); });
+        if (tourBtn) tourBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            autoTourEnabled = !autoTourEnabled;
+            updateScenicUI();
+        });
+
+        // Global Scenic API
+        window.eduScenic = {
+            getLocations: () => SCENIC_LOCATIONS,
+            getCurrentIndex: () => currentScenicIdx,
+            getCurrentLocation: () => SCENIC_LOCATIONS[currentScenicIdx],
+            set: (i, imm) => setScenicLocation(i, imm),
+            next: () => setScenicLocation(currentScenicIdx + 1),
+            prev: () => setScenicLocation(currentScenicIdx - 1),
+            toggleAutoTour: () => {
+                autoTourEnabled = !autoTourEnabled;
+                updateScenicUI();
+                return autoTourEnabled;
+            },
+            isAutoTour: () => autoTourEnabled
+        };
 
         /* ---------------------------------------------------------
            EXECUTIVE DESK WITH LED STRIP
@@ -1765,7 +2093,7 @@
         const dust = new THREE.Points(
             dustGeo,
             new THREE.PointsMaterial({
-                color: 0xffd7a8,
+                color: SCENIC_LOCATIONS[0].dustColor,
                 size: 0.035,
                 transparent: true,
                 opacity: 0.55,
@@ -1774,6 +2102,7 @@
             })
         );
         scene.add(dust);
+        dustMesh = dust;
 
         /* ---------------------------------------------------------
            HOTSPOTS (DIAMOND MARKERS) & CAMERA TARGETS
@@ -1979,6 +2308,10 @@
                 }
                 const id = pickStation(e.clientX, e.clientY);
                 if (id) {
+                    if (id === 'scenic') {
+                        if (window.eduScenic) window.eduScenic.next();
+                        return;
+                    }
                     api.focusStation(id);
                     if (id === 'music' && window.eduSpotifyPlayer) {
                         window.eduSpotifyPlayer.expand();
@@ -2153,6 +2486,77 @@
 
                 // LED breathing
                 deskLight.intensity = 1.15 + Math.sin(t * 1.4) * 0.12;
+            }
+
+            // Scenic window crossfade interpolation
+            if (isCrossFading) {
+                crossFadeProg += dt * 0.85;
+                const p = Math.min(1.0, crossFadeProg);
+                const ease = p * p * (3 - 2 * p); // smoothstep
+
+                scenicMeshA.material.opacity = 1.0 - ease;
+                scenicMeshB.material.opacity = ease;
+
+                const curr = SCENIC_LOCATIONS[currentScenicIdx];
+                const next = SCENIC_LOCATIONS[targetScenicIdx];
+
+                colorLerpA.setHex(curr.sunColor);
+                colorLerpB.setHex(next.sunColor);
+                sunLight.color.copy(colorLerpA).lerp(colorLerpB, ease);
+                sunLight.intensity = THREE.MathUtils.lerp(curr.sunIntensity, next.sunIntensity, ease);
+
+                colorLerpA.setHex(curr.hemiSky);
+                colorLerpB.setHex(next.hemiSky);
+                hemiLight.color.copy(colorLerpA).lerp(colorLerpB, ease);
+
+                colorLerpA.setHex(curr.hemiGround);
+                colorLerpB.setHex(next.hemiGround);
+                hemiLight.groundColor.copy(colorLerpA).lerp(colorLerpB, ease);
+
+                if (dustMesh) {
+                    colorLerpA.setHex(curr.dustColor);
+                    colorLerpB.setHex(next.dustColor);
+                    dustMesh.material.color.copy(colorLerpA).lerp(colorLerpB, ease);
+                }
+
+                colorLerpA.setHex(curr.beamColor);
+                colorLerpB.setHex(next.beamColor);
+                sunbeamMat.color.copy(colorLerpA).lerp(colorLerpB, ease);
+
+                colorLerpA.setHex(curr.floorGlowColor);
+                colorLerpB.setHex(next.floorGlowColor);
+                windowFloorGlow.material.color.copy(colorLerpA).lerp(colorLerpB, ease);
+                windowFloorGlow.material.opacity = THREE.MathUtils.lerp(curr.floorGlowOpacity, next.floorGlowOpacity, ease);
+
+                if (crossFadeProg >= 1.0) {
+                    crossFadeProg = 1.0;
+                    isCrossFading = false;
+                    currentScenicIdx = targetScenicIdx;
+                    scenicMeshA.material.map = scenicTextures[currentScenicIdx];
+                    scenicMeshA.material.opacity = 1.0;
+                    scenicMeshB.material.opacity = 0.0;
+                }
+            }
+
+            // Living micro wind drift & optical 3D perspective parallax
+            const windX = Math.sin(t * 0.28) * 0.038;
+            const windY = Math.cos(t * 0.19) * 0.022;
+            const camRelX = (camera.position.x - 0.6) * 0.045;
+            const camRelY = (camera.position.y - 2.9) * 0.038;
+            scenicGroup.position.set(0.6 + camRelX + windX, 2.9 + camRelY + windY, -5.8);
+
+            // Volumetric sunbeam shaft pulse
+            const currLoc = SCENIC_LOCATIONS[currentScenicIdx];
+            const baseOp = currLoc.beamOpacity;
+            const beamPulse = 0.9 + Math.sin(t * 1.5) * 0.12;
+            sunbeamMat.opacity = baseOp * beamPulse;
+
+            // Auto-tour timer check
+            if (autoTourEnabled && !isCrossFading) {
+                if (t - lastAutoTourTime > 14) {
+                    lastAutoTourTime = t;
+                    setScenicLocation(currentScenicIdx + 1);
+                }
             }
 
             renderer.render(scene, camera);

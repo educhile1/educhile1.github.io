@@ -105,11 +105,28 @@
             </div>
         </div>
 
+        <!-- Scenic View Switcher HUD -->
+        <div id="stage-scenic-pill" class="pointer-events-auto fixed top-[4.6rem] right-4 sm:right-6 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0b0a14]/85 hover:bg-[#121124] text-slate-200 border border-white/15 backdrop-blur-xl shadow-xl transition z-20 select-none">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" aria-hidden="true"></span>
+            <button id="scenic-prev-btn" type="button" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-white/10 hover:text-white transition text-xs font-bold text-slate-300" title="Lugar anterior">‹</button>
+            <div id="scenic-label-container" class="flex items-center gap-1.5 cursor-pointer px-1 py-0.5 rounded hover:bg-white/5 transition" title="Clic para alternar destino">
+                <span id="scenic-icon" class="text-xs">🏔️</span>
+                <span id="scenic-title" class="font-mono-tech text-[11px] font-semibold tracking-wide text-white">Torres del Paine</span>
+                <span id="scenic-badge" class="font-mono-tech text-[9px] text-pink-300 font-mono px-1.5 py-0.2 rounded bg-pink-500/20 border border-pink-400/30">1/5</span>
+            </div>
+            <button id="scenic-next-btn" type="button" class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-white/10 hover:text-white transition text-xs font-bold text-slate-300" title="Siguiente lugar">›</button>
+            <span class="w-px h-3.5 bg-white/20 mx-0.5"></span>
+            <button id="scenic-tour-btn" type="button" class="px-2 py-0.5 rounded-full text-[10px] font-mono text-slate-300 hover:text-pink-300 hover:bg-pink-500/10 border border-transparent hover:border-pink-500/30 transition flex items-center gap-1" title="Activar / desactivar tour panorámico automático">
+                <span id="scenic-tour-icon">↻</span>
+                <span class="hidden sm:inline">Auto</span>
+            </button>
+        </div>
+
         <!-- Controls hint (top-right, overview only) -->
-        <div id="stage-controls-hint" class="pointer-events-none fixed top-[4.6rem] right-4 sm:right-6 transition-opacity duration-300">
+        <div id="stage-controls-hint" class="pointer-events-none fixed top-[7.2rem] right-4 sm:right-6 transition-opacity duration-300">
             <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0b0a14]/70 backdrop-blur-md border border-white/10 font-mono-tech text-[10px] text-slate-300">
                 <span class="text-pink-300" aria-hidden="true">◆</span>
-                <span>Arrastra para explorar · Rueda para zoom · Clic en ◆ para abrir</span>
+                <span>Arrastra para explorar · Clic en la ventana para cambiar vista</span>
             </div>
         </div>
 
