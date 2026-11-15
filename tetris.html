@@ -10,19 +10,20 @@
     <div id="game-wrapper">
         <!-- Top Nav Bar -->
         <header class="top-nav">
-            <a href="index.html#lab" class="back-link">
+            <a href="index.html#interactive" class="back-link">
                 <span>←</span> Volver al Portafolio
             </a>
             <h1 class="arcade-title">EDU TETRIS ARCADE</h1>
-            <div style="width: 140px; text-align: right;">
-                <span id="quick-mute" style="cursor: pointer; font-size: 1.1rem; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">🔊</span>
+            <div class="nav-right-actions">
+                <button id="quick-pause" type="button" class="nav-icon-btn" title="Pausar / Reanudar (P)" aria-label="Pausar juego">⏸</button>
+                <button id="quick-mute" type="button" class="nav-icon-btn" title="Silenciar / Activar sonido" aria-label="Silenciar sonido">🔊</button>
             </div>
         </header>
 
         <!-- Main Game Area -->
         <main class="game-container">
-            <!-- Left Sidebar (Score & Hold) -->
-            <aside class="sidebar">
+            <!-- Left Sidebar (Score, Combo & Hold) -->
+            <aside class="sidebar sidebar-left">
                 <div class="sidebar-box">
                     <h2>Récord</h2>
                     <p id="high-score" class="metric high-metric">0</p>
@@ -30,6 +31,10 @@
                 <div class="sidebar-box">
                     <h2>Puntuación</h2>
                     <p id="score" class="metric score-metric">0</p>
+                </div>
+                <div class="sidebar-box">
+                    <h2>Combo</h2>
+                    <p id="combo" class="metric combo-metric">—</p>
                 </div>
                 <div class="sidebar-box">
                     <h2>Guardada (C)</h2>
@@ -44,7 +49,7 @@
             </div>
 
             <!-- Right Sidebar (Level, Lines, Next & Audio) -->
-            <aside class="sidebar">
+            <aside class="sidebar sidebar-right">
                 <div class="sidebar-box">
                     <h2>Nivel</h2>
                     <p id="level" class="metric level-metric">1</p>
@@ -53,22 +58,22 @@
                     <h2>Líneas</h2>
                     <p id="lines" class="metric lines-metric">0</p>
                 </div>
-                <div class="sidebar-box">
-                    <h2>Siguiente</h2>
+                <div class="sidebar-box next-box">
+                    <h2>Siguientes</h2>
                     <div id="next-pieces"></div>
                 </div>
                 <div class="sidebar-box audio-box">
-                    <h2>Banda Sonora</h2>
+                    <h2>Audio &amp; Música</h2>
                     <div class="audio-controls">
-                        <button id="mute-btn" title="Silenciar / Activar sonido">🔊</button>
-                        <button id="vol-down-btn" title="Bajar volumen">-</button>
+                        <button id="mute-btn" type="button" title="Silenciar / Activar sonido">🔊</button>
+                        <button id="vol-down-btn" type="button" title="Bajar volumen">-</button>
                         <span id="vol-display">5</span>
-                        <button id="vol-up-btn" title="Subir volumen">+</button>
+                        <button id="vol-up-btn" type="button" title="Subir volumen">+</button>
                     </div>
                     <div class="music-controls">
-                        <button class="music-track-btn active" data-track="0" title="Cruzando Cielos">Track 1</button>
-                        <button class="music-track-btn" data-track="1" title="Opa Amor">Track 2</button>
-                        <button class="music-track-btn" data-track="2" title="Together">Track 3</button>
+                        <button type="button" class="music-track-btn active" data-track="0" title="Cruzando Cielos">Track 1</button>
+                        <button type="button" class="music-track-btn" data-track="1" title="Opa Amor">Track 2</button>
+                        <button type="button" class="music-track-btn" data-track="2" title="Together">Track 3</button>
                     </div>
                 </div>
             </aside>
@@ -93,7 +98,7 @@
     <div id="start-screen" class="overlay">
         <div class="overlay-content">
             <h2>EDU TETRIS</h2>
-            <p>Arcade Edition con Audio &amp; Partículas</p>
+            <p>Pro Arcade Edition · Crystal FX &amp; Audio Multicapa</p>
             <div class="controls-info">
                 <h3>CONTROLES DE TECLADO</h3>
                 <p>Mover <span>← → / A D</span></p>
@@ -104,7 +109,7 @@
                 <p>Guardar Pieza <span>C / Shift</span></p>
                 <p>Pausa <span>P / Esc</span></p>
             </div>
-            <button id="start-btn" class="cta-btn">¡INICIAR PARTIDA!</button>
+            <button id="start-btn" type="button" class="cta-btn">¡INICIAR PARTIDA!</button>
         </div>
     </div>
 
@@ -112,7 +117,7 @@
         <div class="overlay-content">
             <h2>PAUSA</h2>
             <p>Partida pausada temporalmente</p>
-            <button id="resume-btn" class="cta-btn">REANUDAR</button>
+            <button id="resume-btn" type="button" class="cta-btn">REANUDAR</button>
         </div>
     </div>
 
@@ -121,7 +126,7 @@
             <h2>FIN DEL JUEGO</h2>
             <p>Puntuación Final: <strong id="final-score" style="color: var(--neon-green); font-size: 1.6rem;">0</strong></p>
             <p id="high-score-msg" style="color: var(--neon-amber); font-size: 1rem; display: none;">🏆 ¡Nuevo Récord Personal!</p>
-            <button id="play-again-btn" class="cta-btn">JUGAR DE NUEVO</button>
+            <button id="play-again-btn" type="button" class="cta-btn">JUGAR DE NUEVO</button>
         </div>
     </div>
 
