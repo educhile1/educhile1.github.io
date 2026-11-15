@@ -1,132 +1,88 @@
 /* =================================================================
-    IMPORTS
+   IMPORTS — EDITORIAL TECH TYPOGRAPHY
 ================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 /* =================================================================
-    VARIABLES
+   VARIABLES & BASE
 ================================================================== */
 :root {
-    --primary: #4f46e5;
-    --secondary: #10b981;
+    --bg-canvas: #060913;
+    --bg-card: rgba(13, 18, 34, 0.74);
+    --border-subtle: rgba(255, 255, 255, 0.09);
+    --border-accent: rgba(56, 189, 248, 0.38);
+    --accent-cyan: #38bdf8;
+    --accent-indigo: #818cf8;
+    --accent-emerald: #34d399;
 }
 
-/* =================================================================
-    GENERAL STYLES
-================================================================== */
-body {
-    font-family: 'Poppins', sans-serif;
+html {
     scroll-behavior: smooth;
+    background-color: var(--bg-canvas);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-canvas);
+    color: #f1f5f9;
+}
+
+.font-display {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono-tech {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
 /* =================================================================
-    UTILITY CLASSES
+   HIGH-CONTRAST TECH BACKGROUND & BENTO CARDS
 ================================================================== */
+.bento-grid-bg {
+    background-image:
+        linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 15%, #000 50%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 15%, #000 50%, transparent 100%);
+}
+
 .gradient-text {
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    background: linear-gradient(120deg, #ffffff 10%, #38bdf8 55%, #818cf8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
-/* =================================================================
-    COMPONENT STYLES
-================================================================== */
-.project-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+.bento-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+        0 20px 45px -20px rgba(0, 0, 0, 0.75),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
 }
 
-.timeline-item:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    left: 7px;
-    top: 22px;
-    height: calc(100% + 12px);
-    width: 2px;
-    background: #e2e8f0;
+.bento-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-accent);
+    box-shadow:
+        0 24px 55px -20px rgba(0, 0, 0, 0.85),
+        0 0 28px -10px rgba(56, 189, 248, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-.dark .timeline-item:not(:last-child)::after {
-    background: #27272a;
+.bento-pill {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
 }
 
-/* =================================================================
-    MUSIC PLAYER MODAL & SCOPED PLAYER STYLES
-================================================================== */
-.music-player-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(2, 6, 23, 0.8);
-    backdrop-filter: blur(6px);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-}
-
-.music-player-dialog {
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 1rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
-}
-
-.body-no-scroll {
-    overflow: hidden;
-}
-
-.close-btn {
-    position: absolute;
-    top: 0.85rem;
-    right: 0.85rem;
-    z-index: 10;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 9999px;
-    background: rgba(15, 23, 42, 0.75);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    font-size: 1.4rem;
-    line-height: 1;
-    color: #ffffff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s, transform 0.2s;
-}
-
-.close-btn:hover {
-    background: rgba(239, 68, 68, 0.9);
-    transform: scale(1.05);
-}
-
-#music-player-root .album-cover {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease;
-}
-
-#music-player-root .album-cover:hover {
-    transform: scale(1.02);
-}
-
-#music-player-root .song-item:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    cursor: pointer;
-}
-
-#music-player-root .song-item.active {
-    background-color: rgba(99, 102, 241, 0.25);
-    border-left: 3px solid #6366f1;
-}
-
-#music-player-root #shuffle-btn.active,
-#music-player-root #repeat-btn.active,
-#music-player-root #shuffle-btn-desktop.active,
-#music-player-root #repeat-btn-desktop.active {
-    color: #a78bfa;
+/* Subtle section divider glow */
+.section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.28), rgba(129, 140, 248, 0.28), transparent);
 }
