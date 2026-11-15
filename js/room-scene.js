@@ -484,7 +484,42 @@
         addMesh(new THREE.BoxGeometry(0.11, 0.035, 0.17), std(0xd9dbe1, 0.45), [1.05, 1.068, 0.32], desk);
         addMesh(new THREE.BoxGeometry(0.4, 0.02, 0.28), std(0x1e1f26, 0.8), [-1.3, 1.06, 0.45], desk, { rot: [0, 0.2, 0] });
 
-        // Phone → CONTACTO (Nothing-OS Dark Flagship Edition)
+        // Phone → CONTACTO (Nothing-OS Dark Flagship Edition - Realistic High-End Unibody)
+        function createRoundedRectShape(w, h, r) {
+            const shape = new THREE.Shape();
+            const x0 = -w / 2;
+            const y0 = -h / 2;
+            const radius = Math.min(r, w / 2, h / 2);
+
+            shape.moveTo(x0 + radius, y0);
+            shape.lineTo(x0 + w - radius, y0);
+            shape.absarc(x0 + w - radius, y0 + radius, radius, -Math.PI / 2, 0, false);
+            shape.lineTo(x0 + w, y0 + h - radius);
+            shape.absarc(x0 + w - radius, y0 + h - radius, radius, 0, Math.PI / 2, false);
+            shape.lineTo(x0 + radius, y0 + h);
+            shape.absarc(x0 + radius, y0 + h - radius, radius, Math.PI / 2, Math.PI, false);
+            shape.lineTo(x0, y0 + radius);
+            shape.absarc(x0 + radius, y0 + radius, radius, Math.PI, Math.PI * 1.5, false);
+
+            return shape;
+        }
+
+        function normalizeShapeUVs(geom) {
+            geom.computeBoundingBox();
+            const bb = geom.boundingBox;
+            const dx = Math.max(0.0001, bb.max.x - bb.min.x);
+            const dy = Math.max(0.0001, bb.max.y - bb.min.y);
+            const uvAttr = geom.attributes.uv;
+            const posAttr = geom.attributes.position;
+            if (!uvAttr || !posAttr) return;
+            for (let i = 0; i < posAttr.count; i++) {
+                const u = (posAttr.getX(i) - bb.min.x) / dx;
+                const v = (posAttr.getY(i) - bb.min.y) / dy;
+                uvAttr.setXY(i, u, v);
+            }
+            uvAttr.needsUpdate = true;
+        }
+
         const BITMAPS_5X7 = {
             '0': [1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1],
             '1': [0,0,1,0,0, 0,1,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,1,1,1,0],
@@ -498,22 +533,27 @@
             '9': [1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 1,1,1,1,1]
         };
 
-        const phoneTex = canvasTexture(512, 1024, (ctx, w, h) => {
+        const phoneTex = canvasTexture(768, 1536, (ctx, w, h) => {
+            // Clip to rounded display corners
+            ctx.save();
+            roundRect(ctx, 0, 0, w, h, 68);
+            ctx.clip();
+
             // Dark obsidian screen background
             ctx.fillStyle = '#080a12';
             ctx.fillRect(0, 0, w, h);
 
             // Subtle dot-matrix pattern
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-            for (let x = 16; x < w; x += 22) {
-                for (let y = 16; y < h; y += 22) {
-                    ctx.fillRect(x, y, 2, 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.055)';
+            for (let x = 24; x < w; x += 32) {
+                for (let y = 24; y < h; y += 32) {
+                    ctx.fillRect(x, y, 2.5, 2.5);
                 }
             }
 
             // Top Status Bar
-            ctx.font = '600 22px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '600 24px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#e2e8f0';
             let timeStr = '18:00';
             try {
                 timeStr = new Intl.DateTimeFormat('es-CL', {
@@ -525,29 +565,30 @@
             } catch {
                 timeStr = '18:00';
             }
-            ctx.fillText(timeStr, 34, 46);
+            ctx.fillText(timeStr, 48, 56);
 
-            // Hole-punch front camera
-            ctx.fillStyle = '#030408';
-            ctx.beginPath();
-            ctx.arc(w / 2, 40, 10, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // Status bar icons (cellular, wifi, battery)
+            // Cellular signal bars
             ctx.fillStyle = '#cbd5e1';
             for (let b = 0; b < 4; b++) {
-                ctx.fillRect(390 + b * 6, 44 - (b + 1) * 4, 4, (b + 1) * 4);
+                ctx.fillRect(592 + b * 9, 54 - (b + 1) * 6, 6, (b + 1) * 6);
             }
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(436, 31, 32, 16);
-            ctx.fillRect(440, 35, 22, 8);
-            ctx.fillRect(468, 35, 3, 8);
+            // 5G icon
+            ctx.font = '700 18px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('5G', 638, 54);
 
-            // Pixel Dot-Matrix Clock
+            // Battery icon
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            roundRect(ctx, 672, 36, 44, 22, 5);
+            ctx.stroke();
+            ctx.fillStyle = '#34d399';
+            roundRect(ctx, 676, 40, 30, 14, 3);
+            ctx.fill();
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(716, 42, 4, 10);
+
+            // Pixel Dot-Matrix Clock (Agrandado & High Contrast Glow)
             const digits = [
                 timeStr.charAt(0) || '0',
                 timeStr.charAt(1) || '0',
@@ -555,22 +596,32 @@
                 timeStr.charAt(4) || '0'
             ];
 
-            const dotSize = 7.5;
-            const dotGap = 3.5;
+            const dotSize = 12.5;
+            const dotGap = 5.5;
             const digitW = 5 * (dotSize + dotGap) - dotGap;
-            const colonW = 16;
-            const digitSpacing = 16;
+            const colonW = 24;
+            const digitSpacing = 22;
             const totalClockW = digitW * 4 + colonW + digitSpacing * 2;
             const startClockX = (w - totalClockW) / 2;
-            const clockY = 88;
+            const clockY = 104;
 
             function drawPixelDigit(char, px, py) {
                 const pat = BITMAPS_5X7[char] || BITMAPS_5X7['0'];
                 for (let r = 0; r < 7; r++) {
                     for (let c = 0; c < 5; c++) {
                         const isLit = pat[r * 5 + c] === 1;
-                        ctx.fillStyle = isLit ? '#ffffff' : 'rgba(255, 255, 255, 0.05)';
-                        ctx.fillRect(px + c * (dotSize + dotGap), py + r * (dotSize + dotGap), dotSize, dotSize);
+                        if (isLit) {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+                            ctx.shadowBlur = 10;
+                            roundRect(ctx, px + c * (dotSize + dotGap), py + r * (dotSize + dotGap), dotSize, dotSize, 2.5);
+                            ctx.fill();
+                            ctx.shadowBlur = 0;
+                        } else {
+                            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+                            roundRect(ctx, px + c * (dotSize + dotGap), py + r * (dotSize + dotGap), dotSize, dotSize, 2.5);
+                            ctx.fill();
+                        }
                     }
                 }
             }
@@ -578,11 +629,16 @@
             drawPixelDigit(digits[0], startClockX, clockY);
             drawPixelDigit(digits[1], startClockX + digitW + digitSpacing, clockY);
 
-            // Colon
+            // Glowing Colon
             const colonX = startClockX + (digitW + digitSpacing) * 2;
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(colonX + 4, clockY + 18, dotSize, dotSize);
-            ctx.fillRect(colonX + 4, clockY + 44, dotSize, dotSize);
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+            ctx.shadowBlur = 10;
+            roundRect(ctx, colonX + 6, clockY + 28, dotSize, dotSize, 2.5);
+            ctx.fill();
+            roundRect(ctx, colonX + 6, clockY + 74, dotSize, dotSize, 2.5);
+            ctx.fill();
+            ctx.shadowBlur = 0;
 
             drawPixelDigit(digits[2], colonX + colonW, clockY);
             drawPixelDigit(digits[3], colonX + colonW + digitW + digitSpacing, clockY);
@@ -590,171 +646,270 @@
             // Subtitle: ● CLT · SANTIAGO
             ctx.fillStyle = '#f472b6';
             ctx.beginPath();
-            ctx.arc(w / 2 - 80, 196, 4.5, 0, Math.PI * 2);
+            ctx.arc(w / 2 - 105, 260, 6, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.font = '600 18px "JetBrains Mono", monospace';
+            ctx.font = '700 22px "JetBrains Mono", monospace';
             ctx.fillStyle = '#94a3b8';
             ctx.textAlign = 'center';
-            ctx.fillText('CLT · SANTIAGO', w / 2 + 10, 202);
+            ctx.fillText('CLT · SANTIAGO', w / 2 + 10, 267);
             ctx.textAlign = 'left';
 
             // Identity Header (Nothing OS Tech Style)
+            ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('Eduardo Cayún M.', 48, 334);
+
+            ctx.font = '600 21px "Inter", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('MBA & Líder TI · Consultoría B2B & Cloud', 48, 372);
+
+            // Widget 1: Direct Email / Contact Card (Agrandado & Frosted Glass)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            roundRect(ctx, 48, 416, w - 96, 168, 28);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.font = '600 18px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('✉  CONTACTO DIRECTO', 76, 458);
+
+            // Emerald status badge
+            ctx.fillStyle = '#34d399';
+            ctx.beginPath();
+            ctx.arc(w - 76, 454, 5.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = '700 15px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#34d399';
+            ctx.textAlign = 'right';
+            ctx.fillText('DISPONIBLE', w - 90, 460);
+            ctx.textAlign = 'left';
+
+            ctx.font = '700 29px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('contacto@eduardocayun.com', 76, 508);
+
+            ctx.font = '500 18px "Inter", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('Liderazgo Estratégico · Ciberseguridad · IA', 76, 546);
+
+            // Widget 2: Split Row - GitHub & LinkedIn Widgets (Agrandados)
+            const colW = (w - 96 - 24) / 2;
+
+            // GitHub Card
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            roundRect(ctx, 48, 612, colW, 196, 26);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.font = '700 20px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#a855f7';
+            ctx.fillText('</>', 74, 654);
+
+            ctx.font = '600 17px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('GITHUB', 116, 654);
+
             ctx.font = '700 28px "JetBrains Mono", monospace';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('Eduardo Cayún M.', 36, 260);
+            ctx.fillText('@educhile1', 74, 714);
 
             ctx.font = '500 17px "Inter", sans-serif';
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText('MBA & Líder TI · Consultoría B2B', 36, 288);
-
-            // Widget 1: Direct Email / Contact Card
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
-            ctx.lineWidth = 1;
-            roundRect(ctx, 32, 318, w - 64, 88, 20);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.font = '600 14px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#64748b';
-            ctx.fillText('✉  contacto directo', 52, 348);
-
-            ctx.font = '700 20px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#f1f5f9';
-            ctx.fillText('contacto@eduardocayun.com', 52, 382);
-
-            ctx.fillStyle = '#34d399';
-            ctx.beginPath();
-            ctx.arc(w - 56, 344, 4.5, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Split Row: GitHub & LinkedIn Widgets
-            const colW = (w - 64 - 16) / 2;
-
-            // GitHub Card
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
-            roundRect(ctx, 32, 422, colW, 98, 18);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.font = '600 14px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#64748b';
-            ctx.fillText('</> github', 50, 452);
-
-            ctx.font = '700 20px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('@educhile1', 50, 492);
+            ctx.fillText('Proyectos & Arquitecturas', 74, 760);
 
             // LinkedIn Card
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
-            roundRect(ctx, 32 + colW + 16, 422, colW, 98, 18);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            roundRect(ctx, 48 + colW + 24, 612, colW, 196, 26);
             ctx.fill();
             ctx.stroke();
 
-            ctx.font = '700 15px "Plus Jakarta Sans", sans-serif';
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillText('in  linkedin', 32 + colW + 36, 452);
-
-            ctx.font = '700 18px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('/eduardocayun', 32 + colW + 36, 492);
-
-            // Widget 3: Trajectory & Credentials Badge
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.09)';
-            roundRect(ctx, 32, 536, w - 64, 88, 18);
+            ctx.fillStyle = '#0284c7';
+            roundRect(ctx, 48 + colW + 48, 638, 28, 24, 6);
             ctx.fill();
-            ctx.stroke();
-
-            // White MBA badge
+            ctx.font = '900 16px "Plus Jakarta Sans", sans-serif';
             ctx.fillStyle = '#ffffff';
-            roundRect(ctx, 48, 554, 46, 50, 10);
-            ctx.fill();
-            ctx.font = '900 15px "Plus Jakarta Sans", sans-serif';
-            ctx.fillStyle = '#0b0f19';
-            ctx.fillText('MBA', 55, 584);
+            ctx.fillText('in', 48 + colW + 55, 655);
 
-            ctx.font = '700 18px "Plus Jakarta Sans", sans-serif';
+            ctx.font = '600 17px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('LINKEDIN', 48 + colW + 86, 654);
+
+            ctx.font = '700 25px "JetBrains Mono", monospace';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('Trayectoria TI & Gobierno', 108, 568);
+            ctx.fillText('/in/eduardocayun', 48 + colW + 48, 714);
 
-            ctx.font = '500 14px "JetBrains Mono", monospace';
+            ctx.font = '500 17px "Inter", sans-serif';
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText('DIPRES · Contraloría · BCI · Falabella', 108, 594);
+            ctx.fillText('Red Ejecutiva Senior', 48 + colW + 48, 760);
 
-            // Widget 4: THE SIGNATURE PINK CARD (Awwwards Nothing-OS Highlight)
-            ctx.fillStyle = '#f9a8d4';
-            roundRect(ctx, 32, 642, w - 64, 118, 22);
+            // Widget 3: THE SIGNATURE PINK CARD (Awwwards Nothing-OS Highlight - Agrandado & Destacado)
+            const pinkGrad = ctx.createLinearGradient(48, 836, 48 + w - 96, 836 + 240);
+            pinkGrad.addColorStop(0, '#f472b6');
+            pinkGrad.addColorStop(1, '#fb7185');
+            ctx.fillStyle = pinkGrad;
+            roundRect(ctx, 48, 836, w - 96, 240, 32);
             ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
 
-            ctx.font = '800 24px "JetBrains Mono", monospace';
+            // Status pill inside pink card
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.16)';
+            roundRect(ctx, 76, 868, 220, 32, 16);
+            ctx.fill();
+            ctx.font = '700 15px "JetBrains Mono", monospace';
             ctx.fillStyle = '#0f172a';
-            ctx.fillText('agendar_meet.cal', 52, 686);
+            ctx.fillText('● DISPONIBILIDAD ACTIVA', 92, 890);
 
-            ctx.font = '600 16px "Inter", sans-serif';
-            ctx.fillStyle = '#334155';
-            ctx.fillText('Reservar videollamada directa (30 min)', 52, 722);
+            ctx.font = '800 40px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('agendar_meet.cal', 76, 954);
+
+            ctx.font = '600 22px "Inter", sans-serif';
+            ctx.fillStyle = '#1e293b';
+            ctx.fillText('Reservar videollamada directa (30 min)', 76, 1000);
 
             // Dark circular button with arrow inside pink card
-            const circleBtnX = w - 82;
-            const circleBtnY = 701;
+            const circleBtnX = w - 108;
+            const circleBtnY = 956;
             ctx.fillStyle = '#0f172a';
             ctx.beginPath();
-            ctx.arc(circleBtnX, circleBtnY, 26, 0, Math.PI * 2);
+            ctx.arc(circleBtnX, circleBtnY, 40, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.font = '800 22px "Inter", sans-serif';
+            ctx.font = '800 34px "Inter", sans-serif';
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
-            ctx.fillText('↗', circleBtnX, circleBtnY + 8);
+            ctx.fillText('↗', circleBtnX, circleBtnY + 11);
             ctx.textAlign = 'left';
 
             // Bottom App Dock (4 circular buttons)
             const dockIcons = ['📞', '💬', '🌐', '🎮'];
-            const dockStep = (w - 64) / 4;
+            const dockStep = (w - 96) / 4;
             dockIcons.forEach((icon, i) => {
-                const cx = 32 + dockStep * i + dockStep / 2;
-                const cy = 824;
+                const cx = 48 + dockStep * i + dockStep / 2;
+                const cy = 1220;
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+                ctx.lineWidth = 1.5;
                 ctx.beginPath();
-                ctx.arc(cx, cy, 26, 0, Math.PI * 2);
+                ctx.arc(cx, cy, 38, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
 
-                ctx.font = '20px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+                ctx.font = '28px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(icon, cx, cy + 7);
+                ctx.fillText(icon, cx, cy + 10);
             });
             ctx.textAlign = 'left';
 
             // Home Indicator Bar
             ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-            roundRect(ctx, (w - 140) / 2, 882, 140, 5, 3);
+            roundRect(ctx, (w - 240) / 2, 1380, 240, 8, 4);
             ctx.fill();
+
+            ctx.restore();
         });
+
+        // Sleek obsidian charging pad on desk surface (Rounded aesthetic)
+        const padShape = createRoundedRectShape(0.32, 0.58, 0.04);
+        const padGeom = new THREE.ShapeGeometry(padShape, 24);
+        padGeom.center();
+        addMesh(padGeom, std(0x0c0e18, 0.8, 0.25), [1.35, 1.051, 0.6], desk, { rot: [-Math.PI / 2, 0, -0.32], cast: false });
+        const padRimShape = createRoundedRectShape(0.328, 0.588, 0.042);
+        const padRimGeom = new THREE.ShapeGeometry(padRimShape, 24);
+        padRimGeom.center();
+        addMesh(padRimGeom, std(0x222738, 0.5, 0.7), [1.35, 1.0505, 0.6], desk, { rot: [-Math.PI / 2, 0, -0.32], cast: false });
+        // Tiny status LED on charging pad
+        addMesh(new THREE.BoxGeometry(0.012, 0.006, 0.012), basic({ color: 0x34d399 }), [1.35, 1.053, 0.87], desk, { rot: [0, -0.32, 0], cast: false });
 
         const phone = new THREE.Group();
         phone.position.set(1.35, 1.05, 0.6);
         phone.rotation.y = -0.32;
         desk.add(phone);
 
-        // Dark matte obsidian phone chassis
-        addMesh(new THREE.BoxGeometry(0.28, 0.022, 0.54), std(0x0e101a, 0.4, 0.5), [0, 0.011, 0], phone, { station: 'contact' });
-        // Metallic edge border
-        addMesh(new THREE.BoxGeometry(0.284, 0.02, 0.544), std(0x282c3c, 0.35, 0.8), [0, 0.01, 0], phone, { cast: false });
-        // Phone screen plane with Nothing-OS dark UI
-        addMesh(new THREE.PlaneGeometry(0.264, 0.524), basic({ map: phoneTex }), [0, 0.023, 0], phone, {
-            rot: [-Math.PI / 2, 0, 0],
-            station: 'contact',
-            cast: false
+        const phoneState = {
+            restPos: new THREE.Vector3(1.35, 1.05, 0.6),
+            restRot: new THREE.Vector3(0, -0.32, 0),
+            liftedPos: new THREE.Vector3(1.35, 1.50, 0.75),
+            liftedRot: new THREE.Vector3(Math.PI * 0.47, 0, 0),
+            liftProgress: 0
+        };
+
+        // Realistic Unibody Titanium/Obsidian Chassis with Rounded Corners & Bevel
+        const bodyShape = createRoundedRectShape(0.28, 0.54, 0.034);
+        const extrudeSettings = {
+            depth: 0.016,
+            bevelEnabled: true,
+            bevelSegments: 4,
+            steps: 1,
+            bevelSize: 0.003,
+            bevelThickness: 0.003
+        };
+        const chassisGeom = new THREE.ExtrudeGeometry(bodyShape, extrudeSettings);
+        chassisGeom.center();
+        const chassisMat = std(0x121520, 0.28, 0.85);
+        const chassisMesh = new THREE.Mesh(chassisGeom, chassisMat);
+        chassisMesh.rotation.x = -Math.PI / 2;
+        chassisMesh.castShadow = true;
+        chassisMesh.receiveShadow = true;
+        chassisMesh.userData.stationId = 'contact';
+        hitMeshes.push(chassisMesh);
+        phone.add(chassisMesh);
+
+        // Screen Display with Matching Rounded Corners
+        const screenShape = createRoundedRectShape(0.264, 0.524, 0.026);
+        const screenGeom = new THREE.ShapeGeometry(screenShape, 24);
+        screenGeom.center();
+        normalizeShapeUVs(screenGeom);
+        const screenMat = basic({ map: phoneTex });
+        const phoneScreenMesh = new THREE.Mesh(screenGeom, screenMat);
+        phoneScreenMesh.rotation.x = -Math.PI / 2;
+        phoneScreenMesh.position.set(0, 0.0116, 0);
+        phoneScreenMesh.userData.stationId = 'contact';
+        phoneScreenMesh.userData.isPhoneScreen = true;
+        hitMeshes.push(phoneScreenMesh);
+        phone.add(phoneScreenMesh);
+
+        // Reflective Protective Screen Glass Layer (adds authentic realistic specular glare)
+        const glassGeom = new THREE.ShapeGeometry(screenShape, 24);
+        glassGeom.center();
+        const glassMat = std(0xffffff, 0.05, 0.2, {
+            transparent: true,
+            opacity: 0.12,
+            depthWrite: false
         });
-        // Side buttons (Power and Volume)
-        addMesh(new THREE.BoxGeometry(0.006, 0.012, 0.07), std(0x33384c, 0.3, 0.8), [0.144, 0.011, -0.05], phone, { cast: false });
-        addMesh(new THREE.BoxGeometry(0.006, 0.012, 0.045), std(0x33384c, 0.3, 0.8), [0.144, 0.011, 0.05], phone, { cast: false });
+        const glassMesh = new THREE.Mesh(glassGeom, glassMat);
+        glassMesh.rotation.x = -Math.PI / 2;
+        glassMesh.position.set(0, 0.0119, 0);
+        phone.add(glassMesh);
+
+        // Realistic Punch-Hole Front Camera Lens with Anti-Reflective Glint
+        addMesh(new THREE.RingGeometry(0.007, 0.011, 24), std(0x2d3345, 0.2, 0.9), [0, 0.0121, -0.218], phone, { rot: [-Math.PI / 2, 0, 0], cast: false });
+        addMesh(new THREE.CircleGeometry(0.007, 24), std(0x04060d, 0.1, 0.4), [0, 0.0121, -0.218], phone, { rot: [-Math.PI / 2, 0, 0], cast: false });
+        addMesh(new THREE.CircleGeometry(0.002, 12), basic({ color: 0x818cf8 }), [0.002, 0.0122, -0.219], phone, { rot: [-Math.PI / 2, 0, 0], cast: false });
+
+        // Micro Earpiece Speaker Grille (Top edge)
+        addMesh(new THREE.BoxGeometry(0.046, 0.002, 0.003), std(0x060810, 0.9, 0.1), [0, 0.0118, -0.252], phone, { cast: false });
+
+        // Physical Side Buttons
+        addMesh(new THREE.BoxGeometry(0.005, 0.009, 0.065), std(0x475569, 0.25, 0.9), [0.144, 0, -0.05], phone, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.005, 0.009, 0.045), std(0x475569, 0.25, 0.9), [-0.144, 0, -0.07], phone, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.005, 0.009, 0.045), std(0x475569, 0.25, 0.9), [-0.144, 0, -0.015], phone, { cast: false });
+
+        // Back Dual Camera Island
+        addMesh(new THREE.CylinderGeometry(0.024, 0.024, 0.005, 24), std(0x1a1e2d, 0.2, 0.8), [-0.075, -0.0135, -0.17], phone);
+        addMesh(new THREE.CylinderGeometry(0.024, 0.024, 0.005, 24), std(0x1a1e2d, 0.2, 0.8), [-0.075, -0.0135, -0.11], phone);
+        addMesh(new THREE.CylinderGeometry(0.016, 0.016, 0.006, 24), std(0x05070e, 0.05, 0.2), [-0.075, -0.0138, -0.17], phone);
+        addMesh(new THREE.CylinderGeometry(0.016, 0.016, 0.006, 24), std(0x05070e, 0.05, 0.2), [-0.075, -0.0138, -0.11], phone);
+        addMesh(new THREE.CylinderGeometry(0.007, 0.007, 0.002, 16), std(0xffffff, 0.2, 0.1), [-0.035, -0.012, -0.14], phone);
+
         // Soft under-phone pink ambient glow
         glowPlane(0.72, 1.0, '249,168,212', 0.26, [0, 0.025, 0], [-Math.PI / 2, 0, 0], phone);
 
@@ -1253,12 +1408,12 @@
         const UP = new THREE.Vector3(0, 1, 0);
         const v3 = (a) => new THREE.Vector3(a[0], a[1], a[2]);
         const HOTSPOTS = [
-            { id: 'projects', code: '01', label: 'Proyectos', anchor: [-0.55, 2.5, 0.12], target: [-0.5, 1.82, 0.12], normal: [Math.sin(0.42), 0, Math.cos(0.42)], dist: 2.7, lift: 0.3 },
-            { id: 'credentials', code: '02', label: 'Credenciales', anchor: [4.15, 4.05, -4.85], target: [4.15, 2.75, -4.95], normal: [0, 0, 1], dist: 3.6, lift: 0.15 },
-            { id: 'home', code: '03', label: 'Perfil', anchor: [-5.85, 4.45, -3.25], target: [-5.95, 3.45, -3.0], normal: [1, 0, 0], dist: 3.5, lift: 0.0 },
-            { id: 'contact', code: '04', label: 'Contacto', anchor: [1.35, 1.45, 0.6], target: [1.35, 1.06, 0.6], normal: [0.28, 0, 0.96], dist: 1.55, lift: 0.85 },
-            { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.4, -4.05], target: [-4.85, 1.4, -3.85], normal: [1, 0, 1], dist: 3.0, lift: 0.25 },
-            { id: 'music', code: '06', label: 'Música IA', anchor: [3.6, 2.0, -4.5], target: [3.95, 1.1, -4.5], normal: [0, 0, 1], dist: 2.7, lift: 0.55 }
+            { id: 'projects', code: '01', label: 'Proyectos', anchor: [-0.55, 2.2, 0.12], target: [-0.55, 1.72, 0.12], normal: [Math.sin(0.42), 0, Math.cos(0.42)], dist: 2.2, lift: 0.05 },
+            { id: 'credentials', code: '02', label: 'Credenciales', anchor: [4.15, 3.8, -4.85], target: [4.15, 2.55, -4.95], normal: [0, 0, 1], dist: 2.8, lift: 0.0 },
+            { id: 'home', code: '03', label: 'Perfil', anchor: [0, 2.1, -0.55], target: [0, 1.42, -0.55], normal: [0.35, 0.15, 0.93], dist: 2.4, lift: 0.1 },
+            { id: 'contact', code: '04', label: 'Contacto', anchor: [1.55, 1.84, 1.0], target: [1.55, 1.50, 1.0], normal: [0, 0.04, 0.999], dist: 1.12, lift: 0.0 },
+            { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.2, -4.05], target: [-5.05, 1.42, -4.05], normal: [0.707, 0, 0.707], dist: 2.1, lift: 0.05 },
+            { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.8, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 }
         ];
         const hotspotMap = new Map();
         let hoveredId = null;
@@ -1378,6 +1533,19 @@
                 return;
             }
             if (e.target !== canvas) return;
+            if (api.getActiveStation() === 'contact' && phoneScreenMesh) {
+                ndc.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+                ndc.y = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
+                raycaster.setFromCamera(ndc, camera);
+                const screenHits = raycaster.intersectObject(phoneScreenMesh, false);
+                if (screenHits.length > 0 && screenHits[0].uv) {
+                    const py = (1 - screenHits[0].uv.y) * 1536;
+                    if ((py >= 416 && py <= 584) || (py >= 612 && py <= 808) || (py >= 836 && py <= 1076) || (py >= 1150 && py <= 1280)) {
+                        canvas.style.cursor = 'pointer';
+                        return;
+                    }
+                }
+            }
             const id = pickStation(e.clientX, e.clientY);
             if (id) {
                 hoveredId = id;
@@ -1393,6 +1561,42 @@
             dragging = false;
             canvas.classList.remove('is-dragging');
             if (api.getViewMode() === 'stage3d' && dragDist < 7 && e.target === canvas) {
+                if (api.getActiveStation() === 'contact' && phoneScreenMesh) {
+                    ndc.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+                    ndc.y = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
+                    raycaster.setFromCamera(ndc, camera);
+                    const screenHits = raycaster.intersectObject(phoneScreenMesh, false);
+                    if (screenHits.length > 0 && screenHits[0].uv) {
+                        const uv = screenHits[0].uv;
+                        const px = uv.x * 768;
+                        const py = (1 - uv.y) * 1536;
+                        if (py >= 416 && py <= 584) {
+                            window.location.href = 'mailto:contacto@eduardocayun.com';
+                            return;
+                        } else if (py >= 612 && py <= 808) {
+                            if (px < 384) {
+                                window.open('https://github.com/educhile1', '_blank', 'noopener,noreferrer');
+                            } else {
+                                window.open('https://www.linkedin.com/in/eduardo-cayun/', '_blank', 'noopener,noreferrer');
+                            }
+                            return;
+                        } else if (py >= 836 && py <= 1076) {
+                            window.open('https://calendar.app.google/bLJvGyt2hxUdHTNG7', '_blank', 'noopener,noreferrer');
+                            return;
+                        } else if (py >= 1150 && py <= 1280) {
+                            if (px < 192) {
+                                window.location.href = 'mailto:contacto@eduardocayun.com';
+                            } else if (px < 384) {
+                                window.open('https://calendar.app.google/bLJvGyt2hxUdHTNG7', '_blank', 'noopener,noreferrer');
+                            } else if (px < 576) {
+                                window.open('https://www.linkedin.com/in/eduardo-cayun/', '_blank', 'noopener,noreferrer');
+                            } else {
+                                window.location.href = 'tetris.html';
+                            }
+                            return;
+                        }
+                    }
+                }
                 const id = pickStation(e.clientX, e.clientY);
                 if (id) api.focusStation(id);
             }
@@ -1460,12 +1664,11 @@
 
             if (hs) {
                 tmpN.copy(hs.normalV).applyAxisAngle(UP, focusYaw);
-                tmpR.set(tmpN.z, 0, -tmpN.x);
-                const dist = hs.dist * (isMobile() ? 1.4 : 1);
-                const shift = window.innerWidth >= 1024 ? hs.dist * 0.36 : 0;
-                desiredPos.copy(hs.targetV).addScaledVector(tmpN, dist).addScaledVector(tmpR, shift);
-                desiredPos.y += hs.lift + focusPitch * 1.6;
-                desiredLook.copy(hs.targetV).addScaledVector(tmpR, shift);
+                const dist = hs.dist * (isMobile() ? 1.3 : 1);
+                // Elements always centered directly in the middle of the screen
+                desiredPos.copy(hs.targetV).addScaledVector(tmpN, dist);
+                desiredPos.y += hs.lift + focusPitch * 1.5;
+                desiredLook.copy(hs.targetV);
             } else {
                 if (!reduced && !dragging && now - lastInteraction > 3000) {
                     orbit.tAz = AZ_BASE + Math.sin(t * 0.12) * 0.16;
@@ -1475,6 +1678,29 @@
                 orbit.r += (orbit.tR - orbit.r) * k;
                 orbitPosition(desiredPos);
                 desiredLook.copy(overviewTarget);
+            }
+
+            // Phone Lift & Float Physics (Station 04 - Contact)
+            const isContactActive = active === 'contact';
+            const liftTarget = isContactActive ? 1 : 0;
+            const liftRate = 1 - Math.exp(-dt * (isContactActive ? 4.5 : 5.5));
+            phoneState.liftProgress += (liftTarget - phoneState.liftProgress) * liftRate;
+            const lp = phoneState.liftProgress;
+
+            const px = THREE.MathUtils.lerp(phoneState.restPos.x, phoneState.liftedPos.x, lp);
+            const floatY = lp > 0.05 && !reduced ? Math.sin(t * 2.4) * 0.012 * lp : 0;
+            const py = THREE.MathUtils.lerp(phoneState.restPos.y, phoneState.liftedPos.y, lp) + floatY;
+            const pz = THREE.MathUtils.lerp(phoneState.restPos.z, phoneState.liftedPos.z, lp);
+            phone.position.set(px, py, pz);
+
+            const rx = THREE.MathUtils.lerp(phoneState.restRot.x, phoneState.liftedRot.x, lp);
+            const ry = THREE.MathUtils.lerp(phoneState.restRot.y, phoneState.liftedRot.y, lp) + focusYaw * 0.45 * lp;
+            const rz = THREE.MathUtils.lerp(phoneState.restRot.z, phoneState.liftedRot.z, lp) + (lp > 0.05 && !reduced ? Math.sin(t * 1.8) * 0.008 * lp : 0);
+            phone.rotation.set(rx, ry, rz);
+
+            const contactHs = hotspotMap.get('contact');
+            if (contactHs) {
+                contactHs.anchorV.set(0.2 + phone.position.x, phone.position.y + 0.34, 0.25 + phone.position.z);
             }
 
             camera.position.lerp(desiredPos, k);
