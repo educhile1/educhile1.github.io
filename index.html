@@ -23,6 +23,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Suppress Tailwind Play CDN informational warning to keep console clean -->
+    <script>
+        (function () {
+            const origWarn = console.warn;
+            console.warn = function (...args) {
+                if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) {
+                    return;
+                }
+                return origWarn.apply(console, args);
+            };
+        })();
+    </script>
+
     <!-- Tailwind CDN + Custom Typography & Obsidian Config -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -45,16 +58,16 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body class="bg-[#04060c] text-slate-100 font-sans antialiased selection:bg-sky-400 selection:text-slate-950 relative overflow-x-hidden pb-14">
+<body class="stage-3d-active is-overview text-slate-100 font-sans antialiased selection:bg-sky-400 selection:text-slate-950 relative overflow-x-hidden pb-14">
     <!-- =================================================================
     BOOT SEQUENCE OVERLAY (1.2s EXECUTIVE SYSTEM INIT)
     ================================================================== -->
-    <div id="boot-screen" role="status" aria-live="polite" aria-label="Inicializando portafolio ejecutivo">
+    <div id="boot-screen" role="status" aria-live="polite" aria-label="Inicializando escenario 3D ejecutivo">
         <div class="w-full max-w-md space-y-4">
             <div class="flex items-center justify-between font-mono-tech text-[11px] uppercase tracking-[0.18em] text-sky-300">
                 <span class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    EC_COMMAND_OS v2.6
+                    EC_COMMAND_OS v3.0 // 3D STAGE
                 </span>
                 <span id="boot-percent">0%</span>
             </div>
@@ -62,25 +75,107 @@
                 <div id="boot-progress-bar" class="boot-progress-fill"></div>
             </div>
             <div class="font-mono-tech text-[11px] sm:text-xs tracking-[0.14em] text-slate-300 text-center">
-                INITIALIZING EXECUTIVE ARCHITECTURE · CLOUD / GIS / SECURITY
+                INITIALIZING 3D EXECUTIVE STAGE · CLOUD / GIS / SECURITY
             </div>
         </div>
     </div>
 
-    <!-- Real-Time Three.js Executive Command Center Backdrop -->
-    <canvas id="webgl-stage" class="fixed inset-0 w-full h-full pointer-events-none -z-20" aria-hidden="true"></canvas>
-    <!-- Soft Obsidian Vignette for WCAG AA+ Text Contrast -->
-    <div class="fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,189,248,0.07)_0%,rgba(4,6,12,0.5)_58%,rgba(4,6,12,0.9)_100%)] pointer-events-none -z-10" aria-hidden="true"></div>
+    <!-- Real-Time Three.js Interactive 3D Command Center Stage -->
+    <canvas id="webgl-stage" class="fixed inset-0 w-full h-full z-[1]" aria-label="Escenario 3D interactivo del portafolio"></canvas>
+    <!-- Soft Obsidian Vignette for Edge Depth (keeps 3D center vibrant) -->
+    <div class="fixed inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(4,6,12,0.42)_78%,rgba(4,6,12,0.82)_100%)] pointer-events-none z-[2]" aria-hidden="true"></div>
     <!-- Subtle Studio Film Grain -->
-    <div class="film-grain pointer-events-none fixed inset-0 -z-10" aria-hidden="true"></div>
+    <div class="film-grain pointer-events-none fixed inset-0 z-[2]" aria-hidden="true"></div>
+
+    <!-- =================================================================
+    3D STAGE OVERLAY UI (PROJECTED MARKERS, COMPACT HERO HUD & DOCK)
+    ================================================================== -->
+    <div id="stage-3d-ui" class="fixed inset-0 z-[15] pointer-events-none">
+        <!-- Projected 3D Station Markers Container -->
+        <div id="stage-3d-markers" class="fixed inset-0 pointer-events-none"></div>
+
+        <!-- Compact Overview HUD Card (Top-Left, unobtrusive on desktop) -->
+        <div id="stage-hero-hud" class="pointer-events-auto hidden md:block fixed top-24 left-5 max-w-[330px] rounded-2xl bg-[#070b16]/72 backdrop-blur-xl border border-white/12 p-4 shadow-2xl">
+            <div class="flex items-center gap-2 font-mono-tech text-[10px] uppercase tracking-[0.16em] text-sky-300 mb-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>MBA · Ing. Informática · +15 Años</span>
+            </div>
+            <h2 class="font-display text-base font-extrabold text-white leading-snug">
+                Consultoría Estratégica y Ejecución Tecnológica
+            </h2>
+            <p class="text-[11px] text-slate-300 mt-1.5 leading-relaxed">
+                Haz clic en cualquier estación 3D del escenario o arrastra para explorar todo mi portafolio en 360°.
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+                <button type="button" data-station-target="home" class="px-3 py-1.5 rounded-lg bg-sky-500/20 hover:bg-sky-400 hover:text-slate-950 text-sky-200 border border-sky-400/35 font-mono-tech text-[11px] font-semibold transition">
+                    01 Abrir Perfil
+                </button>
+                <button type="button" data-switch-mode="full" class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/15 text-slate-200 border border-white/12 font-mono-tech text-[11px] transition">
+                    Vista Completa ↓
+                </button>
+            </div>
+        </div>
+
+        <!-- Panoramic Hint (Top Right in Overview Mode) -->
+        <div id="stage-controls-hint" class="pointer-events-none fixed top-[4.85rem] sm:top-[5.25rem] right-4 sm:right-6 flex flex-wrap items-center justify-end gap-2 transition-opacity duration-300">
+            <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#070b16]/72 backdrop-blur-md border border-white/10 font-mono-tech text-[10px] text-slate-300">
+                <span class="text-sky-400">◈ 3D</span>
+                <span>Arrastra para rotar 360° · Rueda para zoom · Clic en una estación</span>
+            </div>
+        </div>
+
+        <!-- Panoramic Reset Button (Top Left when Inspector Drawer is Open) -->
+        <button id="stage-overview-btn" type="button" data-station-target="overview" class="pointer-events-auto hidden fixed top-[4.85rem] sm:top-[5.25rem] left-4 sm:left-6 items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#070b16]/85 hover:bg-sky-400 hover:text-slate-950 text-sky-200 border border-sky-400/45 backdrop-blur-xl font-mono-tech text-[11px] font-semibold shadow-xl transition z-20">
+            <span aria-hidden="true">◈</span>
+            <span>Vista Panorámica 3D</span>
+        </button>
+
+        <!-- Quick 3D Station Dock -->
+        <nav id="stage-dock" aria-label="Estaciones del escenario 3D" class="pointer-events-auto fixed bottom-[3.65rem] left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-4xl flex justify-center">
+            <div class="stage-dock-shell flex items-center gap-1.5 px-2 py-1.5 rounded-2xl overflow-x-auto max-w-full">
+                <button type="button" class="stage-dock-btn is-active" data-station-target="overview">
+                    <span class="dock-code text-sky-400">00</span>
+                    <span>Escenario 3D</span>
+                </button>
+                <button type="button" class="stage-dock-btn" data-station-target="home">
+                    <span class="dock-code text-sky-400">01</span>
+                    <span>Perfil</span>
+                </button>
+                <button type="button" class="stage-dock-btn" data-station-target="credentials">
+                    <span class="dock-code text-indigo-400">02</span>
+                    <span>MIT &amp; Certs</span>
+                </button>
+                <button type="button" class="stage-dock-btn" data-station-target="sentra">
+                    <span class="dock-code text-sky-400">03A</span>
+                    <span>Banca / Sentra</span>
+                </button>
+                <button type="button" class="stage-dock-btn" data-station-target="gobierno">
+                    <span class="dock-code text-emerald-400">03B</span>
+                    <span>SICA / SIGFE 2</span>
+                </button>
+                <button type="button" class="stage-dock-btn" data-station-target="gis">
+                    <span class="dock-code text-amber-400">03C</span>
+                    <span>UNIS / ANDE</span>
+                </button>
+                <button type="button" class="stage-dock-btn" data-station-target="contact">
+                    <span class="dock-code text-emerald-400">04</span>
+                    <span>AI Brief &amp; Meet</span>
+                </button>
+                <button type="button" class="stage-dock-btn" data-station-target="arcade">
+                    <span class="dock-code text-pink-400">05</span>
+                    <span>Tetris &amp; Música</span>
+                </button>
+            </div>
+        </nav>
+    </div>
 
     <!-- =================================================================
     NUMBERED FLOATING NAVBAR (DYNAMIC ISLAND)
     ================================================================== -->
-    <header class="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.25rem)] max-w-6xl">
+    <header class="fixed top-3.5 sm:top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.25rem)] max-w-6xl">
         <nav aria-label="Navegación principal" class="dynamic-island-nav rounded-full px-3 sm:px-4 py-2 flex items-center justify-between gap-2">
             <!-- Brand -->
-            <a href="#home" class="flex items-center gap-2.5 pl-2 pr-1 py-1 rounded-full group shrink-0">
+            <a href="#home" data-station-target="overview" class="flex items-center gap-2.5 pl-2 pr-1 py-1 rounded-full group shrink-0">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]" aria-hidden="true"></span>
                 <span class="font-display text-sm sm:text-base font-bold tracking-tight text-white group-hover:text-sky-300 transition">
                     EDUARDO CAYÚN M.
@@ -90,30 +185,35 @@
             <!-- Center Desktop Links with Sliding Active Pill -->
             <div id="nav-links-container" class="hidden lg:flex items-center gap-1 text-xs font-medium text-slate-300">
                 <span id="nav-active-pill" aria-hidden="true"></span>
-                <a href="#home" data-section="home" data-index="01" class="nav-link is-active px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                <a href="#home" data-section="home" data-station-target="home" data-index="01" class="nav-link is-active px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
                     <span class="font-mono-tech text-[10px] text-sky-400">01</span>
                     <span>Inicio</span>
                 </a>
-                <a href="#credentials" data-section="credentials" data-index="02" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                <a href="#credentials" data-section="credentials" data-station-target="credentials" data-index="02" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
                     <span class="font-mono-tech text-[10px] text-sky-400">02</span>
                     <span>Credenciales</span>
                 </a>
-                <a href="#projects" data-section="projects" data-index="03" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                <a href="#projects" data-section="projects" data-station-target="projects" data-index="03" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
                     <span class="font-mono-tech text-[10px] text-sky-400">03</span>
                     <span>Proyectos</span>
                 </a>
-                <a href="#contact" data-section="contact" data-index="04" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                <a href="#contact" data-section="contact" data-station-target="contact" data-index="04" class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
                     <span class="font-mono-tech text-[10px] text-sky-400">04</span>
                     <span>Contacto</span>
                 </a>
-                <a href="tetris.html" class="px-3 py-1.5 rounded-full hover:text-sky-300 transition flex items-center gap-1.5 text-slate-300">
+                <a href="tetris.html" data-station-target="arcade" class="px-3 py-1.5 rounded-full hover:text-sky-300 transition flex items-center gap-1.5 text-slate-300">
                     <span class="font-mono-tech text-[10px] text-emerald-400">05</span>
                     <span>Arcade</span>
                 </a>
             </div>
 
-            <!-- Right Actions -->
+            <!-- Right Actions: 3D/Full Mode Toggle + Meet CTA -->
             <div class="flex items-center gap-2 shrink-0">
+                <button id="view-mode-toggle" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-500/15 hover:bg-sky-500/25 text-sky-200 border border-sky-400/35 font-mono-tech text-[11px] font-semibold transition" title="Cambiar entre Escenario 3D Interactivo y Vista Completa en Scroll">
+                    <span id="view-mode-icon" aria-hidden="true">▤</span>
+                    <span id="view-mode-label">Vista Completa</span>
+                </button>
+
                 <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="magnetic-btn hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-slate-950 hover:bg-sky-300 text-xs font-bold shadow-[0_0_24px_-4px_rgba(56,189,248,0.45)] transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -132,20 +232,23 @@
 
         <!-- Mobile Capsule Dropdown -->
         <div id="mobile-menu" class="mobile-capsule-menu lg:hidden mt-2.5 dynamic-island-nav rounded-3xl px-4 py-4 space-y-1.5">
-            <a href="#home" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
-                <span class="font-mono-tech text-xs text-sky-400">01</span> Inicio
+            <a href="#home" data-station-target="overview" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-sky-300 hover:bg-white/[0.06] transition">
+                <span class="font-mono-tech text-xs text-sky-400">00</span> Vista Panorámica 3D
             </a>
-            <a href="#credentials" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
-                <span class="font-mono-tech text-xs text-sky-400">02</span> Credenciales
+            <a href="#home" data-station-target="home" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">01</span> Inicio &amp; Perfil
             </a>
-            <a href="#projects" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
-                <span class="font-mono-tech text-xs text-sky-400">03</span> Proyectos
+            <a href="#credentials" data-station-target="credentials" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">02</span> Credenciales &amp; MIT
             </a>
-            <a href="#contact" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
-                <span class="font-mono-tech text-xs text-sky-400">04</span> Contacto
+            <a href="#projects" data-station-target="projects" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">03</span> Proyectos Críticos
             </a>
-            <a href="tetris.html" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-emerald-300 hover:bg-white/[0.06] transition">
-                <span class="text-xs text-emerald-400">05</span> Edu Tetris Arcade
+            <a href="#contact" data-station-target="contact" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-medium text-slate-200 hover:bg-white/[0.06] hover:text-white transition">
+                <span class="font-mono-tech text-xs text-sky-400">04</span> Contacto &amp; AI Brief
+            </a>
+            <a href="tetris.html" data-station-target="arcade" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-emerald-300 hover:bg-white/[0.06] transition">
+                <span class="text-xs text-emerald-400">05</span> Lab: Edu Tetris &amp; Música IA
             </a>
             <div class="pt-2.5 mt-1 border-t border-white/10">
                 <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-white text-slate-950 hover:bg-sky-300 text-sm font-bold shadow-md transition">
@@ -157,6 +260,27 @@
             </div>
         </div>
     </header>
+
+    <!-- =================================================================
+    MAIN CONTENT CONTAINER (3D STATION INSPECTOR DRAWER OR FULL SCROLL)
+    ================================================================== -->
+    <main id="portfolio-main" class="relative z-[20]">
+        <!-- Sticky OS Drawer Chrome (Visible only in 3D Stage mode when inspecting a station) -->
+        <div id="inspector-chrome-bar" class="hidden sticky top-0 z-30 px-4 sm:px-5 py-3 bg-[#070c18]/92 backdrop-blur-xl border-b border-white/10 items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8] shrink-0"></span>
+                <span id="inspector-station-path" class="font-mono-tech text-[11px] text-sky-300 truncate">~/escenario-3d/perfil</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button id="inspector-show-all-projects" type="button" class="hidden px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/15 text-slate-200 border border-white/12 font-mono-tech text-[11px] transition">
+                    Ver los 5 Proyectos
+                </button>
+                <button id="close-inspector-btn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-400 hover:text-slate-950 text-sky-200 border border-sky-400/35 font-mono-tech text-[11px] font-semibold transition">
+                    <span aria-hidden="true">←</span>
+                    <span>Escenario 3D</span>
+                </button>
+            </div>
+        </div>
 
     <!-- =================================================================
     01. HERO SECTION (EXECUTIVE COMMAND CENTER)
@@ -511,9 +635,9 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-6">
+            <div id="projects-grid" class="grid md:grid-cols-2 gap-6">
                 <!-- 1. FEATURED WIDE OS WINDOW: BANCA & CIBERSEGURIDAD (SENTRA) -->
-                <article class="reveal-up md:col-span-2 os-window bento-card rounded-3xl border border-sky-400/25">
+                <article data-station-group="sentra" class="reveal-up md:col-span-2 os-window bento-card rounded-3xl border border-sky-400/25">
                     <div class="os-window-bar">
                         <span class="font-mono-tech text-[11px] text-sky-300 truncate">~/proyectos/sentra-banca-ciberseguridad</span>
                         <div class="os-ctrl-group">
@@ -570,7 +694,7 @@
                 </article>
 
                 <!-- 2. SICA -->
-                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                <article data-station-group="gobierno" class="reveal-up os-window bento-card rounded-3xl flex flex-col">
                     <div class="os-window-bar">
                         <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/sica-contraloria</span>
                         <div class="os-ctrl-group">
@@ -609,7 +733,7 @@
                 </article>
 
                 <!-- 3. SIGFE 2 -->
-                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                <article data-station-group="gobierno" class="reveal-up os-window bento-card rounded-3xl flex flex-col">
                     <div class="os-window-bar">
                         <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/sigfe2-hacienda</span>
                         <div class="os-ctrl-group">
@@ -648,7 +772,7 @@
                 </article>
 
                 <!-- 4. UNIS -->
-                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                <article data-station-group="gis" class="reveal-up os-window bento-card rounded-3xl flex flex-col">
                     <div class="os-window-bar">
                         <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/unis-geoespacial-gis</span>
                         <div class="os-ctrl-group">
@@ -687,7 +811,7 @@
                 </article>
 
                 <!-- 5. ANDE PARAGUAY -->
-                <article class="reveal-up os-window bento-card rounded-3xl flex flex-col">
+                <article data-station-group="gis" class="reveal-up os-window bento-card rounded-3xl flex flex-col">
                     <div class="os-window-bar">
                         <span class="font-mono-tech text-[11px] text-slate-300 truncate">~/proyectos/ande-paraguay-aws</span>
                         <div class="os-ctrl-group">
@@ -742,10 +866,10 @@
                 </article>
             </div>
 
-            <!-- Discreet Interactive Demo Window (Edu Tetris) -->
-            <div class="reveal-up mt-8 os-window bento-card rounded-2xl">
+            <!-- Discreet Interactive Demo Window (Edu Tetris & Reproductor IA) -->
+            <div id="lab-arcade-card" data-station-group="arcade" class="reveal-up mt-8 os-window bento-card rounded-2xl">
                 <div class="os-window-bar py-2">
-                    <span class="font-mono-tech text-[11px] text-emerald-300 truncate">~/lab/edu-tetris-arcade</span>
+                    <span class="font-mono-tech text-[11px] text-emerald-300 truncate">~/lab/edu-tetris-arcade &amp; audio-ia</span>
                     <div class="os-ctrl-group" aria-hidden="true">
                         <span class="os-ctrl-btn">−</span>
                         <span class="os-ctrl-btn">□</span>
@@ -759,20 +883,26 @@
                         </div>
                         <div>
                             <div class="flex items-center gap-2 flex-wrap">
-                                <h3 class="font-display text-base font-bold text-white">Laboratorio Interactivo · Edu Tetris Arcade</h3>
+                                <h3 class="font-display text-base font-bold text-white">Laboratorio Interactivo · Edu Tetris &amp; Música IA</h3>
                                 <span class="inline-block font-mono-tech text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-400/25">
-                                    Canvas 60 FPS
+                                    Canvas 60 FPS · Web Audio
                                 </span>
                             </div>
                             <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
-                                Demo de ingeniería interactiva en HTML5 Canvas con físicas de partículas y síntesis de audio multicapa en Web Audio API.
+                                Demo de ingeniería interactiva en HTML5 Canvas con físicas de partículas, síntesis multicapa en Web Audio API y reproductor musical generativo independiente.
                             </p>
                         </div>
                     </div>
-                    <a href="tetris.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.08] hover:bg-sky-400 hover:text-slate-950 text-white border border-white/15 font-semibold text-xs sm:text-sm transition shrink-0">
-                        Abrir Edu Tetris
-                        <span aria-hidden="true">→</span>
-                    </a>
+                    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                        <a href="tetris.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.08] hover:bg-sky-400 hover:text-slate-950 text-white border border-white/15 font-semibold text-xs sm:text-sm transition">
+                            Abrir Edu Tetris
+                            <span aria-hidden="true">→</span>
+                        </a>
+                        <a href="music_player.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-400 hover:text-slate-950 text-emerald-200 border border-emerald-400/30 font-semibold text-xs sm:text-sm transition">
+                            Reproductor Música IA
+                            <span aria-hidden="true">♫</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -913,6 +1043,7 @@
             </div>
         </div>
     </section>
+    </main>
 
     <!-- =================================================================
     FOOTER
@@ -1014,8 +1145,8 @@
         </div>
     </div>
 
-    <!-- Three.js + Lenis + GSAP + ScrollTrigger CDNs -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <!-- Three.js (r149 UMD) + Lenis + GSAP + ScrollTrigger CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
