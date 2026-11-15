@@ -137,6 +137,9 @@
                 <button type="button" class="stage-dock-btn" data-station-target="arcade">
                     <span class="dock-code">05</span><span>Arcade</span>
                 </button>
+                <button type="button" class="stage-dock-btn" data-station-target="music">
+                    <span class="dock-code">06</span><span>Música</span>
+                </button>
                 <button type="button" class="stage-dock-btn is-accent text-sky-300 border border-sky-400/30 bg-sky-500/15 hover:bg-sky-400 hover:text-slate-950 font-bold transition" data-switch-mode="full" title="Cambiar a la opción 2D del portafolio">
                     <span class="dock-code text-sky-400">2D</span><span>Opción 2D</span>
                 </button>
@@ -227,7 +230,10 @@
                 <span class="font-mono-tech text-xs text-sky-400">04</span> Contacto &amp; AI Brief
             </a>
             <a href="tetris.html" data-station-target="arcade" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-emerald-300 hover:bg-white/[0.06] transition">
-                <span class="text-xs text-emerald-400">05</span> Lab: Edu Tetris &amp; Música IA
+                <span class="text-xs text-emerald-400">05</span> Lab: Edu Tetris
+            </a>
+            <a href="#projects" data-station-target="music" class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-[#1ed760] hover:bg-white/[0.06] transition">
+                <span class="text-xs text-[#1ed760]">06</span> Spotify &amp; Música IA
             </a>
             <div class="pt-2.5 mt-1 border-t border-white/10">
                 <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-white text-slate-950 hover:bg-sky-300 text-sm font-bold shadow-md transition">
@@ -1066,41 +1072,49 @@
                 </article>
             </div>
 
-            <!-- Discreet Interactive Demo Window (Edu Tetris & Reproductor IA) -->
+            <!-- Discreet Interactive Demo Window (Edu Tetris & Música IA / Spotify) -->
             <div id="lab-arcade-card" data-station-group="arcade" class="reveal-up mt-8 os-window bento-card rounded-2xl">
                 <div class="os-window-bar py-2">
-                    <span class="font-mono-tech text-[11px] text-emerald-300 truncate">~/lab/edu-tetris-arcade &amp; audio-ia</span>
+                    <span class="font-mono-tech text-[11px] text-emerald-300 truncate">~/lab/edu-tetris-arcade &amp; spotify-audio-ia</span>
                     <div class="os-ctrl-group" aria-hidden="true">
                         <span class="os-ctrl-btn">−</span>
                         <span class="os-ctrl-btn">□</span>
                         <span class="os-ctrl-btn is-close">×</span>
                     </div>
                 </div>
-                <div class="p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="p-5 sm:px-7 sm:py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-400/30 text-sky-300 flex items-center justify-center font-mono-tech text-sm font-bold shrink-0">
-                            &lt;/&gt;
+                        <!-- Small Music Cover Art Image -->
+                        <div class="relative shrink-0">
+                            <img src="images/cruzando-cielos-cover.jpg" alt="Cruzando Cielos - Eduardo Cayún M." class="spotify-track-cover w-14 h-14 rounded-xl object-cover ring-2 ring-[#1ed760]/40 shadow-lg">
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#121212] border border-[#1ed760] flex items-center justify-center">
+                                <span class="w-2 h-2 rounded-full bg-[#1ed760] shadow-[0_0_6px_#1ed760]"></span>
+                            </div>
                         </div>
                         <div>
                             <div class="flex items-center gap-2 flex-wrap">
-                                <h3 class="font-display text-base font-bold text-white">Laboratorio Interactivo · Edu Tetris &amp; Música IA</h3>
+                                <h3 class="font-display text-base font-bold text-white">Laboratorio Interactivo · Edu Tetris &amp; Spotify IA</h3>
                                 <span class="inline-block font-mono-tech text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-400/25">
-                                    Canvas 60 FPS · Web Audio
+                                    Canvas 60 FPS · Spotify Player
                                 </span>
                             </div>
                             <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
-                                Demo de ingeniería interactiva en HTML5 Canvas con físicas de partículas, síntesis multicapa en Web Audio API y reproductor musical generativo independiente.
+                                Parlante interactivo 3D con audio sintetizado por IA, integración Spotify Hi-Fi y físicas de partículas en Canvas.
                             </p>
                         </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                    <div class="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
+                        <button type="button" class="lab-audio-play-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1ed760]/15 hover:bg-[#1ed760] text-[#1ed760] hover:text-slate-950 border border-[#1ed760]/40 font-semibold text-xs sm:text-sm transition cursor-pointer">
+                            <span>▶</span>
+                            <span class="btn-label">Escuchar Demo IA</span>
+                        </button>
                         <a href="tetris.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.08] hover:bg-sky-400 hover:text-slate-950 text-white border border-white/15 font-semibold text-xs sm:text-sm transition">
-                            Abrir Edu Tetris
+                            Edu Tetris
                             <span aria-hidden="true">→</span>
                         </a>
-                        <a href="music_player.html" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-400 hover:text-slate-950 text-emerald-200 border border-emerald-400/30 font-semibold text-xs sm:text-sm transition">
-                            Reproductor Música IA
-                            <span aria-hidden="true">♫</span>
+                        <a href="music_player.html" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/15 text-slate-300 hover:text-white border border-white/10 font-semibold text-xs transition">
+                            Reproductor Completo
+                            <span aria-hidden="true">↗</span>
                         </a>
                     </div>
                 </div>
@@ -1243,63 +1257,76 @@
                                 </div>
 
                                 <!-- Contact Cards -->
-                                <div class="space-y-2.5">
+                                <!-- Contact Cards (Agrandados & Mejor Espaciados) -->
+                                <div class="space-y-3.5 sm:space-y-4">
                                     <!-- Direct Email / Contact Card -->
-                                    <a href="mailto:contacto@eduardocayun.com" class="phone-card group block p-3 rounded-2xl">
-                                        <div class="flex items-center justify-between text-[11px] font-mono-tech text-slate-400 mb-1">
-                                            <div class="flex items-center gap-1.5">
-                                                <svg class="w-3.5 h-3.5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <a href="mailto:contacto@eduardocayun.com" class="phone-card group block p-4 sm:p-5 rounded-3xl">
+                                        <div class="flex items-center justify-between text-[11px] font-mono-tech text-slate-400 mb-1.5">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-4 h-4 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                                 </svg>
-                                                <span>contacto directo</span>
+                                                <span class="font-bold tracking-wider uppercase text-[10px]">contacto directo</span>
                                             </div>
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true"></span>
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/20 text-[10px] font-bold text-emerald-400">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" aria-hidden="true"></span>
+                                                DISPONIBLE
+                                            </span>
                                         </div>
-                                        <div class="text-xs sm:text-[13px] font-mono-tech font-semibold text-slate-100 group-hover:text-sky-300 transition truncate">
+                                        <div class="text-sm sm:text-base font-mono-tech font-bold text-white group-hover:text-sky-300 transition truncate">
                                             contacto@eduardocayun.com
+                                        </div>
+                                        <div class="text-xs text-slate-400 font-medium mt-1 truncate">
+                                            Liderazgo Estratégico · Ciberseguridad · IA Cloud
                                         </div>
                                     </a>
 
-                                    <!-- Split Row: GitHub & LinkedIn -->
-                                    <div class="grid grid-cols-2 gap-2.5">
+                                    <!-- Split Row: GitHub & LinkedIn (Agrandados) -->
+                                    <div class="grid grid-cols-2 gap-3 sm:gap-3.5">
                                         <!-- GitHub Card -->
-                                        <a href="https://github.com/educhile1" target="_blank" rel="noopener noreferrer" class="phone-card group p-3 rounded-2xl flex flex-col justify-between">
+                                        <a href="https://github.com/educhile1" target="_blank" rel="noopener noreferrer" class="phone-card group p-4 sm:p-5 rounded-3xl flex flex-col justify-between">
                                             <div class="flex items-center justify-between text-[11px] font-mono-tech text-slate-400 mb-2">
-                                                <svg class="w-3.5 h-3.5 text-slate-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                                                </svg>
-                                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true"></span>
+                                                <div class="flex items-center gap-1.5">
+                                                    <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                                                    </svg>
+                                                    <span class="text-[10px] font-bold text-slate-400">GITHUB</span>
+                                                </div>
+                                                <span class="w-1.5 h-1.5 rounded-full bg-purple-400" aria-hidden="true"></span>
                                             </div>
                                             <div>
-                                                <div class="text-[10px] font-mono-tech uppercase text-slate-400">github</div>
-                                                <div class="text-xs font-mono-tech font-bold text-white group-hover:text-sky-300 transition truncate">@educhile1</div>
+                                                <div class="text-sm font-mono-tech font-bold text-white group-hover:text-sky-300 transition truncate">@educhile1</div>
+                                                <div class="text-[11px] text-slate-400 mt-1 truncate">Código &amp; Proyectos</div>
                                             </div>
                                         </a>
 
                                         <!-- LinkedIn Card -->
-                                        <a href="https://www.linkedin.com/in/eduardocayun/" target="_blank" rel="noopener noreferrer" class="phone-card group p-3 rounded-2xl flex flex-col justify-between">
+                                        <a href="https://www.linkedin.com/in/eduardocayun/" target="_blank" rel="noopener noreferrer" class="phone-card group p-4 sm:p-5 rounded-3xl flex flex-col justify-between">
                                             <div class="flex items-center justify-between text-[11px] font-mono-tech text-slate-400 mb-2">
-                                                <span class="font-display font-bold text-xs text-sky-400">in</span>
+                                                <div class="flex items-center gap-1.5">
+                                                    <span class="font-display font-extrabold text-xs text-sky-400">in</span>
+                                                    <span class="text-[10px] font-bold text-slate-400">LINKEDIN</span>
+                                                </div>
                                                 <span class="w-1.5 h-1.5 rounded-full bg-sky-400" aria-hidden="true"></span>
                                             </div>
                                             <div>
-                                                <div class="text-[10px] font-mono-tech uppercase text-slate-400">linkedin</div>
-                                                <div class="text-xs font-mono-tech font-bold text-white group-hover:text-sky-300 transition truncate">/in/eduardocayun</div>
+                                                <div class="text-xs sm:text-sm font-mono-tech font-bold text-white group-hover:text-sky-300 transition truncate">/in/eduardocayun</div>
+                                                <div class="text-[11px] text-slate-400 mt-1 truncate">Red Senior B2B</div>
                                             </div>
                                         </a>
                                     </div>
 
-                                    <!-- Highlight Pink Card: Agendar Meet (Signature Nothing OS / Hamza Aesthetic) -->
-                                    <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="phone-pink-card group block p-4 sm:p-5 rounded-3xl">
-                                        <div class="flex items-center justify-between gap-3">
+                                    <!-- Highlight Pink Card: Agendar Meet (Signature Nothing OS / Hamza Aesthetic - Agrandado) -->
+                                    <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="phone-pink-card group block p-5 sm:p-6 rounded-3xl">
+                                        <div class="flex items-center justify-between gap-4">
                                             <div class="min-w-0">
-                                                <span class="inline-block px-2 py-0.5 rounded-full bg-slate-950/15 text-[10px] font-mono-tech font-bold text-slate-900 mb-1.5">
-                                                    ● DISPONIBILIDAD INMEDIATA
+                                                <span class="inline-block px-2.5 py-0.5 rounded-full bg-slate-950/15 text-[10px] font-mono-tech font-bold text-slate-900 mb-2">
+                                                    ● DISPONIBILIDAD INMEDIATA (30 MIN)
                                                 </span>
-                                                <div class="font-mono-tech font-extrabold text-sm sm:text-base text-slate-950 truncate tracking-tight">agendar_meet.cal</div>
-                                                <div class="text-xs text-slate-800 font-medium mt-1 truncate">Reservar videollamada directa (30 min)</div>
+                                                <div class="font-mono-tech font-extrabold text-base sm:text-lg text-slate-950 truncate tracking-tight">agendar_meet.cal</div>
+                                                <div class="text-xs sm:text-[13px] text-slate-800 font-medium mt-1 truncate">Reservar videollamada directa con Eduardo</div>
                                             </div>
-                                            <span class="phone-circle-btn shrink-0 w-10 h-10 sm:w-11 sm:h-11" aria-label="Abrir Google Calendar">
+                                            <span class="phone-circle-btn shrink-0 w-11 h-11 sm:w-13 sm:h-13" aria-label="Abrir Google Calendar">
                                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                                 </svg>
@@ -1308,28 +1335,24 @@
                                     </a>
                                 </div>
 
-                                <!-- Bottom App Dock -->
-                                <div class="flex items-center justify-around pt-3">
-                                    <a href="mailto:contacto@eduardocayun.com" class="phone-dock-icon" title="Enviar Email" aria-label="Email">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <!-- Bottom App Dock (Agrandado) -->
+                                <div class="flex items-center justify-around pt-5 sm:pt-6">
+                                    <a href="mailto:contacto@eduardocayun.com" class="phone-dock-icon" title="Enviar Email Directo" aria-label="Email">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                         </svg>
                                     </a>
-                                    <a href="#ai-brief" class="phone-dock-icon" title="Executive AI Brief" aria-label="Terminal">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                    <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer" class="phone-dock-icon" title="Agendar Google Meet" aria-label="Calendario">
+                                        <svg class="w-5 h-5 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
                                     </a>
-                                    <a href="#projects" class="phone-dock-icon" title="Explorar Proyectos TI" aria-label="Proyectos">
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-                                        </svg>
+                                    <a href="https://www.linkedin.com/in/eduardocayun/" target="_blank" rel="noopener noreferrer" class="phone-dock-icon" title="Perfil LinkedIn" aria-label="LinkedIn">
+                                        <span class="font-display font-extrabold text-sm text-sky-400">in</span>
                                     </a>
-                                    <a href="tetris.html" class="phone-dock-icon" title="Edu Tetris Arcade" aria-label="Tetris">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                            <path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                                        </svg>
-                                    </a>
+                                    <button type="button" class="phone-dock-icon spotify-play-btn !w-11 !h-11 sm:!w-12 sm:!h-12 !bg-[#1ed760] !text-slate-950 cursor-pointer" title="Reproducir Spotify IA" aria-label="Spotify">
+                                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </button>
                                 </div>
 
                                 <!-- Home Bar Indicator -->
@@ -1423,11 +1446,141 @@
         <span>Ver 3D</span>
     </button>
 
+    <!-- =================================================================
+    SPOTIFY HI-FI MINI-PLAYER & FLOATING CONTROLLER
+    ================================================================== -->
+    <!-- Minimized Floating Pill (Accessible anytime in 3D and 2D) -->
+    <div id="spotify-mini-pill" class="fixed bottom-20 sm:bottom-24 right-4 sm:right-8 z-40 flex items-center gap-2.5 px-3 py-2 rounded-full cursor-pointer select-none" title="Abrir reproductor Spotify Hi-Fi">
+        <img src="images/cruzando-cielos-cover.jpg" alt="Mini Portada" class="spotify-track-cover w-7 h-7 rounded-lg object-cover shadow ring-1 ring-[#1ed760]/40 shrink-0">
+        <div class="flex items-center gap-2 max-w-[130px] sm:max-w-[160px] truncate">
+            <svg viewBox="0 0 24 24" class="w-4 h-4 text-[#1ed760] fill-current shrink-0" aria-hidden="true">
+                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.018.6-1.141 4.38-1.38 9.781-.72 13.501 1.56.36.239.54.779.24 1.261zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+            </svg>
+            <span class="spotify-track-title text-xs font-semibold text-white truncate">Cruzando cielos</span>
+        </div>
+        <div class="spotify-eq" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <button type="button" class="spotify-pill-play-btn spotify-play-btn !w-7 !h-7 rounded-full bg-[#1ed760] text-slate-950 flex items-center justify-center hover:scale-105 transition" aria-label="Reproducir / Pausar">
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+    </div>
+
+    <!-- Expanded Spotify Player Card -->
+    <div id="spotify-widget" class="fixed bottom-20 sm:bottom-24 right-4 sm:right-8 z-50 hidden flex-col w-[calc(100%-2rem)] max-w-[360px] sm:max-w-[380px] rounded-2xl overflow-hidden backdrop-blur-2xl">
+        <!-- Window Top Bar -->
+        <div class="px-4 py-2.5 bg-black/40 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg viewBox="0 0 24 24" class="w-4 h-4 text-[#1ed760] fill-current" aria-hidden="true">
+                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.018.6-1.141 4.38-1.38 9.781-.72 13.501 1.56.36.239.54.779.24 1.261zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+                <span class="font-mono-tech text-[11px] font-bold tracking-wider text-white">SPOTIFY · PARLANTE 3D</span>
+                <div class="spotify-eq ml-1" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <button id="spotify-btn-minimize" type="button" class="w-6 h-6 rounded-md hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs transition" title="Minimizar">
+                    −
+                </button>
+            </div>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="px-4 pt-2.5 pb-1 flex items-center justify-between border-b border-white/5">
+            <div class="flex items-center gap-1">
+                <button id="spotify-tab-local" type="button" class="spotify-tab-btn is-active">
+                    Temas IA (Eduardo)
+                </button>
+                <button id="spotify-tab-web" type="button" class="spotify-tab-btn">
+                    Spotify Embed
+                </button>
+            </div>
+            <a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer" class="spotify-open-link text-[10px] font-mono-tech text-[#1ed760] hover:underline flex items-center gap-1">
+                <span>Spotify</span> ↗
+            </a>
+        </div>
+
+        <!-- Tab 1: Local Audio Player with Real Audio -->
+        <div id="spotify-body-local" class="p-4 space-y-3.5">
+            <!-- Track Info & Small Album Art Image -->
+            <div class="flex items-center gap-3.5">
+                <div class="relative shrink-0 group">
+                    <img src="images/cruzando-cielos-cover.jpg" alt="Portada de la música" class="spotify-track-cover w-16 h-16 rounded-xl object-cover shadow-lg border border-white/10 ring-2 ring-[#1ed760]/30 transition transform group-hover:scale-105">
+                    <div class="absolute inset-0 rounded-xl bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                        <span class="text-white text-xs">♫</span>
+                    </div>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h4 class="spotify-track-title font-bold text-sm text-white truncate">Cruzando cielos</h4>
+                    <p class="spotify-track-artist text-xs text-slate-300 truncate mt-0.5">Eduardo Cayún M. / IA</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="spotify-track-album text-[10px] font-mono-tech text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-400/25 truncate">
+                            AI Ambient Synth · 2026
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Scrub Bar -->
+            <div class="space-y-1">
+                <div class="spotify-progress-container">
+                    <div class="spotify-progress-bar-fill" style="width: 0%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] font-mono-tech text-slate-400">
+                    <span class="spotify-current-time">0:00</span>
+                    <span class="spotify-total-time">2:48</span>
+                </div>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="flex items-center justify-between pt-1">
+                <div class="flex items-center gap-2">
+                    <button type="button" class="spotify-prev-btn p-2 text-slate-300 hover:text-white transition cursor-pointer" aria-label="Anterior">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                    </button>
+                    <button type="button" class="spotify-play-btn cursor-pointer" aria-label="Reproducir o pausar">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                    <button type="button" class="spotify-next-btn p-2 text-slate-300 hover:text-white transition cursor-pointer" aria-label="Siguiente">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                    </button>
+                </div>
+                <!-- Volume Slider -->
+                <div class="flex items-center gap-1.5">
+                    <button type="button" class="spotify-volume-btn text-xs text-slate-400 hover:text-white transition cursor-pointer" title="Silenciar">
+                        <span class="spotify-volume-icon">🔊</span>
+                    </button>
+                    <input type="range" min="0" max="1" step="0.02" value="0.85" class="spotify-volume-slider" aria-label="Volumen">
+                </div>
+            </div>
+
+            <!-- Track Switcher Chips -->
+            <div class="pt-2 border-t border-white/5 flex items-center gap-1.5 overflow-x-auto text-[11px] pb-1">
+                <button type="button" data-track-index="0" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white whitespace-nowrap transition truncate cursor-pointer">
+                    1. Cruzando Cielos
+                </button>
+                <button type="button" data-track-index="1" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white whitespace-nowrap transition truncate cursor-pointer">
+                    2. Together
+                </button>
+                <button type="button" data-track-index="2" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white whitespace-nowrap transition truncate cursor-pointer">
+                    3. Opa Amor
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab 2: Spotify Web Embed (Official streaming) -->
+        <div id="spotify-body-web" class="p-3 hidden">
+            <iframe id="spotify-embed-iframe" style="border-radius:12px; width: 100%; height: 152px;" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXdLEN7aqioXM?utm_source=generator&theme=0" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+    </div>
+
     <!-- Three.js (r149 UMD) + Lenis + GSAP + ScrollTrigger CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="js/spotify-player.js"></script>
     <script src="js/room-scene.js"></script>
     <script src="js/main.js"></script>
 </body>

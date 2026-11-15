@@ -65,6 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
             path: '~/lab/reproductor-musica-ia',
             hudLabel: 'CAM // 06-MUSICA'
         },
+        cv: {
+            code: '2D',
+            section: 'credentials',
+            group: null,
+            navSection: 'credentials',
+            path: '~/curriculum-vitae/version-2d',
+            hudLabel: 'CAM // 2D-CURRICULUM'
+        },
         sentra: {
             code: '01A',
             section: 'projects',
@@ -516,6 +524,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let onStationFocusChange = () => {};
 
     function focusStation(stationId) {
+        if (stationId === 'cv' || stationId === '2d') {
+            closeMobileMenu();
+            activeStationId = 'cv';
+            onStationFocusChange('cv');
+            setTimeout(() => {
+                setViewMode('full');
+            }, 380);
+            return;
+        }
         if (!STATION_META[stationId]) return;
         closeMobileMenu();
 
@@ -527,6 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
         applyInspectorContent(stationId);
         syncStationVisualUI(stationId);
         onStationFocusChange(stationId);
+        if (stationId === 'music' && window.eduSpotifyPlayer) {
+            window.eduSpotifyPlayer.expand();
+        }
     }
 
     function setFullScrollSection(sectionId) {
@@ -868,7 +888,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             },
             getViewMode: () => viewMode,
-            getActiveStation: () => activeStationId
+            getActiveStation: () => activeStationId,
+            setViewMode: (mode, opts) => setViewMode(mode, opts)
         };
 
         if (window.EduRoomScene && typeof window.EduRoomScene.init === 'function') {

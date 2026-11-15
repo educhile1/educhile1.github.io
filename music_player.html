@@ -25,9 +25,14 @@
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Música de Eduardo Cayún M.</h1>
                 <p class="text-xs sm:text-sm text-indigo-200 mt-1">Exploración sonora asistida por Inteligencia Artificial</p>
             </div>
-            <a href="tetris.html" class="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition flex items-center gap-1.5">
-                🎮 Jugar Edu Tetris
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-[#1ed760]/20 text-[#1ed760] border border-[#1ed760]/30 text-xs font-bold hover:bg-[#1ed760]/30 transition flex items-center gap-1.5">
+                    <span>Spotify</span> ↗
+                </a>
+                <a href="tetris.html" class="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition flex items-center gap-1.5">
+                    🎮 Jugar Edu Tetris
+                </a>
+            </div>
         </div>
 
         <!-- Body -->
@@ -35,7 +40,8 @@
             <!-- Visualizer & Cover -->
             <div class="md:col-span-5 flex flex-col items-center">
                 <div class="album-cover w-60 h-60 sm:w-64 sm:h-64 rounded-2xl overflow-hidden bg-slate-950 border border-white/10 relative shadow-2xl transition duration-500">
-                    <canvas id="particle-canvas" class="w-full h-full block"></canvas>
+                    <img id="music-cover-bg" src="images/cruzando-cielos-cover.jpg" alt="Portada" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                    <canvas id="particle-canvas" class="w-full h-full block relative z-10"></canvas>
                 </div>
                 <div class="text-center mt-5 w-full">
                     <h2 class="song-title-display text-xl sm:text-2xl font-bold text-white truncate">Cruzando cielos</h2>

@@ -484,6 +484,182 @@
         addMesh(new THREE.BoxGeometry(0.11, 0.035, 0.17), std(0xd9dbe1, 0.45), [1.05, 1.068, 0.32], desk);
         addMesh(new THREE.BoxGeometry(0.4, 0.02, 0.28), std(0x1e1f26, 0.8), [-1.3, 1.06, 0.45], desk, { rot: [0, 0.2, 0] });
 
+        /* ---------------------------------------------------------
+           EXECUTIVE CV / RESUME PAPER ON DESK (Interactive → Modo 2D)
+        --------------------------------------------------------- */
+        const cvPaperTex = canvasTexture(600, 848, (ctx, w, h) => {
+            // Crisp premium white paper
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+
+            // Subtle paper border
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(8, 8, w - 16, h - 16);
+
+            // Top Header: Dark Executive Navy
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(20, 20, w - 40, 120);
+
+            // Cyan stripe accent
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(20, 136, w - 40, 4);
+
+            // Monogram Badge
+            ctx.fillStyle = '#1e293b';
+            roundRect(ctx, 40, 36, 88, 88, 14);
+            ctx.fill();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.font = '900 36px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#38bdf8';
+            ctx.textAlign = 'center';
+            ctx.fillText('EC', 84, 92);
+            ctx.textAlign = 'left';
+
+            // Title & Subtitles
+            ctx.font = '800 28px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('EDUARDO CAYÚN M.', 148, 68);
+
+            ctx.font = '700 15px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('MBA & LÍDER DE PROYECTOS TI', 148, 94);
+
+            ctx.font = '500 13px "Inter", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('Cloud AWS/OCI · Ciberseguridad · IA · Santiago, CL', 148, 118);
+
+            // Section 1: Perfil Ejecutivo
+            ctx.font = '800 14px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('01 // RESUMEN EJECUTIVO & DIRECCIÓN B2B', 36, 178);
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(36, 188);
+            ctx.lineTo(w - 36, 188);
+            ctx.stroke();
+
+            ctx.font = '500 13px "Inter", sans-serif';
+            ctx.fillStyle = '#334155';
+            ctx.fillText('Líder estratégico con +15 años articulando tecnología de alta complejidad', 36, 212);
+            ctx.fillText('y valor de negocio. Especialista en modernización del Estado, banca y utilities.', 36, 232);
+
+            // Section 2: Experiencia Laboral
+            ctx.font = '800 14px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('02 // TRAYECTORIA LABORAL RECIENTE', 36, 278);
+            ctx.beginPath();
+            ctx.moveTo(36, 288);
+            ctx.lineTo(w - 36, 288);
+            ctx.stroke();
+
+            const jobs = [
+                ['Tierra Ayni Ltda. · Jefe de Proyectos & Ciberseguridad', '2018 - Presente', '#0284c7'],
+                ['Sentra Software House · Ingeniero de Software (BCI, Falabella)', '2016 - 2018', '#6366f1'],
+                ['L & E Inversiones · Analista de Arquitectura JEE (AWS)', '2016', '#059669'],
+                ['Contraloría General (CGR) · Analista Programador SICA (Oracle)', '2012 - 2015', '#d97706'],
+                ['Everis / NTT DATA · Consultor TI (SIGFE 2 - DIPRES)', '2010 - 2011', '#db2777']
+            ];
+
+            jobs.forEach(([title, period, col], i) => {
+                const y = 314 + i * 44;
+                ctx.fillStyle = col;
+                ctx.beginPath();
+                ctx.arc(44, y - 4, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.font = '700 13px "Inter", sans-serif';
+                ctx.fillStyle = '#0f172a';
+                ctx.fillText(title, 56, y);
+
+                ctx.font = '600 11px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#64748b';
+                ctx.fillText(period, 56, y + 17);
+            });
+
+            // Section 3: Credenciales & Certificaciones
+            ctx.font = '800 14px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('03 // CREDENCIALES & FORMACIÓN', 36, 552);
+            ctx.beginPath();
+            ctx.moveTo(36, 562);
+            ctx.lineTo(w - 36, 562);
+            ctx.stroke();
+
+            const creds = [
+                'MBA (Magíster en Dirección de Empresas)',
+                'Ingeniería en Informática · UDLA',
+                'MIT Professional Education (2025-2026)',
+                'ISC2 Certified in Cybersecurity (CC)',
+                'Top 8 IA Generativa (Google & Alura)',
+                'Oracle OCI Certified & AWS Cloud Architect'
+            ];
+
+            creds.forEach((c, i) => {
+                const col = i % 2;
+                const row = Math.floor(i / 2);
+                const x = 36 + col * 268;
+                const y = 588 + row * 26;
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(x, y - 9, 6, 6);
+                ctx.font = '600 12px "Inter", sans-serif';
+                ctx.fillStyle = '#1e293b';
+                ctx.fillText(c, x + 14, y);
+            });
+
+            // Bottom CTA Banner (High Visibility Action)
+            const btnY = h - 120;
+            const g = ctx.createLinearGradient(32, btnY, w - 32, btnY + 76);
+            g.addColorStop(0, '#0284c7');
+            g.addColorStop(1, '#0369a1');
+            ctx.fillStyle = g;
+            roundRect(ctx, 32, btnY, w - 64, 76, 18);
+            ctx.fill();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.font = '800 21px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText('📄 CLIC AQUÍ · VER EN MODO 2D ↗', w / 2, btnY + 46);
+            ctx.textAlign = 'left';
+        });
+
+        // 3D Paper Mesh Stack on Desk (Near the robot)
+        const cvGroup = new THREE.Group();
+        cvGroup.position.set(-0.12, 1.052, 0.40);
+        cvGroup.rotation.y = 0.14;
+        desk.add(cvGroup);
+
+        // Lower sheets for physical 3D paper stack thickness
+        addMesh(new THREE.BoxGeometry(0.302, 0.002, 0.422), std(0xe2e8f0, 0.9, 0.0), [0.002, 0.001, 0.002], cvGroup, { rot: [0, -0.02, 0], cast: false });
+        addMesh(new THREE.BoxGeometry(0.301, 0.002, 0.421), std(0xf1f5f9, 0.9, 0.0), [-0.002, 0.002, -0.001], cvGroup, { rot: [0, 0.03, 0], cast: false });
+
+        // Top printed CV sheet
+        const cvMesh = addMesh(new THREE.PlaneGeometry(0.30, 0.42), basic({ map: cvPaperTex }), [0, 0.0035, 0], cvGroup, {
+            rot: [-Math.PI / 2, 0, 0],
+            station: 'cv',
+            cast: false
+        });
+        cvMesh.userData.isCVPaper = true;
+
+        // Interactive Luminous Cyan Aura under the paper
+        glowPlane(0.52, 0.64, '56,189,248', 0.28, [0, 0.004, 0], [-Math.PI / 2, 0, 0], cvGroup);
+
+        // Sleek Executive Pen on desk next to the document
+        const pen = new THREE.Group();
+        pen.position.set(0.18, 0.006, 0.05);
+        pen.rotation.y = 0.22;
+        cvGroup.add(pen);
+        addMesh(new THREE.CylinderGeometry(0.0045, 0.0045, 0.16, 16), std(0x0f172a, 0.25, 0.9), [0, 0, 0], pen, { rot: [Math.PI / 2, 0, 0], cast: false });
+        addMesh(new THREE.CylinderGeometry(0.0046, 0.0046, 0.05, 16), std(0xf59e0b, 0.2, 0.95), [0, 0, -0.05], pen, { rot: [Math.PI / 2, 0, 0], cast: false });
+        addMesh(new THREE.BoxGeometry(0.002, 0.004, 0.04), std(0xf59e0b, 0.2, 0.95), [0.005, 0.003, -0.05], pen, { cast: false });
+
         // Phone → CONTACTO (Nothing-OS Dark Flagship Edition - Realistic High-End Unibody)
         function createRoundedRectShape(w, h, r) {
             const shape = new THREE.Shape();
@@ -588,7 +764,7 @@
             ctx.fillStyle = '#cbd5e1';
             ctx.fillRect(716, 42, 4, 10);
 
-            // Pixel Dot-Matrix Clock (Agrandado & High Contrast Glow)
+            // Pixel Dot-Matrix Clock
             const digits = [
                 timeStr.charAt(0) || '0',
                 timeStr.charAt(1) || '0',
@@ -596,14 +772,14 @@
                 timeStr.charAt(4) || '0'
             ];
 
-            const dotSize = 12.5;
+            const dotSize = 13.0;
             const dotGap = 5.5;
             const digitW = 5 * (dotSize + dotGap) - dotGap;
             const colonW = 24;
             const digitSpacing = 22;
             const totalClockW = digitW * 4 + colonW + digitSpacing * 2;
             const startClockX = (w - totalClockW) / 2;
-            const clockY = 104;
+            const clockY = 96;
 
             function drawPixelDigit(char, px, py) {
                 const pat = BITMAPS_5X7[char] || BITMAPS_5X7['0'];
@@ -612,7 +788,7 @@
                         const isLit = pat[r * 5 + c] === 1;
                         if (isLit) {
                             ctx.fillStyle = '#ffffff';
-                            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+                            ctx.shadowColor = 'rgba(255, 255, 255, 0.55)';
                             ctx.shadowBlur = 10;
                             roundRect(ctx, px + c * (dotSize + dotGap), py + r * (dotSize + dotGap), dotSize, dotSize, 2.5);
                             ctx.fill();
@@ -632,11 +808,11 @@
             // Glowing Colon
             const colonX = startClockX + (digitW + digitSpacing) * 2;
             ctx.fillStyle = '#ffffff';
-            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.55)';
             ctx.shadowBlur = 10;
             roundRect(ctx, colonX + 6, clockY + 28, dotSize, dotSize, 2.5);
             ctx.fill();
-            roundRect(ctx, colonX + 6, clockY + 74, dotSize, dotSize, 2.5);
+            roundRect(ctx, colonX + 6, clockY + 76, dotSize, dotSize, 2.5);
             ctx.fill();
             ctx.shadowBlur = 0;
 
@@ -646,172 +822,249 @@
             // Subtitle: ● CLT · SANTIAGO
             ctx.fillStyle = '#f472b6';
             ctx.beginPath();
-            ctx.arc(w / 2 - 105, 260, 6, 0, Math.PI * 2);
+            ctx.arc(w / 2 - 105, 252, 6, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.font = '700 22px "JetBrains Mono", monospace';
             ctx.fillStyle = '#94a3b8';
             ctx.textAlign = 'center';
-            ctx.fillText('CLT · SANTIAGO', w / 2 + 10, 267);
+            ctx.fillText('CLT · SANTIAGO', w / 2 + 10, 259);
             ctx.textAlign = 'left';
 
             // Identity Header (Nothing OS Tech Style)
-            ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
+            ctx.font = '800 38px "Plus Jakarta Sans", sans-serif';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('Eduardo Cayún M.', 48, 334);
+            ctx.fillText('Eduardo Cayún M.', 44, 320);
 
             ctx.font = '600 21px "Inter", sans-serif';
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText('MBA & Líder TI · Consultoría B2B & Cloud', 48, 372);
+            ctx.fillText('MBA & Líder TI · Consultoría B2B & Cloud', 44, 356);
 
-            // Widget 1: Direct Email / Contact Card (Agrandado & Frosted Glass)
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            const cardW = w - 88; // 680px wide
+            const padX = 44;
+
+            // Widget 1: Direct Contact / Email Card (Agrandado & Taller: y = 390 .. 590)
+            const c1Y = 390;
+            const c1H = 200;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.055)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
             ctx.lineWidth = 1.5;
-            roundRect(ctx, 48, 416, w - 96, 168, 28);
+            roundRect(ctx, padX, c1Y, cardW, c1H, 28);
             ctx.fill();
             ctx.stroke();
 
-            ctx.font = '600 18px "JetBrains Mono", monospace';
+            // Inner badge & labels
+            ctx.font = '700 18px "JetBrains Mono", monospace';
             ctx.fillStyle = '#64748b';
-            ctx.fillText('✉  CONTACTO DIRECTO', 76, 458);
+            ctx.fillText('✉  CONTACTO DIRECTO', padX + 28, c1Y + 44);
 
             // Emerald status badge
             ctx.fillStyle = '#34d399';
             ctx.beginPath();
-            ctx.arc(w - 76, 454, 5.5, 0, Math.PI * 2);
+            ctx.arc(padX + cardW - 130, c1Y + 39, 5.5, 0, Math.PI * 2);
             ctx.fill();
             ctx.font = '700 15px "JetBrains Mono", monospace';
             ctx.fillStyle = '#34d399';
-            ctx.textAlign = 'right';
-            ctx.fillText('DISPONIBLE', w - 90, 460);
+            ctx.fillText('DISPONIBLE', padX + cardW - 116, c1Y + 44);
+
+            // Email text (large, high contrast)
+            ctx.font = '800 32px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('contacto@eduardocayun.com', padX + 28, c1Y + 104);
+
+            ctx.font = '500 19px "Inter", sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('Liderazgo Estratégico · Ciberseguridad · IA Cloud', padX + 28, c1Y + 152);
+
+            // Right action arrow
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.beginPath();
+            ctx.arc(padX + cardW - 46, c1Y + 104, 24, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = '700 20px "Inter", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText('↗', padX + cardW - 46, c1Y + 111);
             ctx.textAlign = 'left';
 
-            ctx.font = '700 29px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('contacto@eduardocayun.com', 76, 508);
+            // Widget 2: Split Row - GitHub & LinkedIn Widgets (Agrandados: y = 614 .. 844)
+            const c2Y = 614;
+            const c2H = 230;
+            const colW = (cardW - 20) / 2; // 330px each
 
-            ctx.font = '500 18px "Inter", sans-serif';
-            ctx.fillStyle = '#94a3b8';
-            ctx.fillText('Liderazgo Estratégico · Ciberseguridad · IA', 76, 546);
-
-            // Widget 2: Split Row - GitHub & LinkedIn Widgets (Agrandados)
-            const colW = (w - 96 - 24) / 2;
-
-            // GitHub Card
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            // GitHub Card (Left)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.055)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
             ctx.lineWidth = 1.5;
-            roundRect(ctx, 48, 612, colW, 196, 26);
+            roundRect(ctx, padX, c2Y, colW, c2H, 28);
             ctx.fill();
             ctx.stroke();
 
-            ctx.font = '700 20px "JetBrains Mono", monospace';
+            // GitHub Header
+            ctx.font = '800 22px "JetBrains Mono", monospace';
             ctx.fillStyle = '#a855f7';
-            ctx.fillText('</>', 74, 654);
-
-            ctx.font = '600 17px "JetBrains Mono", monospace';
+            ctx.fillText('</>', padX + 26, c2Y + 48);
+            ctx.font = '700 17px "JetBrains Mono", monospace';
             ctx.fillStyle = '#64748b';
-            ctx.fillText('GITHUB', 116, 654);
+            ctx.fillText('GITHUB', padX + 72, c2Y + 47);
 
-            ctx.font = '700 28px "JetBrains Mono", monospace';
+            // Corner indicator dot
+            ctx.fillStyle = '#a855f7';
+            ctx.beginPath();
+            ctx.arc(padX + colW - 32, c2Y + 44, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Username
+            ctx.font = '800 30px "JetBrains Mono", monospace';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('@educhile1', 74, 714);
+            ctx.fillText('@educhile1', padX + 26, c2Y + 118);
 
             ctx.font = '500 17px "Inter", sans-serif';
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText('Proyectos & Arquitecturas', 74, 760);
+            ctx.fillText('Proyectos & Arquitecturas', padX + 26, c2Y + 160);
 
-            // LinkedIn Card
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-            roundRect(ctx, 48 + colW + 24, 612, colW, 196, 26);
+            // Action chip
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.14)';
+            roundRect(ctx, padX + 26, c2Y + 182, 172, 30, 8);
+            ctx.fill();
+            ctx.font = '700 13px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#c084fc';
+            ctx.fillText('REPOSITORIOS ↗', padX + 38, c2Y + 202);
+
+            // LinkedIn Card (Right)
+            const c2RightX = padX + colW + 20;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.055)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+            roundRect(ctx, c2RightX, c2Y, colW, c2H, 28);
             ctx.fill();
             ctx.stroke();
 
+            // LinkedIn Header
             ctx.fillStyle = '#0284c7';
-            roundRect(ctx, 48 + colW + 48, 638, 28, 24, 6);
+            roundRect(ctx, c2RightX + 26, c2Y + 30, 28, 24, 6);
             ctx.fill();
             ctx.font = '900 16px "Plus Jakarta Sans", sans-serif';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('in', 48 + colW + 55, 655);
+            ctx.fillText('in', c2RightX + 33, c2Y + 47);
 
-            ctx.font = '600 17px "JetBrains Mono", monospace';
+            ctx.font = '700 17px "JetBrains Mono", monospace';
             ctx.fillStyle = '#64748b';
-            ctx.fillText('LINKEDIN', 48 + colW + 86, 654);
+            ctx.fillText('LINKEDIN', c2RightX + 66, c2Y + 47);
 
-            ctx.font = '700 25px "JetBrains Mono", monospace';
+            // Corner indicator dot
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(c2RightX + colW - 32, c2Y + 44, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Username
+            ctx.font = '800 27px "JetBrains Mono", monospace';
             ctx.fillStyle = '#ffffff';
-            ctx.fillText('/in/eduardocayun', 48 + colW + 48, 714);
+            ctx.fillText('/in/eduardocayun', c2RightX + 26, c2Y + 118);
 
             ctx.font = '500 17px "Inter", sans-serif';
             ctx.fillStyle = '#94a3b8';
-            ctx.fillText('Red Ejecutiva Senior', 48 + colW + 48, 760);
+            ctx.fillText('Red Ejecutiva Senior', c2RightX + 26, c2Y + 160);
 
-            // Widget 3: THE SIGNATURE PINK CARD (Awwwards Nothing-OS Highlight - Agrandado & Destacado)
-            const pinkGrad = ctx.createLinearGradient(48, 836, 48 + w - 96, 836 + 240);
+            // Action chip
+            ctx.fillStyle = 'rgba(2, 132, 199, 0.16)';
+            roundRect(ctx, c2RightX + 26, c2Y + 182, 160, 30, 8);
+            ctx.fill();
+            ctx.font = '700 13px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('CONECTAR B2B ↗', c2RightX + 38, c2Y + 202);
+
+            // Widget 3: THE SIGNATURE PINK CARD (Awwwards Highlight - Agrandado: y = 868 .. 1158)
+            const c3Y = 868;
+            const c3H = 290;
+            const pinkGrad = ctx.createLinearGradient(padX, c3Y, padX + cardW, c3Y + c3H);
             pinkGrad.addColorStop(0, '#f472b6');
             pinkGrad.addColorStop(1, '#fb7185');
             ctx.fillStyle = pinkGrad;
-            roundRect(ctx, 48, 836, w - 96, 240, 32);
+            roundRect(ctx, padX, c3Y, cardW, c3H, 36);
             ctx.fill();
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
             // Status pill inside pink card
             ctx.fillStyle = 'rgba(15, 23, 42, 0.16)';
-            roundRect(ctx, 76, 868, 220, 32, 16);
+            roundRect(ctx, padX + 32, c3Y + 32, 280, 36, 18);
             ctx.fill();
-            ctx.font = '700 15px "JetBrains Mono", monospace';
+            ctx.font = '800 15px "JetBrains Mono", monospace';
             ctx.fillStyle = '#0f172a';
-            ctx.fillText('● DISPONIBILIDAD ACTIVA', 92, 890);
+            ctx.fillText('● DISPONIBILIDAD INMEDIATA (30 MIN)', padX + 46, c3Y + 56);
 
-            ctx.font = '800 40px "JetBrains Mono", monospace';
+            // Main meet cal title (Huge, bold, impactful)
+            ctx.font = '800 44px "JetBrains Mono", monospace';
             ctx.fillStyle = '#0f172a';
-            ctx.fillText('agendar_meet.cal', 76, 954);
+            ctx.fillText('agendar_meet.cal', padX + 32, c3Y + 128);
 
-            ctx.font = '600 22px "Inter", sans-serif';
+            ctx.font = '600 23px "Inter", sans-serif';
             ctx.fillStyle = '#1e293b';
-            ctx.fillText('Reservar videollamada directa (30 min)', 76, 1000);
+            ctx.fillText('Reservar videollamada directa con Eduardo', padX + 32, c3Y + 172);
 
-            // Dark circular button with arrow inside pink card
-            const circleBtnX = w - 108;
-            const circleBtnY = 956;
+            ctx.font = '500 18px "Inter", sans-serif';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+            ctx.fillText('Consultoría Estratégica B2B · Evaluación de Proyectos & Cloud', padX + 32, c3Y + 224);
+
+            // Big dark circular button with arrow inside pink card
+            const circleBtnX = padX + cardW - 74;
+            const circleBtnY = c3Y + 126;
             ctx.fillStyle = '#0f172a';
             ctx.beginPath();
-            ctx.arc(circleBtnX, circleBtnY, 40, 0, Math.PI * 2);
+            ctx.arc(circleBtnX, circleBtnY, 48, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.font = '800 34px "Inter", sans-serif';
+            ctx.font = '800 40px "Inter", sans-serif';
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
-            ctx.fillText('↗', circleBtnX, circleBtnY + 11);
+            ctx.fillText('↗', circleBtnX, circleBtnY + 14);
             ctx.textAlign = 'left';
 
-            // Bottom App Dock (4 circular buttons)
-            const dockIcons = ['📞', '💬', '🌐', '🎮'];
-            const dockStep = (w - 96) / 4;
-            dockIcons.forEach((icon, i) => {
-                const cx = 48 + dockStep * i + dockStep / 2;
-                const cy = 1220;
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-                ctx.lineWidth = 1.5;
+            // Bottom App Dock (4 Big Circular Touch Buttons: y = 1200 .. 1380)
+            const dockIcons = [
+                { icon: '✉', label: 'Email', color: '#38bdf8' },
+                { icon: '📅', label: 'Meet', color: '#f472b6' },
+                { icon: '💼', label: 'LinkedIn', color: '#0284c7' },
+                { icon: '🎵', label: 'Música', color: '#1ed760' }
+            ];
+            const dockStep = cardW / 4;
+            dockIcons.forEach((item, i) => {
+                const cx = padX + dockStep * i + dockStep / 2;
+                const cy = 1270;
+                const btnR = 48; // Big 96px diameter touch target!
+
+                // Outer glass ring
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+                ctx.lineWidth = 1.8;
                 ctx.beginPath();
-                ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+                ctx.arc(cx, cy, btnR, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
 
-                ctx.font = '28px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+                // Inner glow accent
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+                ctx.beginPath();
+                ctx.arc(cx, cy, btnR - 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Icon
+                ctx.font = '34px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(icon, cx, cy + 10);
+                ctx.fillText(item.icon, cx, cy + 11);
+
+                // Small micro-label below icon
+                ctx.font = '700 13px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(item.label, cx, cy + btnR + 24);
             });
             ctx.textAlign = 'left';
 
-            // Home Indicator Bar
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-            roundRect(ctx, (w - 240) / 2, 1380, 240, 8, 4);
+            // Home Indicator Bar (Agrandada & centrada)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            roundRect(ctx, (w - 260) / 2, 1450, 260, 9, 4.5);
             ctx.fill();
 
             ctx.restore();
@@ -1259,21 +1512,141 @@
         speaker.position.set(-0.55, 0.78, 0);
         cabinet.add(speaker);
         addMesh(new THREE.BoxGeometry(0.55, 0.66, 0.45), std(0x111216, 0.5, 0.3), [0, 0.33, 0], speaker, { station: 'music' });
+        
+        // Spotify OLED Screen on front-top band of speaker
+        const oledTex = canvasTexture(256, 80, (ctx, w, h) => {
+            ctx.fillStyle = '#06080d';
+            ctx.fillRect(0, 0, w, h);
+            // Spotify icon
+            ctx.fillStyle = '#1ed760';
+            ctx.beginPath();
+            ctx.arc(28, 40, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#06080d';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('≈', 28, 46);
+            // Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 15px "JetBrains Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('SPOTIFY HI-FI', 54, 34);
+            ctx.fillStyle = '#1ed760';
+            ctx.font = '11px "JetBrains Mono", monospace';
+            ctx.fillText('● CONNECTED', 54, 54);
+            // Mini Green Equalizer Bars on right
+            ctx.fillStyle = '#1ed760';
+            ctx.fillRect(206, 26, 4, 30);
+            ctx.fillRect(216, 18, 4, 38);
+            ctx.fillRect(226, 32, 4, 24);
+            ctx.fillRect(236, 22, 4, 34);
+        });
+        addMesh(new THREE.PlaneGeometry(0.34, 0.11), basic({ map: oledTex }), [0, 0.55, 0.23], speaker, { station: 'music', cast: false });
+        glowPlane(0.7, 0.35, '30,215,96', 0.4, [0, 0.55, 0.235], null, speaker);
+
         const ringMat = basic({ color: 0xf472b6 });
         const ringOuter = addMesh(new THREE.TorusGeometry(0.17, 0.016, 10, 40), ringMat, [0, 0.36, 0.23], speaker, { cast: false, station: 'music' });
         const ringInner = addMesh(new THREE.TorusGeometry(0.095, 0.013, 10, 32), ringMat, [0, 0.36, 0.23], speaker, { cast: false });
+        const ringSpotify = addMesh(new THREE.TorusGeometry(0.185, 0.012, 10, 40), basic({ color: 0x1ed760 }), [0, 0.36, 0.232], speaker, { cast: false });
         addMesh(new THREE.SphereGeometry(0.045, 14, 14), std(0x27272a, 0.3, 0.6), [0, 0.36, 0.23], speaker);
         glowPlane(1.2, 1.2, '244,114,182', 0.45, [0, 0.36, 0.235], null, speaker);
         const speakerLight = new THREE.PointLight(0xf472b6, 0.55, 2.5, 2);
         speakerLight.position.set(0, 0.4, 0.5);
         speaker.add(speakerLight);
+        const speakerGreenLight = new THREE.PointLight(0x1ed760, 0.5, 2.5, 2);
+        speakerGreenLight.position.set(0, 0.45, 0.5);
+        speaker.add(speakerGreenLight);
+
+        /* ---------------------------------------------------------
+           VINYL ALBUM COVER ART DISPLAY (→ Imagen pequeña de la música)
+        --------------------------------------------------------- */
+        // Display stand on credenza between speaker and turntable
+        addMesh(new THREE.BoxGeometry(0.32, 0.024, 0.12), std(0x181920, 0.4, 0.6), [-0.05, 0.792, 0.08], cabinet);
+
+        const albumJacket = new THREE.Group();
+        albumJacket.position.set(-0.05, 0.94, 0.08);
+        albumJacket.rotation.set(-0.16, 0.14, 0);
+        cabinet.add(albumJacket);
+
+        addMesh(new THREE.BoxGeometry(0.28, 0.28, 0.012), std(0x121318, 0.4, 0.3), [0, 0, 0], albumJacket, { station: 'music' });
+
+        let coverImg = null;
+        const albumCoverTex = canvasTexture(512, 512, (ctx, w, h) => {
+            ctx.fillStyle = '#0a0b16';
+            ctx.fillRect(0, 0, w, h);
+            if (coverImg) {
+                drawCover(ctx, coverImg, 0, 0, w, h);
+            } else {
+                const g = ctx.createLinearGradient(0, 0, w, h);
+                g.addColorStop(0, '#180b30');
+                g.addColorStop(1, '#070913');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, w, h);
+                ctx.fillStyle = '#ff007f';
+                ctx.beginPath();
+                ctx.arc(w / 2, h / 2 - 20, 90, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 30px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('CRUZANDO CIELOS', w / 2, h - 80);
+            }
+            // Sleek Spotify Badge in corner of the vinyl jacket
+            ctx.save();
+            ctx.fillStyle = 'rgba(18,18,18,0.92)';
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(w - 116, h - 42, 102, 30, 15);
+            else ctx.rect(w - 116, h - 42, 102, 30);
+            ctx.fill();
+            ctx.strokeStyle = '#1ed760';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            // Spotify logo dot
+            ctx.fillStyle = '#1ed760';
+            ctx.beginPath();
+            ctx.arc(w - 100, h - 27, 7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#121212';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('≈', w - 100, h - 24);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('SPOTIFY', w - 86, h - 23);
+            ctx.restore();
+        });
+        loadImage('images/cruzando-cielos-cover.jpg', (img) => {
+            coverImg = img;
+            albumCoverTex.userData.redraw();
+        });
+        const albumCoverMat = std(0xffffff, 0.45, 0.05, {
+            map: albumCoverTex,
+            emissive: 0xffffff,
+            emissiveMap: albumCoverTex,
+            emissiveIntensity: 0.32
+        });
+        addMesh(new THREE.PlaneGeometry(0.274, 0.274), albumCoverMat, [0, 0, 0.007], albumJacket, { station: 'music', cast: false });
+        glowPlane(0.65, 0.65, '30,215,96', 0.4, [0, 0, -0.012], null, albumJacket);
+
+        // Listen for track changes to dynamically update the 3D album cover
+        if (window.eduSpotifyPlayer && window.eduSpotifyPlayer.onStateChange) {
+            window.eduSpotifyPlayer.onStateChange((state) => {
+                if (state && state.currentTrack && state.currentTrack.cover) {
+                    loadImage(state.currentTrack.cover, (newImg) => {
+                        coverImg = newImg;
+                        albumCoverTex.userData.redraw();
+                    });
+                }
+            });
+        }
 
         const turntable = new THREE.Group();
         turntable.position.set(0.42, 0.78, 0);
         cabinet.add(turntable);
         addMesh(new THREE.BoxGeometry(0.85, 0.09, 0.6), std(0x2a2b31, 0.5, 0.3), [0, 0.045, 0], turntable, { station: 'music' });
         const vinyl = addMesh(new THREE.CylinderGeometry(0.23, 0.23, 0.02, 32), std(0x09090b, 0.25, 0.5), [-0.1, 0.1, 0], turntable, { station: 'music' });
-        addMesh(new THREE.CylinderGeometry(0.07, 0.07, 0.022, 20), basic({ color: 0xf9a8d4 }), [-0.1, 0.102, 0], turntable, { cast: false });
+        addMesh(new THREE.CylinderGeometry(0.075, 0.075, 0.022, 20), basic({ color: 0x1ed760 }), [-0.1, 0.102, 0], turntable, { cast: false });
         addMesh(new THREE.BoxGeometry(0.02, 0.02, 0.32), std(0xd4d4d8, 0.3, 0.8), [0.25, 0.12, 0.02], turntable, { rot: [0, 0.4, 0] });
 
         // Plant next to window
@@ -1413,7 +1786,8 @@
             { id: 'home', code: '03', label: 'Perfil', anchor: [0, 2.1, -0.55], target: [0, 1.42, -0.55], normal: [0.35, 0.15, 0.93], dist: 2.4, lift: 0.1 },
             { id: 'contact', code: '04', label: 'Contacto', anchor: [1.55, 1.84, 1.0], target: [1.55, 1.50, 1.0], normal: [0, 0.04, 0.999], dist: 1.12, lift: 0.0 },
             { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.2, -4.05], target: [-5.05, 1.42, -4.05], normal: [0.707, 0, 0.707], dist: 2.1, lift: 0.05 },
-            { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.8, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 }
+            { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.8, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 },
+            { id: 'cv', code: '2D', label: 'Ver Portafolio 2D', anchor: [0.08, 1.48, 0.65], target: [0.08, 1.07, 0.65], normal: [0, 0.85, 0.52], dist: 1.25, lift: 0.25 }
         ];
         const hotspotMap = new Map();
         let hoveredId = null;
@@ -1486,6 +1860,9 @@
                 orbit.tR = baseRadius();
                 orbit.tPol = POL_BASE;
             }
+            if (stationId === 'music' && window.eduSpotifyPlayer) {
+                window.eduSpotifyPlayer.expand();
+            }
         });
 
         const raycaster = new THREE.Raycaster();
@@ -1540,7 +1917,7 @@
                 const screenHits = raycaster.intersectObject(phoneScreenMesh, false);
                 if (screenHits.length > 0 && screenHits[0].uv) {
                     const py = (1 - screenHits[0].uv.y) * 1536;
-                    if ((py >= 416 && py <= 584) || (py >= 612 && py <= 808) || (py >= 836 && py <= 1076) || (py >= 1150 && py <= 1280)) {
+                    if ((py >= 390 && py <= 590) || (py >= 614 && py <= 844) || (py >= 868 && py <= 1158) || (py >= 1210 && py <= 1390)) {
                         canvas.style.cursor = 'pointer';
                         return;
                     }
@@ -1570,20 +1947,20 @@
                         const uv = screenHits[0].uv;
                         const px = uv.x * 768;
                         const py = (1 - uv.y) * 1536;
-                        if (py >= 416 && py <= 584) {
+                        if (py >= 390 && py <= 590) {
                             window.location.href = 'mailto:contacto@eduardocayun.com';
                             return;
-                        } else if (py >= 612 && py <= 808) {
+                        } else if (py >= 614 && py <= 844) {
                             if (px < 384) {
                                 window.open('https://github.com/educhile1', '_blank', 'noopener,noreferrer');
                             } else {
                                 window.open('https://www.linkedin.com/in/eduardo-cayun/', '_blank', 'noopener,noreferrer');
                             }
                             return;
-                        } else if (py >= 836 && py <= 1076) {
+                        } else if (py >= 868 && py <= 1158) {
                             window.open('https://calendar.app.google/bLJvGyt2hxUdHTNG7', '_blank', 'noopener,noreferrer');
                             return;
-                        } else if (py >= 1150 && py <= 1280) {
+                        } else if (py >= 1210 && py <= 1390) {
                             if (px < 192) {
                                 window.location.href = 'mailto:contacto@eduardocayun.com';
                             } else if (px < 384) {
@@ -1591,14 +1968,23 @@
                             } else if (px < 576) {
                                 window.open('https://www.linkedin.com/in/eduardo-cayun/', '_blank', 'noopener,noreferrer');
                             } else {
-                                window.location.href = 'tetris.html';
+                                if (window.eduSpotifyPlayer) {
+                                    window.eduSpotifyPlayer.expand();
+                                    window.eduSpotifyPlayer.togglePlay();
+                                }
                             }
                             return;
                         }
                     }
                 }
                 const id = pickStation(e.clientX, e.clientY);
-                if (id) api.focusStation(id);
+                if (id) {
+                    api.focusStation(id);
+                    if (id === 'music' && window.eduSpotifyPlayer) {
+                        window.eduSpotifyPlayer.expand();
+                        window.eduSpotifyPlayer.togglePlay();
+                    }
+                }
             }
         });
 
@@ -1703,6 +2089,16 @@
                 contactHs.anchorV.set(0.2 + phone.position.x, phone.position.y + 0.34, 0.25 + phone.position.z);
             }
 
+            // CV Paper magnetic elevation on hover / active
+            const isCvActive = active === 'cv';
+            const isCvHovered = hoveredId === 'cv';
+            const targetPaperY = 1.052 + (isCvActive ? 0.028 : (isCvHovered ? 0.009 : 0));
+            cvGroup.position.y += (targetPaperY - cvGroup.position.y) * (1 - Math.exp(-dt * 6.0));
+            const cvHs = hotspotMap.get('cv');
+            if (cvHs) {
+                cvHs.anchorV.set(0.2 + cvGroup.position.x, cvGroup.position.y + 0.38, 0.25 + cvGroup.position.z);
+            }
+
             camera.position.lerp(desiredPos, k);
             currentLook.lerp(desiredLook, k);
             camera.lookAt(currentLook);
@@ -1722,11 +2118,27 @@
                 antennaTipR.scale.setScalar(1 + Math.sin(t * 3 + 1.5) * 0.2);
                 chestLed.visible = Math.sin(t * 4) > -0.4;
 
-                // Speaker pulse & vinyl spin
-                const beat = Math.pow(Math.max(0, Math.sin(t * 6.2)), 6);
-                ringOuter.scale.setScalar(1 + beat * 0.12);
-                ringInner.scale.setScalar(1 + beat * 0.2);
-                vinyl.rotation.y += dt * 3.4;
+                // Speaker pulse & vinyl spin synchronized with Spotify player
+                const isAudioPlaying = window.eduMusicState && window.eduMusicState.isPlaying;
+                let beat = 0;
+                if (isAudioPlaying) {
+                    beat = (window.eduMusicState.getBeat ? window.eduMusicState.getBeat() : Math.pow(Math.max(0, Math.sin(t * 6.8)), 6));
+                    ringOuter.scale.setScalar(1 + beat * 0.22);
+                    ringInner.scale.setScalar(1 + beat * 0.36);
+                    if (ringSpotify) ringSpotify.scale.setScalar(1 + beat * 0.26);
+                    vinyl.rotation.y += dt * 4.2;
+                    speakerLight.intensity = 0.55 + beat * 0.8;
+                    if (speakerGreenLight) speakerGreenLight.intensity = 0.55 + beat * 0.9;
+                    if (albumJacket) albumJacket.position.y = 0.94 + Math.sin(t * 3.5) * 0.005;
+                } else {
+                    ringOuter.scale.setScalar(1.0);
+                    ringInner.scale.setScalar(1.0);
+                    if (ringSpotify) ringSpotify.scale.setScalar(1.0);
+                    vinyl.rotation.y += dt * 0.35;
+                    speakerLight.intensity = 0.25;
+                    if (speakerGreenLight) speakerGreenLight.intensity = 0.2;
+                    if (albumJacket) albumJacket.position.y = 0.94;
+                }
 
                 // Badges sway & cat breathing
                 badgePivots.forEach((b) => {

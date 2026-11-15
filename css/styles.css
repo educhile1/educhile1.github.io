@@ -669,11 +669,19 @@ body.stage-3d-active #floating-ver-3d {
     display: none !important;
 }
 
-/* 2. Full 2D Portfolio Mode - 3D scene becomes ambient background */
+/* 2. Full 2D Portfolio Mode - Deep Executive Obsidian Background */
 body.full-scroll-active {
     overflow-x: hidden !important;
     overflow-y: auto !important;
     height: auto !important;
+    background-color: #070913 !important;
+    background-image:
+        radial-gradient(ellipse 90% 60% at 50% -5%, rgba(30, 27, 75, 0.55) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 45% at 85% 25%, rgba(244, 114, 182, 0.05) 0%, transparent 65%),
+        radial-gradient(ellipse 65% 50% at 10% 48%, rgba(56, 189, 248, 0.05) 0%, transparent 65%),
+        radial-gradient(ellipse 70% 50% at 90% 75%, rgba(52, 211, 153, 0.04) 0%, transparent 70%),
+        linear-gradient(180deg, #090c16 0%, #060810 50%, #030408 100%) !important;
+    background-attachment: fixed !important;
 }
 
 body.full-scroll-active #portfolio-main {
@@ -703,7 +711,8 @@ body.full-scroll-active #inspector-chrome-bar {
 
 body.full-scroll-active #webgl-stage {
     pointer-events: none !important;
-    opacity: 0.16 !important;
+    opacity: 0.2 !important;
+    filter: saturate(125%) blur(1.5px) !important;
     cursor: default !important;
 }
 
@@ -838,31 +847,32 @@ body.full-scroll-active #floating-ver-3d {
 }
 
 .phone-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
     transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .phone-card:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(56, 189, 248, 0.45);
     transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
 .phone-pink-card {
-    background: #f9a8d4;
+    background: linear-gradient(135deg, #f472b6 0%, #fb7185 100%);
     color: #0b0f19;
-    border-radius: 20px;
-    padding: 0.95rem 1.15rem;
-    box-shadow: 0 10px 25px -5px rgba(249, 168, 212, 0.35);
+    border-radius: 28px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 14px 35px -5px rgba(244, 114, 182, 0.45);
     transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .phone-pink-card:hover {
-    background: #f472b6;
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px -5px rgba(244, 114, 182, 0.5);
+    background: linear-gradient(135deg, #f472b6 0%, #f43f5e 100%);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 18px 40px -5px rgba(244, 114, 182, 0.6);
 }
 
 .phone-pink-card:hover .phone-circle-btn {
@@ -871,8 +881,8 @@ body.full-scroll-active #floating-ver-3d {
 }
 
 .phone-circle-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: #0b0f19;
     color: #ffffff;
@@ -880,36 +890,45 @@ body.full-scroll-active #floating-ver-3d {
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 15px;
+    font-size: 18px;
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .phone-dock-icon {
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #cbd5e1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 17px;
+    font-size: 19px;
     transition: all 0.2s ease;
 }
 
+@media (min-width: 640px) {
+    .phone-dock-icon {
+        width: 52px;
+        height: 52px;
+        font-size: 21px;
+    }
+}
+
 .phone-dock-icon:hover {
-    background: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.3);
     color: #ffffff;
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.05);
 }
 
 .phone-home-indicator {
-    width: 110px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.35);
+    width: 140px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.38);
     border-radius: 9999px;
-    margin: 12px auto 2px;
+    margin: 18px auto 4px;
 }
 
 @media (max-width: 400px) {
@@ -930,4 +949,179 @@ body.full-scroll-active #floating-ver-3d {
         border-radius: 32px;
         padding: 0.95rem;
     }
+}
+
+/* =================================================================
+   SPOTIFY MINI-PLAYER & AUDIO WIDGET STYLES
+================================================================== */
+#spotify-widget {
+    background: rgba(18, 18, 18, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(30, 215, 96, 0.12);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#spotify-widget:hover {
+    border-color: rgba(30, 215, 96, 0.4);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(30, 215, 96, 0.2);
+}
+
+#spotify-mini-pill {
+    background: rgba(18, 18, 18, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(30, 215, 96, 0.15);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#spotify-mini-pill:hover {
+    border-color: rgba(30, 215, 96, 0.6);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75), 0 0 25px rgba(30, 215, 96, 0.3);
+}
+
+/* Animated Equalizer Bars */
+.spotify-eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 14px;
+}
+
+.spotify-eq span {
+    width: 3px;
+    height: 4px;
+    background: #1ed760;
+    border-radius: 1.5px;
+    transition: height 0.2s ease;
+}
+
+.is-playing .spotify-eq span:nth-child(1) {
+    animation: spotifyBounce 0.8s ease-in-out infinite alternate;
+}
+.is-playing .spotify-eq span:nth-child(2) {
+    animation: spotifyBounce 0.55s ease-in-out infinite alternate 0.15s;
+}
+.is-playing .spotify-eq span:nth-child(3) {
+    animation: spotifyBounce 0.95s ease-in-out infinite alternate 0.35s;
+}
+.is-playing .spotify-eq span:nth-child(4) {
+    animation: spotifyBounce 0.65s ease-in-out infinite alternate 0.08s;
+}
+
+@keyframes spotifyBounce {
+    0% { height: 3px; }
+    50% { height: 14px; }
+    100% { height: 6px; }
+}
+
+/* Circular green Play Button */
+.spotify-play-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    background: #1ed760;
+    color: #121212;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(30, 215, 96, 0.4);
+    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.spotify-play-btn:hover {
+    background: #1fdf64;
+    transform: scale(1.08);
+    box-shadow: 0 6px 22px rgba(30, 215, 96, 0.65);
+}
+
+.is-playing .spotify-play-btn {
+    box-shadow: 0 0 24px rgba(30, 215, 96, 0.7);
+}
+
+/* Scrub Progress Bar */
+.spotify-progress-container {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    cursor: pointer;
+    position: relative;
+    transition: height 0.15s ease;
+}
+
+.spotify-progress-container:hover {
+    height: 6px;
+}
+
+.spotify-progress-bar-fill {
+    height: 100%;
+    background: #1ed760;
+    border-radius: 9999px;
+    position: relative;
+    transition: width 0.1s linear;
+}
+
+.spotify-progress-container:hover .spotify-progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: #ffffff;
+    border-radius: 9999px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Tab Switcher in Spotify Widget */
+.spotify-tab-btn {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    transition: all 0.18s ease;
+    border: 1px solid transparent;
+}
+
+.spotify-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.spotify-tab-btn.is-active {
+    color: #1ed760;
+    background: rgba(30, 215, 96, 0.12);
+    border-color: rgba(30, 215, 96, 0.3);
+}
+
+/* Volume Slider */
+.spotify-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 68px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+    outline: none;
+    cursor: pointer;
+}
+
+.spotify-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 9999px;
+    background: #1ed760;
+    cursor: pointer;
+}
+
+.spotify-volume-slider::-moz-range-thumb {
+    width: 9px;
+    height: 9px;
+    border-radius: 9999px;
+    background: #1ed760;
+    border: none;
+    cursor: pointer;
 }
