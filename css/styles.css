@@ -1150,3 +1150,106 @@ body.stage-3d-active:not(.is-overview) #stage-scenic-pill:hover {
 body.full-scroll-active #stage-scenic-pill {
     display: none !important;
 }
+
+body.full-scroll-active #spotify-mini-pill {
+    bottom: 1.5rem !important;
+    right: 8.5rem !important;
+}
+
+@media (max-width: 640px) {
+    body.full-scroll-active #spotify-mini-pill {
+        bottom: 4.8rem !important;
+        right: 1rem !important;
+    }
+}
+
+/* =================================================================
+   ARCADE FLOATING PLAY BUTTON CTA ("¡Jugar ahora!!")
+================================================================== */
+#stage-arcade-cta {
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arcade-play-banner-btn {
+    box-shadow: 0 0 35px rgba(52, 211, 153, 0.7), 0 0 15px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    animation: arcadePulseGlow 2.2s infinite ease-in-out;
+}
+
+@keyframes arcadePulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 35px rgba(52, 211, 153, 0.65), 0 0 15px rgba(56, 189, 248, 0.45);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 52px rgba(52, 211, 153, 0.95), 0 0 25px rgba(56, 189, 248, 0.85);
+        transform: scale(1.03);
+    }
+}
+
+body.full-scroll-active #stage-arcade-cta {
+    display: none !important;
+}
+
+/* =================================================================
+   SCENIC WINDOW VIEW SWITCHER HUD
+================================================================== */
+#stage-scenic-pill {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#stage-scenic-pill:hover {
+    border-color: rgba(244, 114, 182, 0.45);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(244, 114, 182, 0.18);
+}
+
+body.stage-3d-active:not(.is-overview) #stage-scenic-pill {
+    opacity: 0.4;
+    pointer-events: auto;
+}
+
+body.stage-3d-active:not(.is-overview) #stage-scenic-pill:hover {
+    opacity: 1;
+}
+
+body.full-scroll-active #stage-scenic-pill {
+    display: none !important;
+}
+
+body.full-scroll-active #spotify-mini-pill {
+    bottom: 1.5rem !important;
+    right: 8.5rem !important;
+}
+
+@media (max-width: 640px) {
+    body.full-scroll-active #spotify-mini-pill {
+        bottom: 4.8rem !important;
+        right: 1rem !important;
+    }
+}
+
+/* =================================================================
+   ARCADE FLOATING PLAY BUTTON CTA ("¡Jugar ahora!!")
+================================================================== */
+#stage-arcade-cta {
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arcade-play-banner-btn {
+    box-shadow: 0 0 35px rgba(52, 211, 153, 0.7), 0 0 15px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    animation: arcadePulseGlow 2.2s infinite ease-in-out;
+}
+
+@keyframes arcadePulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 35px rgba(52, 211, 153, 0.65), 0 0 15px rgba(56, 189, 248, 0.45);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 52px rgba(52, 211, 153, 0.95), 0 0 25px rgba(56, 189, 248, 0.85);
+        transform: scale(1.03);
+    }
+}
+
+body.full-scroll-active #stage-arcade-cta {
+    display: none !important;
+}

@@ -243,17 +243,17 @@
             );
         }
 
-        const wallMatBack = std(0xffffff, 0.92, 0.02, { map: wallTexture(7, 3) });
-        const wallMatLeft = std(0xffffff, 0.92, 0.02, { map: wallTexture(6, 3) });
-        // Back wall segmented with aperture for panoramic window
+        const wallMatBack = std(0xffffff, 0.92, 0.02, { map: wallTexture(7, 5) });
+        const wallMatLeft = std(0xffffff, 0.92, 0.02, { map: wallTexture(6, 5) });
+        // Back wall segmented with aperture for panoramic window (extended height 9.2 to fully occlude outdoor backdrop)
         const backZ = -5.15;
         const backDepth = 0.3;
-        // Left section: from x = -6.3 to x = -1.6 (width 4.7)
-        addMesh(new THREE.BoxGeometry(4.7, 5.2, backDepth), wallMatBack, [-3.95, 2.45, backZ], scene, { cast: false });
-        // Right section: from x = 2.8 to x = 6.3 (width 3.5)
-        addMesh(new THREE.BoxGeometry(3.5, 5.2, backDepth), wallMatBack, [4.55, 2.45, backZ], scene, { cast: false });
-        // Top header: from x = -1.6 to x = 2.8 (width 4.4), y from 4.2 to 5.05 (height 0.85)
-        addMesh(new THREE.BoxGeometry(4.4, 0.85, backDepth), wallMatBack, [0.6, 4.625, backZ], scene, { cast: false });
+        // Left section: from x = -6.3 to x = -1.6 (width 4.7), reaches up to y = 9.05
+        addMesh(new THREE.BoxGeometry(4.7, 9.2, backDepth), wallMatBack, [-3.95, 4.45, backZ], scene, { cast: false });
+        // Right section: from x = 2.8 to x = 6.3 (width 3.5), reaches up to y = 9.05
+        addMesh(new THREE.BoxGeometry(3.5, 9.2, backDepth), wallMatBack, [4.55, 4.45, backZ], scene, { cast: false });
+        // Top header: from x = -1.6 to x = 2.8 (width 4.4), from window lintel y = 4.2 up to y = 9.05 (height 4.85)
+        addMesh(new THREE.BoxGeometry(4.4, 4.85, backDepth), wallMatBack, [0.6, 6.625, backZ], scene, { cast: false });
         // Bottom sill-wall: from x = -1.6 to x = 2.8 (width 4.4), y from -0.15 to 1.6 (height 1.75)
         addMesh(new THREE.BoxGeometry(4.4, 1.75, backDepth), wallMatBack, [0.6, 0.725, backZ], scene, { cast: false });
         // Window opening architectural jamb trim
@@ -262,7 +262,8 @@
         addMesh(new THREE.BoxGeometry(4.4, 0.025, backDepth), jambMat, [0.6, 1.6, backZ]);
         addMesh(new THREE.BoxGeometry(0.025, 2.6, backDepth), jambMat, [-1.6, 2.9, backZ]);
         addMesh(new THREE.BoxGeometry(0.025, 2.6, backDepth), jambMat, [2.8, 2.9, backZ]);
-        addMesh(new THREE.BoxGeometry(0.3, 5.2, 10.3), wallMatLeft, [-6.15, 2.45, 0.15], scene, { cast: false });
+        // Left architectural wall: reaches up to y = 9.05
+        addMesh(new THREE.BoxGeometry(0.3, 9.2, 10.3), wallMatLeft, [-6.15, 4.45, 0.15], scene, { cast: false });
 
         // Baseboards
         const baseMat = std(0x121318, 0.6, 0.2);
@@ -401,7 +402,8 @@
         scenicGroup.position.set(winCenter[0], winCenter[1], -5.8);
         scene.add(scenicGroup);
 
-        const scenicGeo = new THREE.PlaneGeometry(7.8, 4.6);
+        // Perfectly proportioned backdrop plane (height 3.6 centered at y = 2.9, reaching y = 4.7, while wall reaches y = 9.05)
+        const scenicGeo = new THREE.PlaneGeometry(6.6, 3.6);
         const scenicMatA = basic({
             map: scenicTextures[0],
             transparent: true,
@@ -409,7 +411,7 @@
             depthWrite: false
         });
         const scenicMeshA = new THREE.Mesh(scenicGeo, scenicMatA);
-        scenicMeshA.renderOrder = 1;
+        scenicMeshA.renderOrder = 0;
         scenicGroup.add(scenicMeshA);
 
         const scenicMatB = basic({
@@ -422,6 +424,10 @@
         scenicMeshB.position.z = 0.005;
         scenicMeshB.renderOrder = 1;
         scenicGroup.add(scenicMeshB);
+
+        // Exterior Blackout Shroud: Fully seals the top, back and sides of the outdoor window backdrop
+        addMesh(new THREE.BoxGeometry(7.2, 0.15, 1.4), basic({ color: 0x060810 }), [winCenter[0], 4.75, -5.5], scene, { cast: false, receive: false });
+        addMesh(new THREE.PlaneGeometry(7.2, 4.2), basic({ color: 0x060810 }), [winCenter[0], winCenter[1], -5.84], scene, { cast: false, receive: false });
 
         // Volumetric Sunbeams Streaming Through Window Aperture
         const beamCanvas = document.createElement('canvas');
@@ -467,6 +473,7 @@
         const beam1 = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 6.2), sunbeamMat);
         beam1.position.set(0, -1.8, 2.3);
         beam1.rotation.set(-Math.PI / 4, 0.08, -0.06);
+        beam1.renderOrder = 4;
         sunbeamGroup.add(beam1);
 
         // Shaft 2: Crossed secondary angled beam for volumetric body
@@ -475,6 +482,7 @@
         const beam2 = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 5.8), beam2Mat);
         beam2.position.set(0.2, -1.7, 2.2);
         beam2.rotation.set(-Math.PI / 3.7, -0.15, 0.1);
+        beam2.renderOrder = 4;
         sunbeamGroup.add(beam2);
 
         // Shaft 3: Grazing ambient sheet
@@ -483,22 +491,25 @@
         const beam3 = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 5.2), beam3Mat);
         beam3.position.set(-0.2, -1.6, 2.0);
         beam3.rotation.set(-Math.PI / 4.4, 0.18, -0.08);
+        beam3.renderOrder = 4;
         sunbeamGroup.add(beam3);
 
         scene.add(sunbeamGroup);
 
-        // Architectural Double-Pane Glass with Specular Sheen
+        // Architectural Double-Pane Glass with Specular Sheen (depthWrite false so scenery behind is always visible)
         const glass = new THREE.Mesh(
             new THREE.PlaneGeometry(winW, winH),
             new THREE.MeshStandardMaterial({
-                color: 0xe0f2fe,
+                color: 0x93c5fd,
                 transparent: true,
-                opacity: 0.12,
-                roughness: 0.05,
-                metalness: 0.95
+                opacity: 0.08,
+                roughness: 0.15,
+                metalness: 0.1,
+                depthWrite: false
             })
         );
         glass.position.set(winCenter[0], winCenter[1], -4.96);
+        glass.renderOrder = 3;
         glass.userData.stationId = 'scenic';
         hitMeshes.push(glass);
         scene.add(glass);
@@ -523,12 +534,13 @@
             new THREE.MeshBasicMaterial({
                 map: glassSheenTex,
                 transparent: true,
-                opacity: 0.35,
+                opacity: 0.28,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             })
         );
         glassSheen.position.set(winCenter[0], winCenter[1], -4.958);
+        glassSheen.renderOrder = 3;
         glassSheen.userData.stationId = 'scenic';
         hitMeshes.push(glassSheen);
         scene.add(glassSheen);
@@ -562,7 +574,6 @@
 
         // Floor Light Spill from Window
         const windowFloorGlow = glowPlane(5.6, 4.2, '180,210,255', SCENIC_LOCATIONS[0].floorGlowOpacity, [1.2, 0.014, -2.6], [-Math.PI / 2, 0, 0.25]);
-        const windowApertureGlow = glowPlane(6.2, 3.6, '180,210,255', 0.14, [winCenter[0], winCenter[1], -4.97], [0, 0, 0], null, true);
 
         /* ---------------------------------------------------------
            LIGHTING
@@ -734,6 +745,8 @@
             },
             isAutoTour: () => autoTourEnabled
         };
+        window._debugScene = scene;
+        window._debugScenic = { scenicGroup, scenicMeshA, scenicMeshB, scenicTextures, sunbeamGroup, glass };
 
         /* ---------------------------------------------------------
            EXECUTIVE DESK WITH LED STRIP
@@ -1564,30 +1577,19 @@
         const armR = makeArm(1);
 
         /* ---------------------------------------------------------
-           LEFT WALL: PORTRAIT (→ Perfil), ART, BOOKSHELF WITH LED
+           LEFT WALL: FRAMELESS EXECUTIVE PORTRAIT (→ Perfil), ART, SHELF
         --------------------------------------------------------- */
         let portraitImg = null;
-        const portraitTex = canvasTexture(400, 500, (ctx, w, h) => {
-            ctx.fillStyle = '#0f172a';
+        const portraitTex = canvasTexture(512, 640, (ctx, w, h) => {
+            ctx.fillStyle = '#080c16';
             ctx.fillRect(0, 0, w, h);
             if (portraitImg) {
                 drawCover(ctx, portraitImg, 0, 0, w, h);
             } else {
                 ctx.font = '800 120px "Plus Jakarta Sans", sans-serif';
                 ctx.fillStyle = '#38bdf8';
-                ctx.fillText('EC', 110, 290);
+                ctx.fillText('EC', 150, 320);
             }
-            const g = ctx.createLinearGradient(0, h * 0.65, 0, h);
-            g.addColorStop(0, 'rgba(4,6,12,0)');
-            g.addColorStop(1, 'rgba(4,6,12,0.85)');
-            ctx.fillStyle = g;
-            ctx.fillRect(0, h * 0.65, w, h * 0.35);
-            ctx.font = '700 26px "Plus Jakarta Sans", sans-serif';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('EDUARDO CAYÚN M.', 24, h - 50);
-            ctx.font = '600 16px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#f9a8d4';
-            ctx.fillText('MBA · ING. INFORMÁTICA', 24, h - 22);
         });
         loadImage('images/perfil_pro_eduf.jpg', (img) => {
             portraitImg = img;
@@ -1598,8 +1600,21 @@
         portrait.position.set(-5.97, 3.45, -3.25);
         portrait.rotation.y = Math.PI / 2;
         scene.add(portrait);
-        addMesh(new THREE.BoxGeometry(1.12, 1.38, 0.06), std(0x0c0d10, 0.4, 0.4), [0, 0, 0], portrait, { station: 'home' });
-        addMesh(new THREE.PlaneGeometry(1.0, 1.25), std(0xffffff, 0.5, 0, { map: portraitTex, emissive: 0xffffff, emissiveMap: portraitTex, emissiveIntensity: 0.35 }), [0, 0, 0.032], portrait, {
+
+        // Soft ambient pink/sky backlight on the wall behind the frameless portrait
+        glowPlane(1.35, 1.6, '244,114,182', 0.45, [0, 0, -0.015], null, portrait, true);
+
+        // Ultra-slim beveled acrylic backing (frameless floating card)
+        addMesh(new THREE.BoxGeometry(1.02, 1.28, 0.02), std(0x0e1017, 0.25, 0.4), [0, 0, 0.01], portrait, { station: 'home' });
+
+        // The portrait canvas
+        addMesh(new THREE.PlaneGeometry(1.0, 1.25), std(0xffffff, 0.5, 0, { map: portraitTex, emissive: 0xffffff, emissiveMap: portraitTex, emissiveIntensity: 0.35 }), [0, 0, 0.022], portrait, {
+            station: 'home',
+            cast: false
+        });
+
+        // Subtle acrylic glass sheen overlay
+        addMesh(new THREE.PlaneGeometry(1.0, 1.25), basic({ color: 0xffffff, transparent: true, opacity: 0.06, depthWrite: false }), [0, 0, 0.024], portrait, {
             station: 'home',
             cast: false
         });
@@ -1991,72 +2006,640 @@
         }
 
         /* ---------------------------------------------------------
-           RETRO ARCADE CABINET (→ Edu Tetris)
+           RETRO ARCADE CABINET (→ Edu Tetris) - HIGH DEFINITION REMASTER
         --------------------------------------------------------- */
-        const arcadeScreenTex = canvasTexture(256, 200, (ctx, w, h) => {
-            ctx.fillStyle = '#05060f';
+        // 1. Top Illuminated Marquee Texture (1024 x 256)
+        const marqueeTex = canvasTexture(1024, 256, (ctx, w, h) => {
+            const bg = ctx.createLinearGradient(0, 0, w, 0);
+            bg.addColorStop(0, '#090514');
+            bg.addColorStop(0.12, '#be185d');
+            bg.addColorStop(0.5, '#7c3aed');
+            bg.addColorStop(0.88, '#0284c7');
+            bg.addColorStop(1, '#090514');
+            ctx.fillStyle = bg;
             ctx.fillRect(0, 0, w, h);
-            const cols = ['#38bdf8', '#f472b6', '#34d399', '#fbbf24', '#818cf8'];
-            const blocks = [
-                [3, 9, 0], [4, 9, 0], [5, 9, 0], [6, 9, 0],
-                [2, 8, 1], [2, 7, 1], [3, 8, 1], [3, 7, 1],
-                [5, 8, 2], [6, 8, 2], [6, 7, 2], [7, 7, 2],
-                [4, 6, 3], [5, 6, 3], [6, 6, 3], [5, 5, 3],
-                [4, 2, 4], [5, 2, 4], [5, 3, 4], [6, 3, 4]
-            ];
-            blocks.forEach(([bx, by, ci]) => {
-                ctx.fillStyle = cols[ci];
-                ctx.fillRect(40 + bx * 16, by * 18 + 8, 14, 16);
-            });
-            ctx.strokeStyle = 'rgba(56,189,248,0.6)';
-            ctx.strokeRect(38, 6, 16 * 10 + 4, 18 * 10 + 4);
-            ctx.font = '700 13px "JetBrains Mono", monospace';
-            ctx.fillStyle = '#f9a8d4';
-            ctx.fillText('SCORE', 208, 30);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('15000', 206, 50);
-        });
-        const marqueeTex = canvasTexture(256, 64, (ctx, w, h) => {
-            const g = ctx.createLinearGradient(0, 0, w, 0);
-            g.addColorStop(0, '#db2777');
-            g.addColorStop(1, '#7c3aed');
-            ctx.fillStyle = g;
-            ctx.fillRect(0, 0, w, h);
-            ctx.font = '800 30px "Plus Jakarta Sans", sans-serif';
-            ctx.fillStyle = '#ffffff';
+
+            // Subtle scanline stripes
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            for (let y = 0; y < h; y += 4) {
+                ctx.fillRect(0, y, w, 2);
+            }
+
+            // Neon horizontal trim
+            ctx.fillStyle = '#00f0ff';
+            ctx.fillRect(20, 10, w - 40, 3);
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillRect(20, h - 13, w - 40, 3);
+
+            // Top subtitle
+            ctx.font = '700 20px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#fef08a';
             ctx.textAlign = 'center';
-            ctx.fillText('EDU TETRIS', w / 2, 43);
-            ctx.textAlign = 'left';
+            ctx.fillText('★ ARCADE CLASSIC · 1984 - 2026 ★', w / 2, 42);
+
+            // Main 3D Title "EDU TETRIS"
+            ctx.font = '900 84px "Plus Jakarta Sans", sans-serif';
+            for (let s = 8; s > 0; s--) {
+                ctx.fillStyle = s > 4 ? '#1e1b4b' : '#4338ca';
+                ctx.fillText('EDU TETRIS', w / 2 + s * 1.5, 142 + s * 1.5);
+            }
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = '#f43f5e';
+            ctx.strokeText('EDU TETRIS', w / 2, 142);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#00f0ff';
+            ctx.strokeText('EDU TETRIS', w / 2, 142);
+
+            const textGrad = ctx.createLinearGradient(0, 70, 0, 150);
+            textGrad.addColorStop(0, '#ffffff');
+            textGrad.addColorStop(0.48, '#e0f2fe');
+            textGrad.addColorStop(0.52, '#38bdf8');
+            textGrad.addColorStop(1, '#0284c7');
+            ctx.fillStyle = textGrad;
+            ctx.fillText('EDU TETRIS', w / 2, 142);
+
+            ctx.font = '700 17px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#a7f3d0';
+            ctx.fillText('HTML5 PRO ENGINE · WEB AUDIO SYNTH · CHILE CYBERNETICS', w / 2, 202);
         });
 
+        // 2. CRT Screen Texture (1024 x 800) with matrix, stats & "¡JUGAR AHORA!!" CTA
+        const arcadeScreenTex = canvasTexture(1024, 800, (ctx, w, h) => {
+            ctx.fillStyle = '#060814';
+            ctx.fillRect(0, 0, w, h);
+
+            // Scanlines
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.025)';
+            for (let y = 0; y < h; y += 4) {
+                ctx.fillRect(0, y, w, 2);
+            }
+
+            // Top Header Bar
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.fillRect(40, 18, w - 80, 78);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(40, 18, w - 80, 78);
+
+            ctx.font = '800 22px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#facc15';
+            ctx.textAlign = 'left';
+            ctx.fillText('TOP: 999,990', 60, 56);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('SCORE: 184,200', 320, 56);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('LINES: 048', 630, 56);
+            ctx.fillStyle = '#ec4899';
+            ctx.fillText('LV: 09', 850, 56);
+
+            // Playfield Matrix (center)
+            const mw = 380;
+            const mh = 490;
+            const mx = (w - mw) / 2;
+            const my = 112;
+
+            ctx.fillStyle = '#03050d';
+            ctx.fillRect(mx, my, mw, mh);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+            ctx.lineWidth = 1;
+            const cols = 10;
+            const rows = 16;
+            const cellW = mw / cols;
+            const cellH = mh / rows;
+            for (let c = 0; c <= cols; c++) {
+                ctx.beginPath();
+                ctx.moveTo(mx + c * cellW, my);
+                ctx.lineTo(mx + c * cellW, my + mh);
+                ctx.stroke();
+            }
+            for (let r = 0; r <= rows; r++) {
+                ctx.beginPath();
+                ctx.moveTo(mx, my + r * cellH);
+                ctx.lineTo(mx + mw, my + r * cellH);
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(mx - 2, my - 2, mw + 4, mh + 4);
+
+            function drawBlock(gx, gy, col, highlight) {
+                const bx = mx + gx * cellW + 1.5;
+                const by = my + gy * cellH + 1.5;
+                const bw = cellW - 3;
+                const bh = cellH - 3;
+                ctx.fillStyle = col;
+                ctx.fillRect(bx, by, bw, bh);
+                ctx.fillStyle = highlight || 'rgba(255, 255, 255, 0.45)';
+                ctx.fillRect(bx, by, bw, 4);
+                ctx.fillRect(bx, by, 4, bh);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                ctx.fillRect(bx, by + bh - 4, bw, 4);
+                ctx.fillRect(bx + bw - 4, by, 4, bh);
+            }
+
+            // Board stacked blocks
+            for (let x = 0; x < 10; x++) {
+                if (x !== 7) drawBlock(x, 15, '#0284c7', '#38bdf8');
+            }
+            drawBlock(0, 14, '#be185d', '#f472b6');
+            drawBlock(1, 14, '#be185d', '#f472b6');
+            drawBlock(2, 14, '#059669', '#34d399');
+            drawBlock(3, 14, '#059669', '#34d399');
+            drawBlock(4, 14, '#d97706', '#fbbf24');
+            drawBlock(5, 14, '#d97706', '#fbbf24');
+            drawBlock(6, 14, '#7c3aed', '#a78bfa');
+            drawBlock(8, 14, '#dc2626', '#f87171');
+            drawBlock(9, 14, '#dc2626', '#f87171');
+
+            drawBlock(0, 13, '#be185d', '#f472b6');
+            drawBlock(1, 13, '#be185d', '#f472b6');
+            drawBlock(3, 13, '#059669', '#34d399');
+            drawBlock(4, 13, '#059669', '#34d399');
+            drawBlock(6, 13, '#7c3aed', '#a78bfa');
+
+            drawBlock(4, 12, '#7c3aed', '#c084fc');
+            drawBlock(3, 11, '#7c3aed', '#c084fc');
+            drawBlock(4, 11, '#7c3aed', '#c084fc');
+            drawBlock(5, 11, '#7c3aed', '#c084fc');
+
+            drawBlock(7, 12, '#d97706', '#fde047');
+            drawBlock(8, 12, '#d97706', '#fde047');
+            drawBlock(7, 11, '#d97706', '#fde047');
+            drawBlock(8, 11, '#d97706', '#fde047');
+
+            // Falling piece
+            drawBlock(4, 5, '#00f0ff', '#ffffff');
+            drawBlock(3, 6, '#00f0ff', '#ffffff');
+            drawBlock(4, 6, '#00f0ff', '#ffffff');
+            drawBlock(5, 6, '#00f0ff', '#ffffff');
+
+            // Ghost piece
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2;
+            [[4, 9], [3, 10], [4, 10], [5, 10]].forEach(([gx, gy]) => {
+                ctx.strokeRect(mx + gx * cellW + 2, my + gy * cellH + 2, cellW - 4, cellH - 4);
+            });
+
+            // Left HUD: HOLD & Controls
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            ctx.fillRect(50, 140, 220, 160);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(50, 140, 220, 160);
+            ctx.font = '700 17px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#38bdf8';
+            ctx.textAlign = 'center';
+            ctx.fillText('HOLD [C]', 160, 172);
+            for (let i = 0; i < 4; i++) {
+                ctx.fillStyle = '#00f0ff';
+                ctx.fillRect(80 + i * 40, 205, 34, 30);
+            }
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            ctx.fillRect(50, 320, 220, 250);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+            ctx.strokeRect(50, 320, 220, 250);
+            ctx.font = '700 15px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#f472b6';
+            ctx.fillText('CONTROLES', 160, 350);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '13px "JetBrains Mono", monospace';
+            ctx.fillText('◀ ▶  MOVER', 160, 385);
+            ctx.fillText('▲ / Z  ROTAR', 160, 415);
+            ctx.fillText('SPACE  DROP', 160, 445);
+            ctx.fillText('▼  SOFT DROP', 160, 475);
+            ctx.fillText('P  PAUSA', 160, 505);
+            ctx.fillText('M  AUDIO', 160, 535);
+
+            // Right HUD: NEXT & Speed
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            ctx.fillRect(754, 140, 220, 240);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+            ctx.strokeRect(754, 140, 220, 240);
+            ctx.font = '700 17px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#34d399';
+            ctx.fillText('SIGUIENTE', 864, 172);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillRect(825, 195, 36, 32);
+            ctx.fillRect(865, 195, 36, 32);
+            ctx.fillRect(825, 230, 36, 32);
+            ctx.fillRect(865, 230, 36, 32);
+            ctx.fillStyle = '#34d399';
+            ctx.fillRect(845, 290, 32, 28);
+            ctx.fillRect(880, 290, 32, 28);
+            ctx.fillRect(810, 320, 32, 28);
+            ctx.fillRect(845, 320, 32, 28);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+            ctx.fillRect(754, 400, 220, 170);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+            ctx.strokeRect(754, 400, 220, 170);
+            ctx.font = '700 15px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('COMBO RACER', 864, 435);
+            ctx.font = '800 34px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#fde047';
+            ctx.fillText('x4', 864, 480);
+            ctx.font = '12px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#a7f3d0';
+            ctx.fillText('MAX MULTIPLIER', 864, 520);
+
+            // PROMINENT "¡JUGAR AHORA!!" BUTTON / CALL TO ACTION BANNER
+            const btnW = 760;
+            const btnH = 120;
+            const btnX = (w - btnW) / 2;
+            const btnY = 635;
+            const r = 26;
+
+            ctx.shadowColor = 'rgba(16, 185, 129, 0.9)';
+            ctx.shadowBlur = 32;
+
+            const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX + btnW, btnY);
+            btnGrad.addColorStop(0, '#10b981');
+            btnGrad.addColorStop(0.5, '#06b6d4');
+            btnGrad.addColorStop(1, '#3b82f6');
+            ctx.fillStyle = btnGrad;
+
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(btnX, btnY, btnW, btnH, r);
+            } else {
+                ctx.rect(btnX, btnY, btnW, btnH);
+            }
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(btnX, btnY, btnW, btnH, r);
+            } else {
+                ctx.rect(btnX, btnY, btnW, btnH);
+            }
+            ctx.stroke();
+
+            ctx.font = '900 44px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#06131c';
+            ctx.textAlign = 'center';
+            ctx.fillText('🕹️  ¡JUGAR AHORA!!  →', w / 2, btnY + 58);
+
+            ctx.font = '800 18px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#04222e';
+            ctx.fillText('INSERT COIN (25¢) · CLIC EN LA MÁQUINA PARA ENTRAR', w / 2, btnY + 95);
+        });
+
+        // 3. Side Art Decals (512 x 1024)
+        const arcadeSideArtTex = canvasTexture(512, 1024, (ctx, w, h) => {
+            const bg = ctx.createLinearGradient(0, 0, 0, h);
+            bg.addColorStop(0, '#0c071e');
+            bg.addColorStop(0.4, '#2e0854');
+            bg.addColorStop(0.7, '#831843');
+            bg.addColorStop(1, '#0f172a');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, w, h);
+
+            // Synthwave Sun
+            const sunY = 560;
+            const sunR = 120;
+            const sunGrad = ctx.createLinearGradient(0, sunY - sunR, 0, sunY + sunR);
+            sunGrad.addColorStop(0, '#fef08a');
+            sunGrad.addColorStop(0.5, '#f43f5e');
+            sunGrad.addColorStop(1, '#8b5cf6');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(w / 2, sunY, sunR, Math.PI, 0, false);
+            ctx.fill();
+
+            ctx.fillStyle = '#0c071e';
+            for (let i = 0; i < 7; i++) {
+                ctx.fillRect(w / 2 - sunR, sunY - 4 - i * 16, sunR * 2, 4 + i * 2);
+            }
+
+            // Floor perspective grid
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+            ctx.lineWidth = 2;
+            for (let y = sunY + 10; y < h; y += 30) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+            for (let x = -200; x <= w + 200; x += 60) {
+                ctx.beginPath();
+                ctx.moveTo(w / 2, sunY);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+
+            // Tetris crystal blocks
+            const pieces = [
+                { x: 120, y: 220, col: '#00f0ff', s: 38 },
+                { x: 380, y: 180, col: '#f43f5e', s: 44 },
+                { x: 260, y: 310, col: '#fbbf24', s: 40 },
+                { x: 90, y: 440, col: '#34d399', s: 36 },
+                { x: 390, y: 420, col: '#a855f7', s: 42 },
+                { x: 200, y: 720, col: '#0284c7', s: 36 }
+            ];
+            pieces.forEach((p) => {
+                ctx.fillStyle = p.col;
+                ctx.fillRect(p.x, p.y, p.s, p.s);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.fillRect(p.x, p.y, p.s, 6);
+                ctx.fillRect(p.x, p.y, 6, p.s);
+            });
+
+            // Slanted Logo
+            ctx.save();
+            ctx.translate(w / 2, 280);
+            ctx.rotate(-Math.PI / 10);
+            ctx.font = '900 68px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'center';
+            for (let s = 6; s > 0; s--) {
+                ctx.fillStyle = '#312e81';
+                ctx.fillText('EDU TETRIS', s * 2, s * 2);
+            }
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = '#00f0ff';
+            ctx.strokeText('EDU TETRIS', 0, 0);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('EDU TETRIS', 0, 0);
+            ctx.restore();
+
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(10, 10, w - 20, h - 20);
+        });
+
+        // 4. Control Panel Texture (1024 x 512)
+        const arcadeControlPanelTex = canvasTexture(1024, 512, (ctx, w, h) => {
+            ctx.fillStyle = '#11131b';
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            for (let x = 0; x < w; x += 8) {
+                for (let y = 0; y < h; y += 8) {
+                    if ((x + y) % 16 === 0) ctx.fillRect(x, y, 8, 8);
+                }
+            }
+
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(16, 16, w - 32, h - 32);
+
+            // Joystick Area
+            ctx.strokeStyle = 'rgba(244, 63, 94, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(280, 260, 140, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#f43f5e';
+            ctx.textAlign = 'center';
+            ctx.fillText('1 PLAYER', 280, 80);
+            ctx.font = '700 14px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('8-WAY PRECISION STICK', 280, 110);
+
+            ctx.font = '700 20px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#00f0ff';
+            ctx.fillText('▲', 280, 150);
+            ctx.fillText('▼', 280, 390);
+            ctx.fillText('◀', 160, 265);
+            ctx.fillText('▶', 400, 265);
+
+            // Buttons Area
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(540, 60, 440, 380, 24);
+            } else {
+                ctx.rect(540, 60, 440, 380);
+            }
+            ctx.stroke();
+
+            ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText('ACTION MATRIX', 760, 100);
+            ctx.font = '700 13px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('HARD DROP · ROTAR · HOLD · SOFT DROP', 760, 130);
+
+            ctx.font = '800 15px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#fef08a';
+            ctx.fillText('INSERT COIN · PRESS TO PLAY', w / 2, 470);
+        });
+
+        // 5. Coin Door Texture (512 x 512)
+        const arcadeCoinDoorTex = canvasTexture(512, 512, (ctx, w, h) => {
+            ctx.fillStyle = '#141419';
+            ctx.fillRect(0, 0, w, h);
+            ctx.strokeStyle = '#272733';
+            ctx.lineWidth = 12;
+            ctx.strokeRect(10, 10, w - 20, h - 20);
+
+            const frameW = 160;
+            const frameH = 220;
+            [100, 310].forEach((fx) => {
+                ctx.fillStyle = '#0a0a0f';
+                ctx.fillRect(fx - 40, 60, frameW, frameH);
+                ctx.strokeStyle = '#3f3f4e';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(fx - 40, 60, frameW, frameH);
+
+                ctx.fillStyle = '#ea580c';
+                ctx.fillRect(fx - 15, 100, 110, 60);
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(fx - 15, 100, 110, 60);
+
+                ctx.font = '800 24px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.fillText('25¢', fx + 40, 132);
+                ctx.font = '700 11px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#fef08a';
+                ctx.fillText('INSERT COIN', fx + 40, 150);
+
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(fx + 36, 75, 8, 20);
+
+                ctx.fillStyle = '#1c1c24';
+                ctx.fillRect(fx - 20, 200, 120, 60);
+                ctx.strokeStyle = '#333342';
+                ctx.strokeRect(fx - 20, 200, 120, 60);
+                ctx.font = '700 11px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#64748b';
+                ctx.fillText('PUSH COIN', fx + 40, 235);
+            });
+
+            ctx.fillStyle = '#64748b';
+            ctx.beginPath();
+            ctx.arc(w / 2, 330, 16, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fillRect(w / 2 - 3, 320, 6, 20);
+        });
+
+        // 3D Cabinet Construction
         const arcade = new THREE.Group();
         arcade.position.set(-5.05, 0, -4.05);
         arcade.rotation.y = Math.PI / 4;
         scene.add(arcade);
-        const arcadeBody = std(0x14141c, 0.5, 0.25);
-        addMesh(new THREE.BoxGeometry(0.95, 1.95, 0.85), arcadeBody, [0, 0.975, 0], arcade, { station: 'arcade' });
-        addMesh(new THREE.BoxGeometry(0.97, 0.06, 0.87), basic({ color: 0xf472b6 }), [0, 1.86, 0], arcade, { cast: false, receive: false });
-        addMesh(new THREE.BoxGeometry(0.02, 1.7, 0.6), basic({ color: 0x7c3aed }), [0.486, 1.0, 0.05], arcade, { cast: false, receive: false });
-        addMesh(new THREE.BoxGeometry(0.02, 1.7, 0.6), basic({ color: 0x7c3aed }), [-0.486, 1.0, 0.05], arcade, { cast: false, receive: false });
-        addMesh(new THREE.PlaneGeometry(0.78, 0.6), basic({ map: arcadeScreenTex }), [0, 1.38, 0.43], arcade, {
-            rot: [-0.18, 0, 0],
-            station: 'arcade',
-            cast: false
+
+        const arcadeBodyMat = std(0x0a0b12, 0.68, 0.18);
+        const neonCyanMat = basic({ color: 0x00f0ff });
+        const neonPinkMat = basic({ color: 0xf43f5e });
+
+        // Core structural bodies
+        addMesh(new THREE.BoxGeometry(0.86, 0.96, 0.76), arcadeBodyMat, [0, 0.48, -0.02], arcade, { station: 'arcade' });
+        addMesh(new THREE.BoxGeometry(0.88, 1.96, 0.04), arcadeBodyMat, [0, 1.0, -0.41], arcade, { station: 'arcade' });
+        addMesh(new THREE.BoxGeometry(0.88, 0.04, 0.72), arcadeBodyMat, [0, 1.98, -0.04], arcade, { station: 'arcade' });
+        addMesh(new THREE.BoxGeometry(0.86, 0.58, 0.22), std(0x0a0b12, 0.75, 0.1), [0, 1.36, 0.12], arcade, { station: 'arcade' });
+
+        // Contoured Side Wings (Left & Right)
+        [-0.45, 0.45].forEach((sx) => {
+            addMesh(new THREE.BoxGeometry(0.035, 1.04, 0.82), arcadeBodyMat, [sx, 0.52, 0.01], arcade, { station: 'arcade' });
+            addMesh(new THREE.BoxGeometry(0.035, 0.24, 0.26), arcadeBodyMat, [sx, 1.02, 0.42], arcade, { station: 'arcade' });
+            addMesh(new THREE.BoxGeometry(0.035, 0.46, 0.64), arcadeBodyMat, [sx, 1.76, 0.14], arcade, { station: 'arcade' });
         });
-        addMesh(new THREE.PlaneGeometry(0.9, 0.22), basic({ map: marqueeTex }), [0, 1.76, 0.432], arcade, { cast: false, station: 'arcade' });
-        addMesh(new THREE.BoxGeometry(0.95, 0.08, 0.42), std(0x1f1f2b, 0.5, 0.3), [0, 1.0, 0.55], arcade, { rot: [0.25, 0, 0] });
-        addMesh(new THREE.CylinderGeometry(0.015, 0.015, 0.12, 8), std(0x0a0a0a, 0.4), [-0.22, 1.1, 0.55], arcade);
-        addMesh(new THREE.SphereGeometry(0.045, 12, 12), std(0xef4444, 0.3), [-0.22, 1.17, 0.55], arcade);
-        [0x38bdf8, 0x34d399, 0xfbbf24].forEach((c, i) => {
-            addMesh(new THREE.CylinderGeometry(0.035, 0.035, 0.03, 14), basic({ color: c }), [0.05 + i * 0.12, 1.06, 0.55 + (i % 2) * 0.04], arcade, {
-                rot: [0.25, 0, 0],
+
+        // Outer Side Art Decals (Left & Right)
+        addMesh(new THREE.PlaneGeometry(0.82, 1.92), basic({ map: arcadeSideArtTex }), [-0.472, 1.0, 0], arcade, {
+            rot: [0, -Math.PI / 2, 0],
+            cast: false,
+            station: 'arcade'
+        });
+        addMesh(new THREE.PlaneGeometry(0.82, 1.92), basic({ map: arcadeSideArtTex }), [0.472, 1.0, 0], arcade, {
+            rot: [0, Math.PI / 2, 0],
+            cast: false,
+            station: 'arcade'
+        });
+
+        // Glowing Neon T-Molding on front edges
+        [-0.468, 0.468].forEach((sx) => {
+            addMesh(new THREE.BoxGeometry(0.016, 0.94, 0.016), neonCyanMat, [sx, 0.48, 0.41], arcade, { cast: false, receive: false });
+            addMesh(new THREE.BoxGeometry(0.016, 0.16, 0.016), neonCyanMat, [sx, 1.02, 0.54], arcade, { cast: false, receive: false });
+            addMesh(new THREE.BoxGeometry(0.016, 0.38, 0.016), neonCyanMat, [sx, 1.80, 0.45], arcade, { cast: false, receive: false });
+        });
+
+        // Top Canopy & Illuminated Marquee
+        addMesh(new THREE.BoxGeometry(0.86, 0.24, 0.06), arcadeBodyMat, [0, 1.83, 0.42], arcade, {
+            rot: [0.08, 0, 0],
+            station: 'arcade'
+        });
+        addMesh(new THREE.PlaneGeometry(0.85, 0.22), basic({ map: marqueeTex }), [0, 1.83, 0.452], arcade, {
+            rot: [0.08, 0, 0],
+            cast: false,
+            station: 'arcade'
+        });
+        // Marquee retainers (top & bottom black aluminum clamps)
+        addMesh(new THREE.BoxGeometry(0.87, 0.02, 0.04), std(0x0a0a0f, 0.3, 0.8), [0, 1.945, 0.455], arcade, { rot: [0.08, 0, 0] });
+        addMesh(new THREE.BoxGeometry(0.87, 0.02, 0.04), std(0x0a0a0f, 0.3, 0.8), [0, 1.715, 0.455], arcade, { rot: [0.08, 0, 0] });
+
+        // Under-Marquee Stereo Speaker Grille & Downlight
+        addMesh(new THREE.BoxGeometry(0.86, 0.12, 0.04), std(0x181822, 0.6, 0.2), [0, 1.66, 0.33], arcade, {
+            rot: [-0.42, 0, 0],
+            station: 'arcade'
+        });
+        addMesh(new THREE.BoxGeometry(0.72, 0.012, 0.012), neonCyanMat, [0, 1.64, 0.35], arcade, {
+            rot: [-0.42, 0, 0],
+            cast: false,
+            receive: false
+        });
+
+        // Recessed CRT Monitor Bezel & Screen
+        addMesh(new THREE.BoxGeometry(0.86, 0.62, 0.04), std(0x0c0d14, 0.85, 0.1), [0, 1.36, 0.22], arcade, {
+            rot: [-0.18, 0, 0],
+            station: 'arcade'
+        });
+        addMesh(new THREE.PlaneGeometry(0.82, 0.58), basic({ map: arcadeScreenTex }), [0, 1.36, 0.245], arcade, {
+            rot: [-0.18, 0, 0],
+            cast: false,
+            station: 'arcade'
+        });
+        // Glass Reflection Sheen
+        addMesh(new THREE.PlaneGeometry(0.82, 0.58), new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.08,
+            metalness: 0.9,
+            transparent: true,
+            opacity: 0.14,
+            depthWrite: false
+        }), [0, 1.36, 0.248], arcade, {
+            rot: [-0.18, 0, 0],
+            cast: false,
+            receive: false
+        });
+
+        // Angled Ergonomic Control Panel (CPO)
+        addMesh(new THREE.BoxGeometry(0.86, 0.05, 0.34), std(0x11131c, 0.5, 0.3), [0, 1.01, 0.40], arcade, {
+            rot: [0.26, 0, 0],
+            station: 'arcade'
+        });
+        addMesh(new THREE.PlaneGeometry(0.85, 0.33), basic({ map: arcadeControlPanelTex }), [0, 1.036, 0.40], arcade, {
+            rot: [-Math.PI / 2 + 0.26, 0, 0],
+            cast: false,
+            station: 'arcade'
+        });
+        // Front rubber bullnose bumper
+        addMesh(new THREE.BoxGeometry(0.87, 0.03, 0.03), neonCyanMat, [0, 0.965, 0.56], arcade, {
+            rot: [0.26, 0, 0],
+            cast: false,
+            receive: false
+        });
+
+        // Joystick (Player 1)
+        addMesh(new THREE.CylinderGeometry(0.042, 0.042, 0.006, 16), std(0x0a0a0f, 0.3), [-0.24, 1.045, 0.42], arcade, { rot: [0.26, 0, 0] });
+        addMesh(new THREE.CylinderGeometry(0.011, 0.011, 0.075, 12), std(0xffffff, 0.08, 0.95), [-0.24, 1.085, 0.42], arcade, { rot: [0.26, 0, 0] });
+        addMesh(new THREE.SphereGeometry(0.042, 20, 20), std(0xef4444, 0.1, 0.35), [-0.24, 1.13, 0.42], arcade);
+
+        // 6 Illuminated Arcade Action Buttons (Sanwa style 2x3 curved layout)
+        const arcadeButtonColors = [
+            [0x00f0ff, 0.06, 0.45], // Cyan (Top-left)
+            [0x10b981, 0.17, 0.43], // Emerald (Top-mid)
+            [0xfbbf24, 0.28, 0.45], // Yellow (Top-right)
+            [0xf43f5e, 0.06, 0.37], // Pink (Bot-left)
+            [0xa855f7, 0.17, 0.35], // Purple (Bot-mid)
+            [0xf97316, 0.28, 0.37]  // Orange (Bot-right)
+        ];
+        arcadeButtonColors.forEach(([col, bx, bz]) => {
+            // Button black collar
+            addMesh(new THREE.CylinderGeometry(0.032, 0.032, 0.016, 16), std(0x0a0a0f, 0.3), [bx, 1.035, bz], arcade, {
+                rot: [0.26, 0, 0],
+                cast: false
+            });
+            // Button convex plunger with emissive glow
+            addMesh(new THREE.CylinderGeometry(0.026, 0.026, 0.024, 16), basic({ color: col }), [bx, 1.045, bz], arcade, {
+                rot: [0.26, 0, 0],
                 cast: false
             });
         });
-        glowPlane(1.8, 1.8, '244,114,182', 0.35, [0, 0.012, 0.7], [-Math.PI / 2, 0, 0], arcade);
-        const arcadeLight = new THREE.PointLight(0xa855f7, 0.7, 3, 2);
-        arcadeLight.position.set(0, 1.4, 0.9);
-        arcade.add(arcadeLight);
+
+        // 1P & 2P Start buttons
+        addMesh(new THREE.CylinderGeometry(0.016, 0.016, 0.016, 12), basic({ color: 0xffffff }), [-0.20, 1.08, 0.30], arcade, { rot: [0.26, 0, 0], cast: false });
+        addMesh(new THREE.CylinderGeometry(0.016, 0.016, 0.016, 12), basic({ color: 0xffffff }), [-0.12, 1.08, 0.30], arcade, { rot: [0.26, 0, 0], cast: false });
+
+        // Lower Cabinet & Heavy Steel Coin Door
+        addMesh(new THREE.BoxGeometry(0.86, 0.72, 0.03), std(0x161822, 0.6, 0.3), [0, 0.56, 0.38], arcade, { station: 'arcade' });
+        addMesh(new THREE.PlaneGeometry(0.56, 0.56), basic({ map: arcadeCoinDoorTex }), [0, 0.56, 0.398], arcade, { cast: false, station: 'arcade' });
+        // 3D Glowing Orange Coin Reject Buttons
+        addMesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), basic({ color: 0xf97316 }), [-0.11, 0.61, 0.408], arcade, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), basic({ color: 0xf97316 }), [0.11, 0.61, 0.408], arcade, { cast: false });
+
+        // Diamond-plate Lower Kickplate
+        addMesh(new THREE.BoxGeometry(0.86, 0.18, 0.03), std(0x222634, 0.4, 0.5), [0, 0.09, 0.31], arcade, { station: 'arcade' });
+
+        // Ambient Lights & Floor Underglow
+        glowPlane(2.2, 2.2, '0,240,255', 0.42, [0, 0.012, 0.6], [-Math.PI / 2, 0, 0], arcade);
+        const arcadeMarqueeLight = new THREE.PointLight(0xa855f7, 0.9, 3.5, 2);
+        arcadeMarqueeLight.position.set(0, 1.83, 0.65);
+        arcade.add(arcadeMarqueeLight);
+        const arcadeScreenLight = new THREE.PointLight(0x00f0ff, 0.6, 2.5, 2);
+        arcadeScreenLight.position.set(0, 1.36, 0.7);
+        arcade.add(arcadeScreenLight);
 
         /* ---------------------------------------------------------
            BEANBAG + SLEEPING CAT (decor)
@@ -2114,7 +2697,7 @@
             { id: 'credentials', code: '02', label: 'Credenciales', anchor: [4.15, 3.8, -4.85], target: [4.15, 2.55, -4.95], normal: [0, 0, 1], dist: 2.8, lift: 0.0 },
             { id: 'home', code: '03', label: 'Perfil', anchor: [0, 2.1, -0.55], target: [0, 1.42, -0.55], normal: [0.35, 0.15, 0.93], dist: 2.4, lift: 0.1 },
             { id: 'contact', code: '04', label: 'Contacto', anchor: [1.55, 1.84, 1.0], target: [1.55, 1.50, 1.0], normal: [0, 0.04, 0.999], dist: 1.12, lift: 0.0 },
-            { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.2, -4.05], target: [-5.05, 1.42, -4.05], normal: [0.707, 0, 0.707], dist: 2.1, lift: 0.05 },
+            { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.2, -4.05], target: [-5.05, 1.36, -4.05], normal: [0.707, 0, 0.707], dist: 2.45, lift: 0.0 },
             { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.8, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 },
             { id: 'cv', code: '2D', label: 'Ver Portafolio 2D', anchor: [0.08, 1.48, 0.65], target: [0.08, 1.07, 0.65], normal: [0, 0.85, 0.52], dist: 1.25, lift: 0.25 }
         ];
@@ -2191,6 +2774,22 @@
             }
             if (stationId === 'music' && window.eduSpotifyPlayer) {
                 window.eduSpotifyPlayer.expand();
+            }
+            const arcadeCta = document.getElementById('stage-arcade-cta');
+            if (arcadeCta) {
+                if (stationId === 'arcade') {
+                    arcadeCta.classList.remove('hidden');
+                    requestAnimationFrame(() => {
+                        arcadeCta.classList.remove('opacity-0', 'scale-95');
+                        arcadeCta.classList.add('opacity-100', 'scale-100');
+                    });
+                } else {
+                    arcadeCta.classList.remove('opacity-100', 'scale-100');
+                    arcadeCta.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        if (api.getActiveStation() !== 'arcade') arcadeCta.classList.add('hidden');
+                    }, 250);
+                }
             }
         });
 
@@ -2311,6 +2910,12 @@
                     if (id === 'scenic') {
                         if (window.eduScenic) window.eduScenic.next();
                         return;
+                    }
+                    if (id === 'arcade') {
+                        if (api.getActiveStation() === 'arcade') {
+                            window.location.href = 'tetris.html';
+                            return;
+                        }
                     }
                     api.focusStation(id);
                     if (id === 'music' && window.eduSpotifyPlayer) {

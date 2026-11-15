@@ -464,6 +464,25 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.stage-dock-btn').forEach((btn) => {
             btn.classList.toggle('is-active', btn.dataset.stationTarget === stationId);
         });
+
+        const arcadeCta = document.getElementById('stage-arcade-cta');
+        if (arcadeCta) {
+            if (stationId === 'arcade' && viewMode === 'stage3d') {
+                arcadeCta.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    arcadeCta.classList.remove('opacity-0', 'scale-95');
+                    arcadeCta.classList.add('opacity-100', 'scale-100');
+                });
+            } else {
+                arcadeCta.classList.remove('opacity-100', 'scale-100');
+                arcadeCta.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    if (activeStationId !== 'arcade' || viewMode !== 'stage3d') {
+                        arcadeCta.classList.add('hidden');
+                    }
+                }, 250);
+            }
+        }
     }
 
     function applyInspectorContent(stationId) {
