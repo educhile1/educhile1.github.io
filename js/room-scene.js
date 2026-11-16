@@ -4184,10 +4184,10 @@
             }
         });
         const pegboard = new THREE.Group();
-        pegboard.position.set(4.15, 2.9, -4.97);
+        pegboard.position.set(4.52, 2.9, -4.97);
         scene.add(pegboard);
-        glowPlane(4.3, 2.9, '210,225,255', 0.85, [0, 0, -0.012], null, pegboard, true);
-        addMesh(new THREE.BoxGeometry(3.1, 1.75, 0.05), std(0xffffff, 0.8, 0.1, { map: pegTex }), [0, 0, 0.025], pegboard, { station: 'credentials' });
+        glowPlane(3.8, 2.9, '210,225,255', 0.85, [0, 0, -0.012], null, pegboard, true);
+        addMesh(new THREE.BoxGeometry(2.76, 1.75, 0.05), std(0xffffff, 0.8, 0.1, { map: pegTex }), [0, 0, 0.025], pegboard, { station: 'credentials' });
         const pegLight = new THREE.PointLight(0xdbeafe, 0.8, 4.5, 2);
         pegLightRef = pegLight;
         pegLight.position.set(0, 0, 0.9);
@@ -4642,7 +4642,7 @@
                 ctx.textAlign = 'left';
             });
 
-            const x = -1.15 + i * 0.46;
+            const x = -1.075 + i * 0.43;
             const pivot = new THREE.Group();
             pivot.position.set(x, 0.62, 0.07);
             pegboard.add(pivot);
@@ -7910,7 +7910,7 @@
         const v3 = (a) => new THREE.Vector3(a[0], a[1], a[2]);
         const HOTSPOTS = [
             { id: 'projects', code: '01', label: 'Proyectos', anchor: [-0.38, 2.32, 0.13], target: [-0.38, 1.75, 0.13], normal: [Math.sin(0.32), 0, Math.cos(0.32)], dist: 2.2, lift: 0.05 },
-            { id: 'credentials', code: '02', label: 'Credenciales', anchor: [4.15, 3.85, -4.85], target: [4.15, 2.65, -4.95], normal: [0, 0, 1], dist: 2.55, lift: 0.0 },
+            { id: 'credentials', code: '02', label: 'Credenciales', anchor: [4.52, 3.85, -4.85], target: [4.52, 2.65, -4.95], normal: [0, 0, 1], dist: 2.55, lift: 0.0 },
             { id: 'home', code: '🤖', label: 'EduBot IA', anchor: [0.55, 2.35, -0.74], target: [0.50, 1.45, -0.74], normal: [0.35, 0.15, 0.93], dist: 2.4, lift: 0.1 },
             { id: 'contact', code: '04', label: 'Contacto', anchor: [1.56, 1.48, 0.18], target: [1.44, 1.50, 0.15], normal: [0, 0.04, 0.999], dist: 1.12, lift: 0.0 },
             { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.35, -4.05], target: [-5.05, 1.36, -4.05], normal: [0.707, 0, 0.707], dist: 2.45, lift: 0.0 },
