@@ -402,15 +402,24 @@
         ];
 
         const textureLoader = new THREE.TextureLoader();
-        const scenicTextures = SCENIC_LOCATIONS.map((loc) => {
-            const tex = textureLoader.load(loc.image);
+        const scenicTextures = new Array(SCENIC_LOCATIONS.length).fill(null);
+
+        function getScenicTexture(idx) {
+            const safeIdx = ((idx % SCENIC_LOCATIONS.length) + SCENIC_LOCATIONS.length) % SCENIC_LOCATIONS.length;
+            if (scenicTextures[safeIdx]) return scenicTextures[safeIdx];
+
+            const tex = textureLoader.load(SCENIC_LOCATIONS[safeIdx].image);
             tex.encoding = THREE.sRGBEncoding;
             tex.anisotropy = Math.min(8, renderer ? renderer.capabilities.getMaxAnisotropy() : 8);
             tex.minFilter = THREE.LinearMipmapLinearFilter;
             tex.magFilter = THREE.LinearFilter;
             tex.generateMipmaps = true;
+            scenicTextures[safeIdx] = tex;
             return tex;
-        });
+        }
+
+        // Load only the initial visible vista at startup; remaining vistas load lazily on demand
+        getScenicTexture(0);
 
         const winCenter = [0.6, 2.9, -4.99];
         const winW = 4.4;
@@ -424,7 +433,7 @@
         // Perfectly proportioned backdrop plane (height 3.6 centered at y = 2.9, reaching y = 4.7, while wall reaches y = 9.05)
         const scenicGeo = new THREE.PlaneGeometry(6.6, 3.6);
         const scenicMatA = basic({
-            map: scenicTextures[0],
+            map: getScenicTexture(0),
             transparent: true,
             opacity: 1.0,
             depthWrite: false
@@ -434,7 +443,7 @@
         scenicGroup.add(scenicMeshA);
 
         const scenicMatB = basic({
-            map: scenicTextures[1],
+            map: null,
             transparent: true,
             opacity: 0.0,
             depthWrite: false
@@ -705,7 +714,7 @@
                 targetScenicIdx = nextIdx;
                 isCrossFading = false;
                 crossFadeProg = 1.0;
-                scenicMeshA.material.map = scenicTextures[nextIdx];
+                scenicMeshA.material.map = getScenicTexture(nextIdx);
                 scenicMeshA.material.opacity = 1.0;
                 scenicMeshB.material.opacity = 0.0;
                 const loc = SCENIC_LOCATIONS[nextIdx];
@@ -725,12 +734,12 @@
 
             if (isCrossFading) {
                 currentScenicIdx = targetScenicIdx;
-                scenicMeshA.material.map = scenicTextures[currentScenicIdx];
+                scenicMeshA.material.map = getScenicTexture(currentScenicIdx);
                 scenicMeshA.material.opacity = 1.0;
             }
 
             targetScenicIdx = nextIdx;
-            scenicMeshB.material.map = scenicTextures[targetScenicIdx];
+            scenicMeshB.material.map = getScenicTexture(targetScenicIdx);
             scenicMeshB.material.opacity = 0.0;
             crossFadeProg = 0.0;
             isCrossFading = true;
@@ -10025,7 +10034,7 @@
                     crossFadeProg = 1.0;
                     isCrossFading = false;
                     currentScenicIdx = targetScenicIdx;
-                    scenicMeshA.material.map = scenicTextures[currentScenicIdx];
+                    scenicMeshA.material.map = getScenicTexture(currentScenicIdx);
                     scenicMeshA.material.opacity = 1.0;
                     scenicMeshB.material.opacity = 0.0;
                 }

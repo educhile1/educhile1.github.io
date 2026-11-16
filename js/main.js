@@ -178,15 +178,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const bootPercent = document.getElementById('boot-percent');
         if (!bootScreen) return;
 
-        if (prefersReducedMotion) {
+        let finished = false;
+        function finishBoot(immediate = false) {
+            if (finished) return;
+            finished = true;
+            if (bootBar) bootBar.style.width = '100%';
+            if (bootPercent) bootPercent.textContent = '100%';
             bootScreen.classList.add('boot-complete');
+            window.removeEventListener('keydown', onBootSkip);
+            setTimeout(() => {
+                if (window.eduRobotAssistant && window.eduRobotAssistant.triggerWelcomeGreeting) {
+                    window.eduRobotAssistant.triggerWelcomeGreeting();
+                }
+            }, immediate ? 150 : 300);
+        }
+
+        function onBootSkip() {
+            finishBoot(true);
+        }
+
+        if (prefersReducedMotion) {
+            finishBoot(true);
             return;
         }
 
-        const duration = 950;
+        bootScreen.addEventListener('click', () => finishBoot(true));
+        window.addEventListener('keydown', onBootSkip, { once: true });
+
+        const duration = 450;
         const start = performance.now();
 
         function step(now) {
+            if (finished) return;
             const elapsed = now - start;
             const progress = Math.min(1, elapsed / duration);
             const eased = 1 - Math.pow(1 - progress, 2.2);
@@ -198,14 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (progress < 1) {
                 requestAnimationFrame(step);
             } else {
-                setTimeout(() => {
-                    bootScreen.classList.add('boot-complete');
-                    setTimeout(() => {
-                        if (window.eduRobotAssistant && window.eduRobotAssistant.triggerWelcomeGreeting) {
-                            window.eduRobotAssistant.triggerWelcomeGreeting();
-                        }
-                    }, 400);
-                }, 100);
+                setTimeout(() => finishBoot(false), 60);
             }
         }
 

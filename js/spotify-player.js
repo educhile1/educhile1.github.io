@@ -49,6 +49,36 @@
     let activeTab = 'local'; // 'local' | 'spotify'
     let partyHudDismissed = false;
     let listeners = [];
+    let analyserCtx = null;
+    let analyserNode = null;
+    let analyserData = null;
+    let analyserFailed = false;
+
+    function setupAudioAnalyser() {
+        if (analyserNode || analyserFailed || !audio) return;
+        if (window.location && window.location.protocol === 'file:') {
+            analyserFailed = true;
+            return;
+        }
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) {
+                analyserFailed = true;
+                return;
+            }
+            analyserCtx = new AudioContext();
+            const source = analyserCtx.createMediaElementSource(audio);
+            analyserNode = analyserCtx.createAnalyser();
+            analyserNode.fftSize = 256;
+            analyserNode.smoothingTimeConstant = 0.72;
+            source.connect(analyserNode);
+            analyserNode.connect(analyserCtx.destination);
+            analyserData = new Uint8Array(analyserNode.frequencyBinCount);
+        } catch (err) {
+            analyserFailed = true;
+            analyserNode = null;
+        }
+    }
 
     // Global state object accessible by 3D room-scene.js
     window.eduMusicState = {
@@ -60,8 +90,23 @@
         volume: 0.85,
         getBeat: function () {
             if (!isPlaying) return 0;
+
+            if (analyserNode && analyserData) {
+                analyserNode.getByteFrequencyData(analyserData);
+                // Average low-end bass + kick bins (indices 0..10)
+                let sum = 0;
+                const bins = 10;
+                for (let i = 0; i < bins; i++) {
+                    sum += analyserData[i];
+                }
+                const avg = sum / (bins * 255);
+                if (avg > 0.01) {
+                    return Math.min(1, Math.pow(avg * 1.35, 1.35));
+                }
+            }
+
             const t = (audio ? audio.currentTime : performance.now() / 1000);
-            // Dynamic synthetic beat rhythm for punchy speaker woofer animations
+            // Fallback synthetic beat rhythm when analyser is unavailable (e.g. file://)
             const kick = Math.pow(Math.max(0, Math.sin(t * Math.PI * 2 * 1.95)), 8);
             const snare = Math.pow(Math.max(0, Math.sin((t + 0.25) * Math.PI * 2 * 0.98)), 10) * 0.6;
             return Math.min(1, kick + snare);
@@ -93,6 +138,10 @@
         });
 
         audio.addEventListener('play', () => {
+            setupAudioAnalyser();
+            if (analyserCtx && analyserCtx.state === 'suspended') {
+                analyserCtx.resume().catch(() => {});
+            }
             isPlaying = true;
             window.eduMusicState.isPlaying = true;
             syncUIState();

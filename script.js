@@ -1912,13 +1912,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =================================================================
-    // INPUT LISTENERS & TOUCH BINDINGS
+    // INPUT LISTENERS, DAS/ARR & TOUCH BINDINGS
     // =================================================================
+    const DAS_DELAY = 145;
+    const ARR_RATE = 42;
+    const SOFT_DROP_RATE = 38;
+    const activeRepeats = new Map();
+
+    function stopRepeat(key) {
+        const entry = activeRepeats.get(key);
+        if (!entry) return;
+        clearTimeout(entry.delayId);
+        clearInterval(entry.intervalId);
+        activeRepeats.delete(key);
+    }
+
+    function stopAllRepeats() {
+        Array.from(activeRepeats.keys()).forEach(stopRepeat);
+    }
+
+    function startRepeat(key, action, rate = ARR_RATE, delay = DAS_DELAY) {
+        if (activeRepeats.has(key)) return;
+        action();
+        const entry = { delayId: null, intervalId: null };
+        entry.delayId = setTimeout(() => {
+            entry.intervalId = setInterval(() => {
+                if (paused || gameOver || !startScreen.classList.contains('hidden')) {
+                    stopRepeat(key);
+                    return;
+                }
+                action();
+            }, rate);
+        }, delay);
+        activeRepeats.set(key, entry);
+    }
+
+    window.addEventListener('blur', stopAllRepeats);
+
     document.addEventListener('keydown', event => {
         if (gameOver) return;
 
         if (event.key === 'p' || event.key === 'P' || event.key === 'Escape') {
             if (!startScreen.classList.contains('hidden')) return;
+            stopAllRepeats();
             togglePause();
             return;
         }
@@ -1929,57 +1965,93 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'ArrowLeft':
             case 'KeyA':
                 event.preventDefault();
-                pieceMove(-1);
+                if (!event.repeat) startRepeat('left', () => pieceMove(-1), ARR_RATE, DAS_DELAY);
                 break;
             case 'ArrowRight':
             case 'KeyD':
                 event.preventDefault();
-                pieceMove(1);
+                if (!event.repeat) startRepeat('right', () => pieceMove(1), ARR_RATE, DAS_DELAY);
                 break;
             case 'ArrowDown':
             case 'KeyS':
                 event.preventDefault();
-                pieceDrop(true);
+                if (!event.repeat) startRepeat('down', () => pieceDrop(true), SOFT_DROP_RATE, 60);
                 break;
             case 'ArrowUp':
             case 'KeyW':
                 event.preventDefault();
-                pieceRotate(1);
+                if (!event.repeat) pieceRotate(1);
                 break;
             case 'KeyQ':
             case 'KeyZ':
                 event.preventDefault();
-                pieceRotate(-1);
+                if (!event.repeat) pieceRotate(-1);
                 break;
             case 'Space':
                 event.preventDefault();
-                hardDrop();
+                if (!event.repeat) hardDrop();
                 break;
             case 'KeyC':
             case 'ShiftLeft':
             case 'ShiftRight':
                 event.preventDefault();
-                hold();
+                if (!event.repeat) hold();
                 break;
         }
     });
 
-    function bindTouch(id, action) {
+    document.addEventListener('keyup', event => {
+        switch (event.code) {
+            case 'ArrowLeft':
+            case 'KeyA':
+                stopRepeat('left');
+                break;
+            case 'ArrowRight':
+            case 'KeyD':
+                stopRepeat('right');
+                break;
+            case 'ArrowDown':
+            case 'KeyS':
+                stopRepeat('down');
+                break;
+        }
+    });
+
+    function bindTouch(id, action, repeatKey = null, repeatRate = ARR_RATE, repeatDelay = DAS_DELAY) {
         const el = document.getElementById(id);
         if (!el) return;
-        el.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            action();
-        }, { passive: false });
-        el.addEventListener('click', (e) => {
-            e.preventDefault();
-            action();
-        });
+
+        if (repeatKey) {
+            const onStart = (e) => {
+                e.preventDefault();
+                if (paused || gameOver || !startScreen.classList.contains('hidden')) return;
+                startRepeat(`touch-${repeatKey}`, action, repeatRate, repeatDelay);
+            };
+            const onEnd = (e) => {
+                e.preventDefault();
+                stopRepeat(`touch-${repeatKey}`);
+            };
+            el.addEventListener('touchstart', onStart, { passive: false });
+            el.addEventListener('touchend', onEnd, { passive: false });
+            el.addEventListener('touchcancel', onEnd, { passive: false });
+            el.addEventListener('mousedown', onStart);
+            el.addEventListener('mouseup', onEnd);
+            el.addEventListener('mouseleave', onEnd);
+        } else {
+            el.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                action();
+            }, { passive: false });
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                action();
+            });
+        }
     }
 
-    bindTouch('touch-left', () => pieceMove(-1));
-    bindTouch('touch-right', () => pieceMove(1));
-    bindTouch('touch-down', () => pieceDrop(true));
+    bindTouch('touch-left', () => pieceMove(-1), 'left', ARR_RATE, DAS_DELAY);
+    bindTouch('touch-right', () => pieceMove(1), 'right', ARR_RATE, DAS_DELAY);
+    bindTouch('touch-down', () => pieceDrop(true), 'down', SOFT_DROP_RATE, 60);
     bindTouch('touch-rotate', () => pieceRotate(1));
     bindTouch('touch-drop', () => hardDrop());
     bindTouch('touch-hold', () => hold());

@@ -1,0 +1,9 @@
+# Chrome / Browser test profiles & temp directories
+.chrome-disco-temp2/
+.chrome-*/
+
+# Logs & OS artifacts
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
