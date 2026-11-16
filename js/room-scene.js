@@ -7975,6 +7975,7 @@
             focusYaw = 0;
             focusPitch = 0;
             if (!hotspotMap.has(stationId)) {
+                orbit.tAz = AZ_BASE;
                 orbit.tR = baseRadius();
                 orbit.tPol = POL_BASE;
             }
@@ -8274,14 +8275,39 @@
                         window.eduSpotifyPlayer.expand();
                         window.eduSpotifyPlayer.togglePlay();
                     }
+                } else if (api.getActiveStation() !== 'overview') {
+                    // Event strategy: clicking empty/non-interactive space while zoomed in exits to overview
+                    api.focusStation('overview');
                 }
+            }
+        });
+
+        canvas.addEventListener('dblclick', (e) => {
+            if (api.getViewMode() === 'stage3d' && api.getActiveStation() !== 'overview') {
+                e.preventDefault();
+                api.focusStation('overview');
+            }
+        });
+
+        canvas.addEventListener('contextmenu', (e) => {
+            if (api.getViewMode() === 'stage3d' && api.getActiveStation() !== 'overview') {
+                e.preventDefault();
+                api.focusStation('overview');
             }
         });
 
         canvas.addEventListener(
             'wheel',
             (e) => {
-                if (api.getViewMode() !== 'stage3d' || hotspotMap.has(api.getActiveStation())) return;
+                if (api.getViewMode() !== 'stage3d') return;
+                if (hotspotMap.has(api.getActiveStation())) {
+                    // Event strategy: scrolling out while zoomed in returns to office overview
+                    if (e.deltaY > 35) {
+                        e.preventDefault();
+                        api.focusStation('overview');
+                    }
+                    return;
+                }
                 e.preventDefault();
                 lastInteraction = performance.now();
                 const base = baseRadius();

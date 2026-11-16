@@ -747,6 +747,16 @@ document.addEventListener('DOMContentLoaded', () => {
         closeInspectorBtn.addEventListener('click', () => focusStation('overview'));
     }
 
+    const stageOverviewBtn = document.getElementById('stage-overview-btn');
+    if (stageOverviewBtn) {
+        stageOverviewBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+        stageOverviewBtn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            focusStation('overview');
+        });
+    }
+
     if (inspectorShowAllBtn) {
         inspectorShowAllBtn.addEventListener('click', () => focusStation('projects'));
     }
