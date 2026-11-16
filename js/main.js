@@ -104,6 +104,22 @@ document.addEventListener('DOMContentLoaded', () => {
             navSection: 'projects',
             path: '~/proyectos/gis-cloud-unis-ande',
             hudLabel: 'CAM // 01C-GIS'
+        },
+        cat: {
+            code: '🐾',
+            section: null,
+            group: null,
+            navSection: 'home',
+            path: '~/mascota/kotetsu',
+            hudLabel: 'CAM // 🐾-KOTETSU'
+        },
+        coffee: {
+            code: '☕',
+            section: null,
+            group: null,
+            navSection: 'home',
+            path: '~/escritorio/cafe-turbo',
+            hudLabel: 'CAM // ☕-CAFE-TURBO'
         }
     };
 
@@ -144,6 +160,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 setTimeout(() => {
                     bootScreen.classList.add('boot-complete');
+                    setTimeout(() => {
+                        if (window.eduRobotAssistant && window.eduRobotAssistant.triggerWelcomeGreeting) {
+                            window.eduRobotAssistant.triggerWelcomeGreeting();
+                        }
+                    }, 400);
                 }, 100);
             }
         }
@@ -641,6 +662,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyInspectorContent('overview');
                 syncStationVisualUI('overview');
                 onStationFocusChange('overview');
+            }
+
+            if (window.eduRobotAssistant && window.eduRobotAssistant.triggerWelcomeGreeting) {
+                window.eduRobotAssistant.triggerWelcomeGreeting();
             }
         }
     }

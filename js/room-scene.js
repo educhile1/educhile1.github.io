@@ -858,6 +858,52 @@
         addMesh(new THREE.BoxGeometry(0.38, 0.02, 0.26), std(0x1e1f26, 0.8), [-1.15, 1.06, -0.38], desk, { rot: [0, 0.15, 0] });
 
         /* ---------------------------------------------------------
+           EXECUTIVE ESPRESSO COFFEE MUG & STEAM (Interactive → Modo Turbo)
+        --------------------------------------------------------- */
+        const coffeeGroup = new THREE.Group();
+        coffeeGroup.position.set(0.66, 1.052, -0.16);
+        desk.add(coffeeGroup);
+
+        // Thermal cyber coaster with amber LED ring
+        addMesh(new THREE.CylinderGeometry(0.09, 0.09, 0.012, 24), std(0x181a22, 0.6, 0.4), [0, 0.006, 0], coffeeGroup, { cast: false });
+        const coasterGlowMat = basic({ color: 0xf59e0b });
+        addMesh(new THREE.CylinderGeometry(0.092, 0.092, 0.004, 24), coasterGlowMat, [0, 0.008, 0], coffeeGroup, { cast: false });
+
+        // Ceramic matte coffee mug
+        const mugMat = std(0x1e293b, 0.35, 0.2);
+        const mugMesh = addMesh(new THREE.CylinderGeometry(0.062, 0.052, 0.115, 24), mugMat, [0, 0.065, 0], coffeeGroup, { station: 'coffee' });
+        mugMesh.userData.isCoffee = true;
+
+        // Mug handle
+        addMesh(new THREE.TorusGeometry(0.035, 0.010, 12, 20, Math.PI * 1.35), mugMat, [0.062, 0.065, 0], coffeeGroup, { rot: [0, 0, -Math.PI / 2] });
+
+        // Hot coffee liquid surface
+        addMesh(new THREE.CircleGeometry(0.058, 20), std(0x23140b, 0.2, 0.9), [0, 0.115, 0], coffeeGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
+
+        // Procedural steam particle system
+        const steamCount = 18;
+        const steamGeo = new THREE.BufferGeometry();
+        const steamPositions = new Float32Array(steamCount * 3);
+        const steamPhases = new Float32Array(steamCount);
+        for (let i = 0; i < steamCount; i++) {
+            steamPositions[i * 3] = (Math.random() - 0.5) * 0.04;
+            steamPositions[i * 3 + 1] = 0.12 + Math.random() * 0.32;
+            steamPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.04;
+            steamPhases[i] = Math.random() * Math.PI * 2;
+        }
+        steamGeo.setAttribute('position', new THREE.BufferAttribute(steamPositions, 3));
+        const steamMat = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.030,
+            transparent: true,
+            opacity: 0.4,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const steamPoints = new THREE.Points(steamGeo, steamMat);
+        coffeeGroup.add(steamPoints);
+
+        /* ---------------------------------------------------------
            EXECUTIVE CV / RESUME PAPER ON DESK (Interactive → Modo 2D)
         --------------------------------------------------------- */
         const cvPaperTex = canvasTexture(600, 848, (ctx, w, h) => {
@@ -1630,8 +1676,63 @@
             ctx.lineWidth = 4;
             ctx.strokeRect(8, 8, w - 16, h - 16);
 
-            const isHappyOrDancing = expr === 'happy' || expr === 'dancing';
-            const eyeColor = (expr === 'dancing' && (beatVal || 0) > 0.45) ? '#f472b6' : '#00f0ff';
+            const isHappyOrDancing = expr === 'happy' || expr === 'dancing' || expr === 'welcome';
+            const isTurbo = expr === 'turbo';
+            const eyeColor = isTurbo ? '#fde047' : ((expr === 'dancing' && (beatVal || 0) > 0.45) ? '#f472b6' : '#00f0ff');
+
+            if (isTurbo) {
+                // Cheeks glow gold
+                ctx.save();
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.75)';
+                ctx.shadowColor = '#facc15';
+                ctx.shadowBlur = 22;
+                ctx.beginPath();
+                ctx.ellipse(130, 260, 32, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(382, 260, 32, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // Electric lightning bolt eyes ⚡ ⚡
+                ctx.save();
+                ctx.fillStyle = '#fde047';
+                ctx.shadowColor = '#facc15';
+                ctx.shadowBlur = 24;
+
+                function drawLightning(cx, cy, s) {
+                    ctx.save();
+                    ctx.translate(cx, cy);
+                    ctx.scale(s, s);
+                    ctx.beginPath();
+                    ctx.moveTo(10, -30);
+                    ctx.lineTo(-14, 0);
+                    ctx.lineTo(2, 4);
+                    ctx.lineTo(-8, 30);
+                    ctx.lineTo(16, -2);
+                    ctx.lineTo(0, -6);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                drawLightning(152, 175, 1.25);
+                drawLightning(360, 175, 1.25);
+                ctx.restore();
+
+                // Energetic open laughing mouth
+                ctx.save();
+                ctx.strokeStyle = '#f472b6';
+                ctx.shadowColor = '#f472b6';
+                ctx.shadowBlur = 16;
+                ctx.lineWidth = 9;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.arc(256, 260, 34, 0, Math.PI, false);
+                ctx.stroke();
+                ctx.restore();
+                return;
+            }
 
             // Cheeks glow
             if (isHappyOrDancing) {
@@ -1761,6 +1862,203 @@
             } catch (e) {}
         }
 
+        function playRobotWelcomeSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6 (Harmonic arpeggio)
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const t = now + i * 0.10;
+                    osc.type = i === 3 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, t);
+                    gain.gain.setValueAtTime(0.001, t);
+                    gain.gain.linearRampToValueAtTime(0.12, t + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.40);
+                });
+            } catch (e) {}
+        }
+
+        function playCatMeow() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(1150, now);
+                filter.Q.setValueAtTime(2.2, now);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.18, now + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(540, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.18);
+                osc.frequency.exponentialRampToValueAtTime(620, now + 0.62);
+
+                const osc2 = ctx.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(1080, now);
+                osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.18);
+                osc2.frequency.exponentialRampToValueAtTime(1240, now + 0.62);
+
+                const purr = ctx.createOscillator();
+                purr.type = 'sawtooth';
+                purr.frequency.setValueAtTime(45, now + 0.42);
+                const purrGain = ctx.createGain();
+                purrGain.gain.setValueAtTime(0.001, now + 0.42);
+                purrGain.gain.linearRampToValueAtTime(0.035, now + 0.52);
+                purrGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+
+                osc.connect(filter);
+                osc2.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                purr.connect(purrGain);
+                purrGain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.65);
+                osc2.start(now);
+                osc2.stop(now + 0.65);
+                purr.start(now + 0.42);
+                purr.stop(now + 1.15);
+            } catch (e) {}
+        }
+
+        function playCatPurr() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                const purr = ctx.createOscillator();
+                purr.type = 'sawtooth';
+                purr.frequency.setValueAtTime(32, now);
+
+                const mod = ctx.createOscillator();
+                mod.type = 'sine';
+                mod.frequency.setValueAtTime(24, now);
+                const modGain = ctx.createGain();
+                modGain.gain.setValueAtTime(14, now);
+                mod.connect(modGain);
+                modGain.connect(purr.frequency);
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(170, now);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.08, now + 0.15);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+
+                purr.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                mod.start(now);
+                mod.stop(now + 1.55);
+                purr.start(now);
+                purr.stop(now + 1.55);
+            } catch (e) {}
+        }
+
+        function playCatPlayChirp() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(680, now);
+                osc.frequency.exponentialRampToValueAtTime(1240, now + 0.11);
+                osc.frequency.exponentialRampToValueAtTime(940, now + 0.28);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.15, now + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.34);
+            } catch (e) {}
+        }
+
+        function playToyBounceSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(540, now);
+                osc.frequency.exponentialRampToValueAtTime(260, now + 0.12);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.12, now + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } catch (e) {}
+        }
+
+        function playCoffeeSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                const chord = [392.00, 523.25, 659.25, 783.99, 1046.50, 1318.51];
+                chord.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const t = now + idx * 0.05;
+                    osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, t);
+                    gain.gain.setValueAtTime(0.001, t);
+                    gain.gain.linearRampToValueAtTime(0.14, t + 0.015);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.35);
+                });
+            } catch (e) {}
+        }
+
         const robotBubbleEl = document.getElementById('edubot-speech-bubble');
         const robotBubbleText = document.getElementById('edubot-bubble-text');
         const robotBubbleBadge = document.getElementById('edubot-bubble-badge');
@@ -1769,11 +2067,20 @@
         const robotProfileBtn = document.getElementById('edubot-profile-btn');
         const robotMeetBtn = document.getElementById('edubot-meet-btn');
 
+        let isInitialWelcomeActive = false;
+        let hasShownInitialWelcome = false;
+        let standProg = 1.0; // Starts standing tall on first load
+        let targetStand = 1.0;
+
         function showTip(idx) {
+            isInitialWelcomeActive = false;
             currentTipIdx = (idx % EDUBOT_TIPS.length + EDUBOT_TIPS.length) % EDUBOT_TIPS.length;
             const tip = EDUBOT_TIPS[currentTipIdx];
             if (robotBubbleBadge) robotBubbleBadge.textContent = tip.badge;
             if (robotBubbleText) robotBubbleText.innerHTML = tip.text;
+            if (robotNextTipBtn) {
+                robotNextTipBtn.innerHTML = '<span>💡 Siguiente tip</span>';
+            }
             if (robotBubbleEl) robotBubbleEl.classList.remove('hidden');
 
             if (dismissTimer) clearTimeout(dismissTimer);
@@ -1785,16 +2092,50 @@
         function hideBubble() {
             if (robotBubbleEl) robotBubbleEl.classList.add('hidden');
             if (dismissTimer) clearTimeout(dismissTimer);
+            isInitialWelcomeActive = false;
+            isGreetingActive = false;
+            targetStand = 0.0;
         }
 
         function triggerGreeting() {
+            isInitialWelcomeActive = false;
             isGreetingActive = true;
+            targetStand = 1.0;
             greetingStartTime = performance.now();
             playRobotChirp();
             showTip(currentTipIdx);
         }
 
+        function triggerWelcomeGreeting() {
+            if (hasShownInitialWelcome) return;
+            hasShownInitialWelcome = true;
+            isInitialWelcomeActive = true;
+            isGreetingActive = true;
+            targetStand = 1.0;
+            standProg = 1.0;
+            greetingStartTime = performance.now();
+            playRobotWelcomeSound();
+
+            if (robotBubbleBadge) robotBubbleBadge.textContent = '🤖 ASISTENTE DE EDUARDO';
+            if (robotBubbleText) {
+                robotBubbleText.innerHTML = '¡Bienvenido! Soy el <strong>asistente virtual de Eduardo</strong> y me ha dejado para ayudarte. Si necesitas información haz clic en mí o en los <strong>elementos interactivos</strong> de nuestra oficina virtual, ¡estamos muy felices de que estés acá! ✨';
+            }
+            if (robotNextTipBtn) {
+                robotNextTipBtn.innerHTML = '<span>✨ ¡Explorar oficina!</span>';
+            }
+            if (robotBubbleEl) robotBubbleEl.classList.remove('hidden');
+
+            if (dismissTimer) clearTimeout(dismissTimer);
+            dismissTimer = setTimeout(() => {
+                hideBubble();
+            }, 18000);
+        }
+
         function nextTip() {
+            if (isInitialWelcomeActive) {
+                hideBubble();
+                return;
+            }
             triggerGreeting();
             showTip(currentTipIdx + 1);
         }
@@ -1803,6 +2144,7 @@
         if (robotNextTipBtn) robotNextTipBtn.addEventListener('click', nextTip);
         if (robotProfileBtn) {
             robotProfileBtn.addEventListener('click', () => {
+                hideBubble();
                 api.focusStation('home');
             });
         }
@@ -1812,8 +2154,150 @@
             });
         }
 
+        /* ---------------------------------------------------------
+           COFFEE TURBO MODE & KOTETSU CAT MASCOT LOGIC
+        --------------------------------------------------------- */
+        let isTurboActive = false;
+        let turboStartTime = 0;
+        const TURBO_DURATION = 9500;
+        let turboDismissTimer = null;
+
+        function triggerCoffeeTurbo() {
+            isTurboActive = true;
+            turboStartTime = performance.now();
+            playCoffeeSound();
+
+            if (robotBubbleBadge) robotBubbleBadge.textContent = '☕ MODO TURBO ACTIVADO (200%)';
+            if (robotBubbleText) {
+                robotBubbleText.innerHTML = '¡Café de especialidad detectado! ☕⚡ <strong>Compilando arquitecturas, desplegando microservicios y liderando proyectos de misión crítica</strong> a velocidad supersónica.';
+            }
+            if (robotNextTipBtn) {
+                robotNextTipBtn.innerHTML = '<span>⚡ ¡Velocidad máxima!</span>';
+            }
+            if (robotBubbleEl) robotBubbleEl.classList.remove('hidden');
+
+            if (turboDismissTimer) clearTimeout(turboDismissTimer);
+            turboDismissTimer = setTimeout(() => {
+                isTurboActive = false;
+                hideBubble();
+            }, TURBO_DURATION);
+        }
+
+        const catBubbleEl = document.getElementById('cat-speech-bubble');
+        const catBubbleText = document.getElementById('cat-bubble-text');
+        const catBubbleBadge = document.getElementById('cat-bubble-badge');
+        const catCloseBtn = document.getElementById('cat-close-btn');
+        const catPetBtn = document.getElementById('cat-pet-btn');
+        const catPlayBtn = document.getElementById('cat-play-btn');
+        const catDeskBtn = document.getElementById('cat-desk-btn');
+        const catSleepBtn = document.getElementById('cat-sleep-btn');
+        let isCatPetted = false;
+        let catPetStartTime = 0;
+        let catDismissTimer = null;
+
+        const KOTETSU_THOUGHTS = [
+            {
+                badge: '🐾 SABIDURÍA FELINA',
+                text: '¡Miau! Eduardo es un líder que <strong>mantiene la templanza, el foco y la empatía</strong> incluso en incidentes críticos y alta exigencia. Además, ¡siempre recuerda darme mis premios favoritos! 🐾✨'
+            },
+            {
+                badge: '🐾 ASESOR DE BIENESTAR',
+                text: '¡Purr! Mi función oficial es garantizar que el equipo tenga <strong>alta disponibilidad emocional</strong>. ¡Un equipo sin tiempo para caricias felinas no puede innovar a su máximo nivel!'
+            },
+            {
+                badge: '🎾 MODO JUEGO & ZOOMIES',
+                text: '¡Atrapé la pelotita de fibra óptica! Correr a <strong>latencia cero</strong> por la oficina virtual me mantiene en forma para supervisar los clusters y la nube.'
+            },
+            {
+                badge: '🤖 COMPAÑERO DE ESCRITORIO',
+                text: 'Me encanta estar junto a EduBot. Entre sus algoritmos de IA y mis ronroneos de baja frecuencia, <strong>la productividad del equipo sube un 300%</strong>.'
+            },
+            {
+                badge: '🏔️ VISTA PANORÁMICA',
+                text: 'Tomando el sol junto al ventanal mirando las Torres del Paine... La arquitectura de software debe ser tan majestuosa, limpia y sólida como la Patagonia.'
+            }
+        ];
+
+        function showCatThought(badge, text) {
+            if (catBubbleBadge) catBubbleBadge.textContent = badge;
+            if (catBubbleText) catBubbleText.innerHTML = text;
+            if (catBubbleEl) catBubbleEl.classList.remove('hidden');
+            if (catDismissTimer) clearTimeout(catDismissTimer);
+            catDismissTimer = setTimeout(() => {
+                hideCatBubble();
+            }, 12000);
+        }
+
+        function triggerCatInteraction() {
+            isCatPetted = true;
+            catPetStartTime = performance.now();
+            playCatPurr();
+            playCatMeow();
+            if (typeof spawnCatHearts === 'function' && typeof catRoot !== 'undefined') {
+                spawnCatHearts(catRoot.position);
+            }
+            const thought = KOTETSU_THOUGHTS[Math.floor(Math.random() * KOTETSU_THOUGHTS.length)];
+            showCatThought(thought.badge, thought.text);
+        }
+
+        function triggerCatPlay() {
+            if (typeof startCatPlayActivity === 'function') {
+                startCatPlayActivity();
+            }
+            showCatThought('🎾 ¡A CORRER Y JUGAR!', '¡Miau! ¡Modo zoomies activado! Persiguiendo la pelotita energética por toda la oficina virtual a velocidad supersónica.');
+        }
+
+        function triggerCatDesk() {
+            if (typeof sendCatToDesk === 'function') {
+                sendCatToDesk();
+            }
+            showCatThought('📍 EN CAMINO AL ESCRITORIO', '¡Prrr! Voy directo al escritorio a hacerle compañía a EduBot y supervisar los pipelines de desarrollo.');
+        }
+
+        function triggerCatSleep() {
+            if (typeof sendCatToSleep === 'function') {
+                sendCatToSleep();
+            }
+            showCatThought('💤 HORA DE LA SIESTA', 'Miau... fue un gran día de juegos y arquitectura cloud. Me acurruco en mi puf rosado a recargar baterías.');
+        }
+
+        function hideCatBubble() {
+            if (catBubbleEl) catBubbleEl.classList.add('hidden');
+            if (catDismissTimer) clearTimeout(catDismissTimer);
+            isCatPetted = false;
+        }
+
+        if (catCloseBtn) catCloseBtn.addEventListener('click', hideCatBubble);
+        if (catSleepBtn) catSleepBtn.addEventListener('click', triggerCatSleep);
+        if (catPetBtn) catPetBtn.addEventListener('click', triggerCatInteraction);
+        if (catPlayBtn) catPlayBtn.addEventListener('click', triggerCatPlay);
+        if (catDeskBtn) catDeskBtn.addEventListener('click', triggerCatDesk);
+
+        window.eduKotetsuPet = {
+            pet: triggerCatInteraction,
+            play: triggerCatPlay,
+            goToDesk: triggerCatDesk,
+            goToSleep: triggerCatSleep,
+            hideBubble: hideCatBubble,
+            getState: () => ({
+                state: typeof catState !== 'undefined' ? catState : 'unknown',
+                x: typeof catRoot !== 'undefined' ? Number(catRoot.position.x.toFixed(2)) : 0,
+                y: typeof catRoot !== 'undefined' ? Number(catRoot.position.y.toFixed(2)) : 0,
+                z: typeof catRoot !== 'undefined' ? Number(catRoot.position.z.toFixed(2)) : 0,
+                waypoint: typeof currentWaypointId !== 'undefined' ? currentWaypointId : ''
+            }),
+            focusCamera: () => {
+                if (api && api.focusStation) {
+                    api.focusStation('cat');
+                }
+            }
+        };
+
         window.eduRobotAssistant = {
             triggerGreeting,
+            triggerWelcomeGreeting,
+            triggerCoffeeTurbo,
+            triggerCatInteraction,
             nextTip,
             hideBubble,
             showTip
@@ -1854,6 +2338,33 @@
         }
         const armL = makeArm(-1);
         const armR = makeArm(1);
+
+        // Articulated legs for sitting & standing kinematics
+        function makeLeg(side) {
+            const hip = new THREE.Group();
+            hip.position.set(side * 0.18, 0.75, 0);
+            robot.add(hip);
+
+            // Thigh
+            addMesh(new THREE.BoxGeometry(0.14, 0.30, 0.14), robotWhite, [0, -0.15, 0], hip);
+
+            // Knee
+            const knee = new THREE.Group();
+            knee.position.set(0, -0.30, 0);
+            hip.add(knee);
+            addMesh(new THREE.CylinderGeometry(0.06, 0.06, 0.15, 16), robotGray, [0, 0, 0], knee, { rot: [0, 0, Math.PI / 2] });
+
+            // Calf
+            addMesh(new THREE.BoxGeometry(0.13, 0.30, 0.13), robotWhite, [0, -0.15, 0], knee);
+
+            // Cyber Boot
+            addMesh(new THREE.BoxGeometry(0.16, 0.08, 0.22), robotGray, [0, -0.32, 0.04], knee);
+            addMesh(new THREE.BoxGeometry(0.14, 0.015, 0.18), basic({ color: 0x38bdf8 }), [0, -0.36, 0.04], knee, { cast: false });
+
+            return { hip, knee };
+        }
+        const legL = makeLeg(-1);
+        const legR = makeLeg(1);
 
         /* ---------------------------------------------------------
            LEFT WALL: FRAMELESS EXECUTIVE PORTRAIT (→ Perfil), ART, SHELF
@@ -4350,23 +4861,397 @@
         arcade.add(arcadeScreenLight);
 
         /* ---------------------------------------------------------
-           BEANBAG + SLEEPING CAT (decor)
+           BEANBAG + SLEEPING CAT & INTERACTIVE 3D ROAMING MASCOT
         --------------------------------------------------------- */
         const lounge = new THREE.Group();
         lounge.position.set(-4.3, 0, 2.4);
         scene.add(lounge);
-        const beanbag = addMesh(new THREE.SphereGeometry(0.9, 28, 20), std(0xf9a8d4, 0.92), [0, 0.44, 0], lounge);
+        const beanbag = addMesh(new THREE.SphereGeometry(0.9, 28, 20), std(0xf9a8d4, 0.92), [0, 0.44, 0], lounge, { station: 'cat' });
         beanbag.scale.set(1, 0.55, 1);
-        const cat = new THREE.Group();
-        cat.position.set(0.05, 0.86, 0.05);
-        lounge.add(cat);
-        const catMat = std(0xf8fafc, 0.85);
-        const catBody = addMesh(new THREE.SphereGeometry(0.22, 18, 14), catMat, [0, 0, 0], cat);
-        catBody.scale.set(1.45, 0.62, 0.95);
-        addMesh(new THREE.SphereGeometry(0.13, 16, 12), catMat, [0.3, 0.02, 0.06], cat);
-        addMesh(new THREE.ConeGeometry(0.045, 0.09, 8), catMat, [0.33, 0.13, 0.0], cat, { rot: [0, 0, -0.2] });
-        addMesh(new THREE.ConeGeometry(0.045, 0.09, 8), catMat, [0.33, 0.13, 0.12], cat, { rot: [0, 0, -0.2] });
-        const tail = addMesh(new THREE.CylinderGeometry(0.035, 0.03, 0.42, 8), catMat, [-0.3, -0.04, 0.16], cat, { rot: [Math.PI / 2, 0, 0.9] });
+        beanbag.userData.isCat = true;
+
+        /* ---------------------------------------------------------
+           KOTETSU CAT MASCOT (ARTICULATED 3D CHARACTER)
+        --------------------------------------------------------- */
+        const catRoot = new THREE.Group();
+        catRoot.position.set(-4.25, 0.86, 2.45);
+        catRoot.rotation.y = 0.25;
+        scene.add(catRoot);
+        const cat = catRoot; // Alias for compatibility with all existing references
+
+        // Fur materials
+        const catMat = std(0xfdfdfd, 0.82, 0.05); // soft pearlescent white fur
+        const catSpotMat = std(0xe08b48, 0.85, 0.05); // warm caramel/ginger calico patch
+        const catPinkMat = basic({ color: 0xf472b6 });
+        const catCollarMat = std(0xec4899, 0.4, 0.5);
+        const catBellMat = basic({ color: 0x38bdf8 }); // cyber LED pendant
+        const catEyeMat = basic({ color: 0x10b981 }); // emerald eyes
+        const catPupilMat = basic({ color: 0x052e16 });
+        const catPawPadMat = basic({ color: 0xfb7185 });
+
+        // Spine group (handles breathing, arching, bending)
+        const catSpine = new THREE.Group();
+        catRoot.add(catSpine);
+
+        // Torso / body
+        const catBody = addMesh(new THREE.SphereGeometry(0.22, 18, 14), catMat, [0, 0, 0], catSpine, { station: 'cat' });
+        catBody.scale.set(1.42, 0.65, 0.92);
+        catBody.userData.isCat = true;
+
+        // Ginger calico patch on back
+        const catPatch = addMesh(new THREE.SphereGeometry(0.12, 12, 10), catSpotMat, [-0.06, 0.08, 0.04], catSpine, { station: 'cat' });
+        catPatch.scale.set(1.2, 0.4, 0.9);
+        catPatch.userData.isCat = true;
+
+        // Cyber Collar + Glowing LED pendant / bell
+        const catCollar = addMesh(new THREE.TorusGeometry(0.115, 0.016, 10, 24), catCollarMat, [0.22, 0.02, 0.0], catSpine, { rot: [0, Math.PI / 2, 0], cast: false });
+        const catBell = addMesh(new THREE.SphereGeometry(0.022, 10, 10), catBellMat, [0.24, -0.065, 0.0], catSpine, { cast: false });
+        const catBellLight = new THREE.PointLight(0x38bdf8, 0.4, 0.8);
+        catBellLight.position.set(0.24, -0.065, 0);
+        catSpine.add(catBellLight);
+
+        // Head Group (allows tilting, sniffing, turning)
+        const catHeadGroup = new THREE.Group();
+        catHeadGroup.position.set(0.29, 0.05, 0);
+        catSpine.add(catHeadGroup);
+
+        const catHead = addMesh(new THREE.SphereGeometry(0.135, 18, 14), catMat, [0, 0, 0], catHeadGroup, { station: 'cat' });
+        catHead.userData.isCat = true;
+
+        // Calico patch on right ear/brow
+        const headPatch = addMesh(new THREE.SphereGeometry(0.075, 10, 8), catSpotMat, [0.03, 0.05, 0.045], catHeadGroup, { station: 'cat' });
+        headPatch.scale.set(1.0, 0.6, 0.8);
+        headPatch.userData.isCat = true;
+
+        // Ears (Pointed + Pink inner)
+        const earL = new THREE.Group();
+        earL.position.set(0.03, 0.11, -0.06);
+        earL.rotation.set(-0.15, 0, -0.2);
+        catHeadGroup.add(earL);
+        addMesh(new THREE.ConeGeometry(0.045, 0.09, 8), catMat, [0, 0.04, 0], earL);
+        addMesh(new THREE.ConeGeometry(0.026, 0.062, 8), catPinkMat, [0.005, 0.036, 0.005], earL, { cast: false });
+
+        const earR = new THREE.Group();
+        earR.position.set(0.03, 0.11, 0.06);
+        earR.rotation.set(0.15, 0, -0.2);
+        catHeadGroup.add(earR);
+        addMesh(new THREE.ConeGeometry(0.045, 0.09, 8), catSpotMat, [0, 0.04, 0], earR);
+        addMesh(new THREE.ConeGeometry(0.026, 0.062, 8), catPinkMat, [0.005, 0.036, -0.005], earR, { cast: false });
+
+        // Eyes (Glowing emerald)
+        const eyeGroupL = new THREE.Group();
+        eyeGroupL.position.set(0.11, 0.025, -0.055);
+        catHeadGroup.add(eyeGroupL);
+        const catEyeL = addMesh(new THREE.SphereGeometry(0.022, 10, 10), catEyeMat, [0, 0, 0], eyeGroupL, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.008, 8, 8), basic({ color: 0xffffff }), [0.015, 0.006, -0.003], eyeGroupL, { cast: false });
+
+        const eyeGroupR = new THREE.Group();
+        eyeGroupR.position.set(0.11, 0.025, 0.055);
+        catHeadGroup.add(eyeGroupR);
+        const catEyeR = addMesh(new THREE.SphereGeometry(0.022, 10, 10), catEyeMat, [0, 0, 0], eyeGroupR, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.008, 8, 8), basic({ color: 0xffffff }), [0.015, 0.006, 0.003], eyeGroupR, { cast: false });
+
+        // Muzzle & Pink nose
+        addMesh(new THREE.SphereGeometry(0.014, 8, 8), catPinkMat, [0.134, -0.006, 0], catHeadGroup, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.034, 10, 8), catMat, [0.11, -0.026, -0.026], catHeadGroup);
+        addMesh(new THREE.SphereGeometry(0.034, 10, 8), catMat, [0.11, -0.026, 0.026], catHeadGroup);
+
+        // Delicate Whiskers (3 left, 3 right)
+        const whiskerMat = basic({ color: 0xe2e8f0 });
+        [-0.015, 0, 0.015].forEach((dy) => {
+            addMesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.07, 4), whiskerMat, [0.115, -0.02 + dy, -0.065], catHeadGroup, { rot: [0.35 + dy * 4, 0.4, 1.45], cast: false });
+            addMesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.07, 4), whiskerMat, [0.115, -0.02 + dy, 0.065], catHeadGroup, { rot: [-0.35 - dy * 4, -0.4, 1.45], cast: false });
+        });
+
+        // 4 Articulated Quadruped Legs
+        // Front Left Leg
+        const legFL = new THREE.Group();
+        legFL.position.set(0.16, -0.05, -0.11);
+        catSpine.add(legFL);
+        const legMeshFL = addMesh(new THREE.CylinderGeometry(0.032, 0.026, 0.13, 8), catMat, [0, -0.05, 0], legFL);
+        const pawFL = addMesh(new THREE.SphereGeometry(0.038, 10, 8), catMat, [0.015, -0.11, 0], legFL);
+        addMesh(new THREE.CircleGeometry(0.016, 8), catPawPadMat, [0.015, -0.125, 0], legFL, { rot: [Math.PI / 2, 0, 0], cast: false });
+
+        // Front Right Leg
+        const legFR = new THREE.Group();
+        legFR.position.set(0.16, -0.05, 0.11);
+        catSpine.add(legFR);
+        const legMeshFR = addMesh(new THREE.CylinderGeometry(0.032, 0.026, 0.13, 8), catMat, [0, -0.05, 0], legFR);
+        const pawFR = addMesh(new THREE.SphereGeometry(0.038, 10, 8), catMat, [0.015, -0.11, 0], legFR);
+        addMesh(new THREE.CircleGeometry(0.016, 8), catPawPadMat, [0.015, -0.125, 0], legFR, { rot: [Math.PI / 2, 0, 0], cast: false });
+
+        // Back Left Leg
+        const legBL = new THREE.Group();
+        legBL.position.set(-0.16, -0.03, -0.115);
+        catSpine.add(legBL);
+        const haunchBL = addMesh(new THREE.SphereGeometry(0.055, 10, 8), catMat, [0, 0, 0], legBL);
+        haunchBL.scale.set(0.9, 1.25, 0.85);
+        const legMeshBL = addMesh(new THREE.CylinderGeometry(0.028, 0.024, 0.12, 8), catMat, [0.01, -0.07, 0], legBL);
+        const pawBL = addMesh(new THREE.SphereGeometry(0.036, 10, 8), catMat, [0.02, -0.125, 0], legBL);
+        addMesh(new THREE.CircleGeometry(0.015, 8), catPawPadMat, [0.02, -0.138, 0], legBL, { rot: [Math.PI / 2, 0, 0], cast: false });
+
+        // Back Right Leg
+        const legBR = new THREE.Group();
+        legBR.position.set(-0.16, -0.03, 0.115);
+        catSpine.add(legBR);
+        const haunchBR = addMesh(new THREE.SphereGeometry(0.055, 10, 8), catMat, [0, 0, 0], legBR);
+        haunchBR.scale.set(0.9, 1.25, 0.85);
+        const legMeshBR = addMesh(new THREE.CylinderGeometry(0.028, 0.024, 0.12, 8), catMat, [0.01, -0.07, 0], legBR);
+        const pawBR = addMesh(new THREE.SphereGeometry(0.036, 10, 8), catMat, [0.02, -0.125, 0], legBR);
+        addMesh(new THREE.CircleGeometry(0.015, 8), catPawPadMat, [0.02, -0.138, 0], legBR, { rot: [Math.PI / 2, 0, 0], cast: false });
+
+        // Articulated 3-Segment Tail
+        const tailRoot = new THREE.Group();
+        tailRoot.position.set(-0.25, 0.03, 0);
+        catSpine.add(tailRoot);
+
+        const tailSeg1 = addMesh(new THREE.CylinderGeometry(0.030, 0.026, 0.14, 8), catMat, [0, 0.07, 0], tailRoot);
+        tailSeg1.rotation.set(0, 0, -0.4);
+
+        const tailMid = new THREE.Group();
+        tailMid.position.set(0.03, 0.13, 0);
+        tailRoot.add(tailMid);
+        const tailSeg2 = addMesh(new THREE.CylinderGeometry(0.026, 0.022, 0.13, 8), catMat, [0, 0.065, 0], tailMid);
+
+        const tailTipGroup = new THREE.Group();
+        tailTipGroup.position.set(0.015, 0.12, 0);
+        tailMid.add(tailTipGroup);
+        const tailTipMesh = addMesh(new THREE.CylinderGeometry(0.022, 0.016, 0.12, 8), catSpotMat, [0, 0.06, 0], tailTipGroup);
+        addMesh(new THREE.SphereGeometry(0.016, 8, 8), catSpotMat, [0, 0.12, 0], tailTipGroup);
+
+        // Legacy reference so old code doesn't break
+        const tail = tailRoot;
+
+        /* ---------------------------------------------------------
+           KOTETSU'S CYBER-YARN TOY BALL (INTERACTIVE 3D OBJECT)
+        --------------------------------------------------------- */
+        const catToy = new THREE.Group();
+        catToy.position.set(-1.8, 0.08, 0.8);
+        scene.add(catToy);
+
+        const toyCoreMat = std(0xf472b6, 0.35, 0.5);
+        const toyCore = addMesh(new THREE.SphereGeometry(0.075, 18, 14), toyCoreMat, [0, 0, 0], catToy, { station: 'cat' });
+        toyCore.userData.isCat = true;
+        toyCore.userData.isCatToy = true;
+
+        const toyRing1 = addMesh(new THREE.TorusGeometry(0.078, 0.010, 8, 24), basic({ color: 0x38bdf8 }), [0, 0, 0], catToy, { rot: [0.6, 0.4, 0], cast: false });
+        toyRing1.userData.isCat = true;
+        toyRing1.userData.isCatToy = true;
+
+        const toyRing2 = addMesh(new THREE.TorusGeometry(0.078, 0.010, 8, 24), basic({ color: 0xfacc15 }), [0, 0, 0], catToy, { rot: [-0.7, 1.1, 0.4], cast: false });
+        toyRing2.userData.isCat = true;
+        toyRing2.userData.isCatToy = true;
+
+        const toyLight = new THREE.PointLight(0xf472b6, 0.75, 2.2);
+        toyLight.position.set(0, 0.06, 0);
+        catToy.add(toyLight);
+
+        // Hearts & sparkles particle system
+        const CAT_PART_COUNT = 24;
+        const catPartPos = new Float32Array(CAT_PART_COUNT * 3);
+        const catPartVels = [];
+        const catPartAges = new Float32Array(CAT_PART_COUNT);
+        for (let i = 0; i < CAT_PART_COUNT; i++) {
+            catPartPos[i * 3] = 0;
+            catPartPos[i * 3 + 1] = -50;
+            catPartPos[i * 3 + 2] = 0;
+            catPartAges[i] = 999;
+            catPartVels.push({ x: 0, y: 0.35, z: 0 });
+        }
+        const catPartGeo = new THREE.BufferGeometry();
+        catPartGeo.setAttribute('position', new THREE.BufferAttribute(catPartPos, 3));
+        const catPartMat = new THREE.PointsMaterial({
+            color: 0xf472b6,
+            size: 0.055,
+            transparent: true,
+            opacity: 0.85,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const catParticles = new THREE.Points(catPartGeo, catPartMat);
+        scene.add(catParticles);
+
+        function spawnCatHearts(origin) {
+            for (let i = 0; i < 8; i++) {
+                const idx = Math.floor(Math.random() * CAT_PART_COUNT);
+                catPartPos[idx * 3] = origin.x + (Math.random() - 0.5) * 0.28;
+                catPartPos[idx * 3 + 1] = origin.y + 0.12 + Math.random() * 0.14;
+                catPartPos[idx * 3 + 2] = origin.z + (Math.random() - 0.5) * 0.28;
+                catPartVels[idx].x = (Math.random() - 0.5) * 0.16;
+                catPartVels[idx].y = 0.22 + Math.random() * 0.28;
+                catPartVels[idx].z = (Math.random() - 0.5) * 0.16;
+                catPartAges[idx] = 0;
+            }
+            catPartGeo.attributes.position.needsUpdate = true;
+        }
+
+        /* ---------------------------------------------------------
+           KOTETSU WAYPOINT MAP, GRAPH & PATHFINDING
+        --------------------------------------------------------- */
+        const KOTETSU_WAYPOINTS = {
+            'beanbag': { id: 'beanbag', x: -4.25, y: 0.86, z: 2.45, isBed: true, name: 'Puf de descanso', action: 'sleep' },
+            'lounge_rug': { id: 'lounge_rug', x: -3.5, y: 0.16, z: 2.2, name: 'Zona Lounge', action: 'stretch' },
+            'whiteboard': { id: 'whiteboard', x: -4.3, y: 0.16, z: 0.9, name: 'Pizarra de Certificaciones', action: 'sniff' },
+            'arcade': { id: 'arcade', x: -4.3, y: 0.16, z: -3.0, name: 'Edu Tetris Arcade', action: 'watch_arcade' },
+            'window': { id: 'window', x: 0.4, y: 0.16, z: -3.2, name: 'Ventanal Panorámico', action: 'sunbathe' },
+            'dj': { id: 'dj', x: 2.8, y: 0.16, z: -3.2, name: 'Estación de Música IA', action: 'listen_music' },
+            'desk_front': { id: 'desk_front', x: -0.3, y: 0.16, z: 0.95, name: 'Frente al Escritorio', action: 'groom' },
+            'desk_robot': { id: 'desk_robot', x: 0.65, y: 0.16, z: 0.75, name: 'Junto a EduBot', action: 'greet_robot' },
+            'center': { id: 'center', x: -1.2, y: 0.16, z: 0.2, name: 'Alfombra Central', action: 'play_ball' }
+        };
+
+        const WAYPOINT_GRAPH = {
+            'beanbag': ['lounge_rug'],
+            'lounge_rug': ['beanbag', 'whiteboard', 'center'],
+            'whiteboard': ['lounge_rug', 'arcade', 'center'],
+            'arcade': ['whiteboard', 'window'],
+            'window': ['arcade', 'dj', 'center'],
+            'dj': ['window', 'desk_robot', 'center'],
+            'desk_robot': ['dj', 'desk_front', 'center'],
+            'desk_front': ['desk_robot', 'center', 'lounge_rug'],
+            'center': ['lounge_rug', 'whiteboard', 'window', 'dj', 'desk_robot', 'desk_front']
+        };
+
+        function findCatPath(startId, goalId) {
+            if (startId === goalId) return [goalId];
+            const queue = [[startId]];
+            const visited = new Set([startId]);
+            while (queue.length > 0) {
+                const path = queue.shift();
+                const node = path[path.length - 1];
+                const neighbors = WAYPOINT_GRAPH[node] || [];
+                for (const next of neighbors) {
+                    if (next === goalId) {
+                        return path.slice(1).concat(next);
+                    }
+                    if (!visited.has(next)) {
+                        visited.add(next);
+                        queue.push(path.concat(next));
+                    }
+                }
+            }
+            return [goalId];
+        }
+
+        function getClosestWaypoint(px, pz) {
+            let bestId = 'center';
+            let bestDist = 999999;
+            for (const [id, wp] of Object.entries(KOTETSU_WAYPOINTS)) {
+                if (id === 'beanbag') continue;
+                const dist = Math.hypot(wp.x - px, wp.z - pz);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestId = id;
+                }
+            }
+            return bestId;
+        }
+
+        function lerpAngle(current, target, alpha) {
+            let diff = (target - current) % (Math.PI * 2);
+            if (diff < -Math.PI) diff += Math.PI * 2;
+            if (diff > Math.PI) diff -= Math.PI * 2;
+            return current + diff * alpha;
+        }
+
+        /* ---------------------------------------------------------
+           KOTETSU STATE MACHINE & AUTONOMOUS ROAMING
+        --------------------------------------------------------- */
+        let catState = 'sleeping'; // 'sleeping', 'waking', 'jumping_down', 'walking', 'running_zoomies', 'hunting_wiggle', 'pouncing', 'investigating', 'grooming', 'jumping_up', 'petted'
+        let currentWaypointId = 'beanbag';
+        let pathQueue = [];
+        let stateStartTime = performance.now();
+        let stateDuration = 28.0;
+        let walkPhase = 0;
+        let runPhase = 0;
+        let jumpStartPos = new THREE.Vector3();
+        let jumpEndPos = new THREE.Vector3();
+        let pounceCount = 0;
+        let isCatVisitingDesk = false;
+        let lastAutoActionTime = performance.now();
+        let nextActivityAfterLanding = null;
+
+        const toyPos = new THREE.Vector3(-1.8, 0.08, 0.8);
+        const toyVel = new THREE.Vector2(0, 0);
+
+        function startWaking() {
+            catState = 'waking';
+            stateStartTime = performance.now();
+            stateDuration = 2.2;
+            catEyeMat.color.setHex(0x10b981);
+            playCatMeow();
+        }
+
+        function startJumpDown(afterLanding = null) {
+            catState = 'jumping_down';
+            nextActivityAfterLanding = afterLanding;
+            stateStartTime = performance.now();
+            stateDuration = 0.75;
+            jumpStartPos.copy(catRoot.position);
+            jumpEndPos.set(-3.5, 0.16, 2.2);
+            catRoot.rotation.y = -Math.atan2(jumpEndPos.z - jumpStartPos.z, jumpEndPos.x - jumpStartPos.x);
+        }
+
+        function startJumpUp() {
+            catState = 'jumping_up';
+            stateStartTime = performance.now();
+            stateDuration = 0.85;
+            jumpStartPos.copy(catRoot.position);
+            jumpEndPos.set(-4.25, 0.86, 2.45);
+            catRoot.rotation.y = -Math.atan2(jumpEndPos.z - jumpStartPos.z, jumpEndPos.x - jumpStartPos.x);
+        }
+
+        function startWalkTo(goalId, mode = 'walking') {
+            if (currentWaypointId === 'beanbag' && goalId !== 'beanbag') {
+                startJumpDown(goalId);
+                return;
+            }
+            const startId = currentWaypointId === 'beanbag' ? 'lounge_rug' : currentWaypointId;
+            pathQueue = findCatPath(startId, goalId);
+            catState = mode;
+            stateStartTime = performance.now();
+        }
+
+        function startCatPlayActivity() {
+            pounceCount = 0;
+            // Kick ball slightly into room
+            toyVel.x = (Math.random() - 0.5) * 3.0;
+            toyVel.y = (Math.random() - 0.5) * 3.0;
+            playCatPlayChirp();
+
+            if (currentWaypointId === 'beanbag') {
+                startJumpDown('running_zoomies');
+            } else {
+                catState = 'running_zoomies';
+            }
+        }
+
+        function sendCatToDesk() {
+            isCatVisitingDesk = false;
+            startWalkTo('desk_robot', 'walking');
+        }
+
+        function sendCatToSleep() {
+            isCatVisitingDesk = false;
+            if (currentWaypointId === 'beanbag') {
+                catState = 'sleeping';
+                return;
+            }
+            startWalkTo('lounge_rug', 'walking');
+        }
+
+        function startHuntingWiggle() {
+            catState = 'hunting_wiggle';
+            stateStartTime = performance.now();
+            stateDuration = 0.65;
+        }
+
+        function startPounce() {
+            catState = 'pouncing';
+            stateStartTime = performance.now();
+            stateDuration = 0.50;
+            playCatPlayChirp();
+        }
 
         /* ---------------------------------------------------------
            FLOATING DUST MOTES IN SUNLIGHT
@@ -4770,7 +5655,8 @@
             { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.2, -4.05], target: [-5.05, 1.36, -4.05], normal: [0.707, 0, 0.707], dist: 2.45, lift: 0.0 },
             { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.8, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 },
             { id: 'cv', code: '2D', label: 'Ver Portafolio 2D', anchor: [-0.05, 1.48, 0.71], target: [-0.05, 1.07, 0.71], normal: [0, 0.85, 0.52], dist: 1.25, lift: 0.25 },
-            { id: 'certifications', code: '07', label: 'Certificaciones', anchor: [-5.2, 3.9, 1.05], target: [-5.96, 2.85, 1.05], normal: [1, 0, 0], dist: 3.2, lift: 0.0 }
+            { id: 'certifications', code: '07', label: 'Certificaciones', anchor: [-5.2, 3.9, 1.05], target: [-5.96, 2.85, 1.05], normal: [1, 0, 0], dist: 3.2, lift: 0.0 },
+            { id: 'cat', code: '🐾', label: 'Kotetsu', anchor: [-3.0, 1.4, 3.4], target: [-4.25, 0.86, 2.45], normal: [0.6, 0.2, 0.77], dist: 1.8, lift: 0.1, noDiamond: true }
         ];
         const hotspotMap = new Map();
         let hoveredId = null;
@@ -4781,7 +5667,7 @@
             hs.normalV = v3(hs.normal).normalize();
             hotspotMap.set(hs.id, hs);
 
-            if (markersContainer) {
+            if (markersContainer && !hs.noDiamond) {
                 const el = document.createElement('button');
                 el.type = 'button';
                 el.className = 'room-hotspot';
@@ -5032,6 +5918,18 @@
                         }
                         return;
                     }
+                    if (id === 'coffee' || (hit.object && hit.object.userData && hit.object.userData.isCoffee)) {
+                        triggerCoffeeTurbo();
+                        return;
+                    }
+                    if (id === 'cat' || (hit.object && hit.object.userData && hit.object.userData.isCat)) {
+                        if (hit.object && hit.object.userData && hit.object.userData.isCatToy) {
+                            triggerCatPlay();
+                        } else {
+                            triggerCatInteraction();
+                        }
+                        return;
+                    }
                     if (id === 'robot') {
                         if (window.eduRobotAssistant) {
                             window.eduRobotAssistant.triggerGreeting();
@@ -5163,6 +6061,40 @@
             robotBubbleEl.style.transform = `translate3d(${targetX.toFixed(1)}px, ${targetY.toFixed(1)}px, 0)`;
         }
 
+        const catAnchor = new THREE.Vector3(-4.25, 1.35, 2.45);
+        function updateCatBubble() {
+            if (!catBubbleEl || catBubbleEl.classList.contains('hidden') || api.getViewMode() !== 'stage3d') return;
+            if (typeof catRoot !== 'undefined') {
+                catAnchor.set(catRoot.position.x, catRoot.position.y + 0.46, catRoot.position.z);
+            }
+            projVec.copy(catAnchor);
+            projVec.project(camera);
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const px = (projVec.x * 0.5 + 0.5) * vw;
+            const py = (-projVec.y * 0.5 + 0.5) * vh;
+
+            if (projVec.z > 1 || px < -80 || px > vw + 80 || py < -80 || py > vh + 80) {
+                catBubbleEl.style.opacity = '0';
+                return;
+            }
+
+            catBubbleEl.style.opacity = '1';
+            const bubbleW = catBubbleEl.offsetWidth || 320;
+            const bubbleH = catBubbleEl.offsetHeight || 160;
+
+            const targetX = Math.max(14, Math.min(vw - bubbleW - 14, px - bubbleW * 0.45));
+            const targetY = Math.max(80, Math.min(vh - bubbleH - 75, py - bubbleH - 24));
+
+            catBubbleEl.style.transform = `translate3d(${targetX.toFixed(1)}px, ${targetY.toFixed(1)}px, 0)`;
+
+            const tailEl = catBubbleEl.querySelector('.cat-bubble-tail');
+            if (tailEl) {
+                const tailX = Math.max(22, Math.min(bubbleW - 26, px - targetX));
+                tailEl.style.left = `${tailX.toFixed(1)}px`;
+            }
+        }
+
         function updateMarkers(timeSec) {
             if (!markersContainer || api.getViewMode() !== 'stage3d') return;
             const vw = window.innerWidth;
@@ -5200,6 +6132,11 @@
             const hs = api.getViewMode() === 'stage3d' ? hotspotMap.get(active) : null;
 
             if (hs) {
+                if (active === 'cat' && typeof catRoot !== 'undefined') {
+                    hs.targetV.set(catRoot.position.x, catRoot.position.y + 0.16, catRoot.position.z);
+                    hs.dist = 1.95;
+                    hs.lift = 0.28;
+                }
                 tmpN.copy(hs.normalV).applyAxisAngle(UP, focusYaw);
                 const dist = hs.dist * (isMobile() ? 1.3 : 1);
                 // Elements always centered directly in the middle of the screen
@@ -5280,14 +6217,16 @@
 
                 // ROBOT ANIMATIONS: GREETING WAVE, DANCING WITH MUSIC, OR IDLE TYPING
                 const nowMs = performance.now();
-                const isGreetingNow = (nowMs - greetingStartTime) < GREETING_DURATION;
+                const isGreetingNow = isInitialWelcomeActive || (isGreetingActive && (nowMs - greetingStartTime) < (isInitialWelcomeActive ? 18000 : 5000));
 
                 // Face expression & Blinking logic
                 let expr = 'normal';
-                if (isGreetingNow) {
-                    expr = 'happy';
+                if (isTurboActive) {
+                    expr = 'turbo';
                 } else if (isAudioPlaying) {
                     expr = 'dancing';
+                } else if (isGreetingNow || isInitialWelcomeActive) {
+                    expr = 'welcome';
                 }
 
                 nextBlink -= dt;
@@ -5301,37 +6240,48 @@
                     robotFaceTex.needsUpdate = true;
                 }
 
+                // Smooth standing & sitting kinematics transition
+                targetStand = (isInitialWelcomeActive || isGreetingNow) ? 1.0 : 0.0;
+                standProg += (targetStand - standProg) * (1 - Math.exp(-dt * 4.2));
+
+                const standY = standProg * 0.38;
+                robot.position.y = (isAudioPlaying ? (Math.abs(Math.sin(t * 7.2)) * 0.038 * (0.6 + beat * 0.6)) : 0) + standY;
+                chair.position.z = -0.86 - standProg * 0.22;
+
+                // Leg articulation
+                const hipAngle = THREE.MathUtils.lerp(-1.45, 0.0, standProg);
+                const kneeAngle = THREE.MathUtils.lerp(1.45, 0.0, standProg);
+                legL.hip.rotation.x = hipAngle;
+                legL.knee.rotation.x = kneeAngle;
+                legR.hip.rotation.x = hipAngle;
+                legR.knee.rotation.x = kneeAngle;
+
+                // Dynamic speech bubble anchor following the standing elevation
+                robotAnchor.set(0.50, 1.85 + standY, -0.74);
+
                 if (isGreetingNow) {
                     const waveT = (nowMs - greetingStartTime) / 1000;
-                    const raiseProg = Math.min(1.0, waveT * 3.5);
-                    const lowerProg = Math.max(0, (waveT - (GREETING_DURATION / 1000 - 0.6)) * 2.5);
-                    const armBlend = Math.max(0, raiseProg - lowerProg);
+                    const armBlend = THREE.MathUtils.clamp(waveT * 3.5, 0, 1);
 
-                    // Wave right arm enthusiastically
-                    armR.rotation.x = THREE.MathUtils.lerp(-1.2, 0.45, armBlend);
-                    armR.rotation.z = THREE.MathUtils.lerp(0.12, 0.85 + Math.sin(waveT * 13) * 0.32, armBlend);
-                    armR.rotation.y = THREE.MathUtils.lerp(0, Math.sin(waveT * 7) * 0.15, armBlend);
+                    // Wave right arm high and enthusiastically
+                    armR.rotation.x = THREE.MathUtils.lerp(-1.18, 0.55, armBlend);
+                    armR.rotation.z = THREE.MathUtils.lerp(0.16, 0.88 + Math.sin(waveT * 11) * 0.36, armBlend);
+                    armR.rotation.y = THREE.MathUtils.lerp(-0.12, Math.sin(waveT * 5) * 0.18, armBlend);
+
+                    // Left arm in friendly welcoming pose at side/hip
+                    armL.rotation.x = THREE.MathUtils.lerp(-1.18, -0.42 + Math.sin(waveT * 3) * 0.06, armBlend);
+                    armL.rotation.z = THREE.MathUtils.lerp(-0.16, -0.38, armBlend);
+                    armL.rotation.y = THREE.MathUtils.lerp(0.12, 0.22, armBlend);
 
                     // Head turns toward user/camera and tilts cutely
-                    head.rotation.y = THREE.MathUtils.lerp(Math.sin(t * 0.6) * 0.18, -0.28 + Math.sin(waveT * 4) * 0.08, armBlend);
-                    head.rotation.z = Math.sin(waveT * 5) * 0.08 * armBlend;
-                    head.rotation.x = Math.sin(waveT * 3) * 0.04 * armBlend;
-                    head.position.y = 1.62 + Math.sin(waveT * 4) * 0.015;
+                    head.rotation.y = THREE.MathUtils.lerp(Math.sin(t * 0.6) * 0.18, -0.24 + Math.sin(waveT * 2.5) * 0.08, armBlend);
+                    head.rotation.z = THREE.MathUtils.lerp(0, 0.06 + Math.sin(waveT * 3.5) * 0.04, armBlend);
+                    head.rotation.x = THREE.MathUtils.lerp(0, 0.04 + Math.sin(waveT * 4) * 0.04, armBlend);
+                    head.position.y = 1.62 + Math.sin(waveT * 3) * 0.015;
 
-                    // Left arm grooves if music, else types
-                    if (isAudioPlaying) {
-                        armL.rotation.x = -0.9 + Math.sin(t * 7.2) * 0.45;
-                        armL.rotation.z = -0.35 + Math.sin(t * 3.6) * 0.15;
-                        armL.rotation.y = 0;
-                    } else {
-                        // Left hand continues typing keystrokes over keyboard
-                        armL.rotation.x = -1.18 + Math.sin(t * 20) * 0.04;
-                        armL.rotation.z = -0.16 + Math.sin(t * 3) * 0.02;
-                        armL.rotation.y = 0.12;
-                    }
-                    antennaTipL.scale.setScalar(1.2 + Math.sin(waveT * 8) * 0.3);
-                    antennaTipR.scale.setScalar(1.2 + Math.sin(waveT * 8 + 1.5) * 0.3);
-                    chestLed.visible = Math.sin(t * 6) > -0.3;
+                    antennaTipL.scale.setScalar(1.2 + Math.sin(waveT * 8) * 0.25);
+                    antennaTipR.scale.setScalar(1.2 + Math.sin(waveT * 8 + 1.5) * 0.25);
+                    chestLed.visible = Math.sin(t * 7) > -0.2;
 
                 } else if (isAudioPlaying) {
                     // DANCING ROUTINE TO THE BEAT
@@ -5365,16 +6315,19 @@
                     chestLed.visible = Math.sin(t * 10) > -0.2;
 
                 } else {
-                    // DYNAMIC WORK & TYPING AT KEYBOARD
-                    // Natural cycle: bursts of rapid keyboard keystrokes alternating with pauses to inspect the monitor & move the mouse
+                    // DYNAMIC WORK & TYPING AT KEYBOARD (With Turbo Mode support)
                     robot.position.y = 0;
-                    const workCycle = (t % 5.8);
-                    const isTyping = workCycle < 3.8;
+                    const turboMult = isTurboActive ? 3.6 : 1.0;
+                    const workCycle = ((t * turboMult) % 5.8);
+                    const isTyping = isTurboActive || workCycle < 3.8;
 
                     if (isTyping) {
-                        // Rapid alternating fingertip/wrist typing oscillations over the keys
-                        const strokeL = Math.sin(t * 22) * 0.045 + Math.sin(t * 37) * 0.022;
-                        const strokeR = Math.sin(t * 24 + 1.8) * 0.045 + Math.sin(t * 33 + 0.9) * 0.022;
+                        const freqL1 = isTurboActive ? 75 : 22;
+                        const freqL2 = isTurboActive ? 120 : 37;
+                        const freqR1 = isTurboActive ? 80 : 24;
+                        const freqR2 = isTurboActive ? 115 : 33;
+                        const strokeL = Math.sin(t * freqL1) * 0.045 + Math.sin(t * freqL2) * 0.022;
+                        const strokeR = Math.sin(t * freqR1 + 1.8) * 0.045 + Math.sin(t * freqR2 + 0.9) * 0.022;
                         const keyDriftX = Math.sin(t * 3.2) * 0.035;
 
                         armL.rotation.x = -1.18 + strokeL;
@@ -5386,10 +6339,10 @@
                         armR.rotation.y = -0.12 - Math.sin(t * 2.8) * 0.03;
 
                         // Head focused down towards keyboard keys
-                        head.rotation.x = 0.14 + Math.sin(t * 11) * 0.012;
+                        head.rotation.x = 0.14 + Math.sin(t * (isTurboActive ? 32 : 11)) * (isTurboActive ? 0.02 : 0.012);
                         head.rotation.y = -0.18 + Math.sin(t * 2.5) * 0.04;
                         head.rotation.z = Math.sin(t * 4) * 0.018;
-                        head.position.y = 1.62 + Math.sin(t * 5.5) * 0.005;
+                        head.position.y = 1.62 + Math.sin(t * (isTurboActive ? 18 : 5.5)) * (isTurboActive ? 0.009 : 0.005);
                     } else {
                         // Pause typing to inspect monitor screen / use mouse
                         const inspectT = workCycle - 3.8;
@@ -5412,19 +6365,28 @@
                             armR.rotation.y = -0.10;
                         }
 
-                        // Head turns slightly toward monitor screen to review code
-                        head.rotation.x = -0.06 + Math.sin(t * 1.5) * 0.015;
-                        head.rotation.y = -0.32 + Math.sin(t * 1.8) * 0.025;
-                        head.rotation.z = 0.02;
-                        head.position.y = 1.622 + Math.sin(t * 2) * 0.004;
+                        if (isCatVisitingDesk) {
+                            // EduBot turns head down to look warmly at Kotetsu visiting the desk!
+                            head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0.22, 0.08);
+                            head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, 0.44, 0.08);
+                            head.rotation.z = 0.02;
+                            head.position.y = 1.622;
+                        } else {
+                            // Head turns slightly toward monitor screen to review code
+                            head.rotation.x = -0.06 + Math.sin(t * 1.5) * 0.015;
+                            head.rotation.y = -0.32 + Math.sin(t * 1.8) * 0.025;
+                            head.rotation.z = 0.02;
+                            head.position.y = 1.622 + Math.sin(t * 2) * 0.004;
+                        }
                     }
 
-                    antennaTipL.scale.setScalar(1 + Math.sin(t * 3.5) * 0.18);
-                    antennaTipR.scale.setScalar(1 + Math.sin(t * 3.5 + 1.5) * 0.18);
-                    chestLed.visible = Math.sin(t * 4.5) > -0.35;
+                    antennaTipL.scale.setScalar(1 + Math.sin(t * (isTurboActive ? 8 : 3.5)) * (isTurboActive ? 0.4 : 0.18));
+                    antennaTipR.scale.setScalar(1 + Math.sin(t * (isTurboActive ? 8 : 3.5) + 1.5) * (isTurboActive ? 0.4 : 0.18));
+                    chestLed.visible = isTurboActive ? (Math.sin(t * 18) > -0.2) : (Math.sin(t * 4.5) > -0.35);
                 }
 
                 updateRobotBubble();
+                updateCatBubble();
 
                 // DISCO BALL & STAGE PARTY ANIMATION LOOP
                 const targetParty = isAudioPlaying ? 1.0 : 0.0;
@@ -5569,8 +6531,436 @@
                         b.cardHolder.rotation.y = b.targetRotY;
                     }
                 });
-                cat.scale.y = 1 + Math.sin(t * 1.6) * 0.03;
-                tail.rotation.z = 0.9 + Math.sin(t * 1.1) * 0.15;
+                // =========================================================
+                // KOTETSU CAT MASCOT: 3D LOCOMOTION, STATE MACHINE & PLAY
+                // =========================================================
+                const stateElapsed = (now - stateStartTime) / 1000;
+
+                // Autonomous state progression timers
+                if (now - lastAutoActionTime > 16000) {
+                    lastAutoActionTime = now;
+                    if (catState === 'sleeping' && Math.random() < 0.65) {
+                        startWaking();
+                    } else if (catState === 'investigating' || catState === 'grooming') {
+                        const rand = Math.random();
+                        if (rand < 0.35) {
+                            startCatPlayActivity();
+                        } else if (rand < 0.72) {
+                            const choices = ['desk_robot', 'window', 'arcade', 'whiteboard', 'center'];
+                            const nextChoice = choices[Math.floor(Math.random() * choices.length)];
+                            startWalkTo(nextChoice, 'walking');
+                        } else {
+                            sendCatToSleep();
+                        }
+                    }
+                }
+
+                // Cyber-Yarn Toy Ball physics
+                if (toyVel.lengthSq() > 0.0001) {
+                    toyPos.x += toyVel.x * dt;
+                    toyPos.z += toyVel.y * dt;
+                    toyVel.multiplyScalar(Math.pow(0.88, dt * 60));
+
+                    // Room bounds bounce
+                    if (toyPos.x < -4.8) { toyPos.x = -4.8; toyVel.x *= -0.7; }
+                    if (toyPos.x > 3.8) { toyPos.x = 3.8; toyVel.x *= -0.7; }
+                    if (toyPos.z < -4.0) { toyPos.z = -4.0; toyVel.y *= -0.7; }
+                    if (toyPos.z > 2.8) { toyPos.z = 2.8; toyVel.y *= -0.7; }
+
+                    // Desk obstacle bounce (approx bounds x: [-0.7, 1.7], z: [-0.6, 0.6])
+                    if (toyPos.x > -0.7 && toyPos.x < 1.7 && toyPos.z > -0.6 && toyPos.z < 0.6) {
+                        if (Math.abs(toyPos.x - 0.5) > Math.abs(toyPos.z)) {
+                            toyVel.x *= -0.75;
+                            toyPos.x += Math.sign(toyPos.x - 0.5) * 0.05;
+                        } else {
+                            toyVel.y *= -0.75;
+                            toyPos.z += Math.sign(toyPos.z) * 0.05;
+                        }
+                    }
+
+                    // Ball roll spin
+                    toyCore.rotation.x += toyVel.y * dt * 9;
+                    toyCore.rotation.z -= toyVel.x * dt * 9;
+                    toyRing1.rotation.x += toyVel.y * dt * 9;
+                    toyRing2.rotation.z -= toyVel.x * dt * 9;
+                }
+                catToy.position.copy(toyPos);
+
+                // Floating Hearts / Sparkles particle update
+                let anyPartActive = false;
+                for (let i = 0; i < CAT_PART_COUNT; i++) {
+                    if (catPartAges[i] < 1.4) {
+                        catPartAges[i] += dt;
+                        catPartPos[i * 3] += catPartVels[i].x * dt;
+                        catPartPos[i * 3 + 1] += catPartVels[i].y * dt;
+                        catPartPos[i * 3 + 2] += catPartVels[i].z * dt;
+                        anyPartActive = true;
+                    } else {
+                        catPartPos[i * 3 + 1] = -50;
+                    }
+                }
+                if (anyPartActive) {
+                    catPartGeo.attributes.position.needsUpdate = true;
+                }
+
+                // If user currently petted Kotetsu:
+                if (isCatPetted) {
+                    const petT = (now - catPetStartTime) / 1000;
+                    const stretch = Math.sin(Math.min(Math.PI, petT * 2.2));
+                    catSpine.scale.y = 1 + stretch * 0.28;
+                    catSpine.position.y = stretch * 0.05;
+                    tailRoot.rotation.z = 0.35 + Math.sin(t * 8) * 0.35;
+                    tailMid.rotation.z = 0.3 + Math.sin(t * 8 + 0.4) * 0.25;
+                    catEyeMat.color.setHex(0x10b981);
+                    catEyeL.scale.y = 1.0;
+                    catEyeR.scale.y = 1.0;
+                    if (petT > 4.5) isCatPetted = false;
+                }
+                // STATE MACHINE IMPLEMENTATION
+                else if (catState === 'sleeping') {
+                    // Resting breathing on beanbag
+                    catSpine.scale.set(1.0, 1 + Math.sin(t * 1.5) * 0.035, 1.0);
+                    catSpine.position.set(0, -0.02, 0);
+                    catSpine.rotation.set(0, 0, 0);
+                    catHeadGroup.position.set(0.24, -0.01, 0.04);
+                    catHeadGroup.rotation.set(0.08, 0.2, 0.12);
+                    catEyeL.scale.y = 0.15;
+                    catEyeR.scale.y = 0.15;
+                    catEyeMat.color.setHex(0x044837);
+
+                    legFL.rotation.set(-1.1, 0, 0); legFL.position.y = -0.01;
+                    legFR.rotation.set(-1.1, 0, 0); legFR.position.y = -0.01;
+                    legBL.rotation.set(1.1, 0, 0); legBL.position.y = 0.02;
+                    legBR.rotation.set(1.1, 0, 0); legBR.position.y = 0.02;
+
+                    tailRoot.rotation.set(0.2, 1.3, -0.35);
+                    tailMid.rotation.z = 0.75;
+                    tailTipGroup.rotation.z = 0.55;
+                }
+                else if (catState === 'waking') {
+                    // Yawn and 2-phase feline stretch
+                    const prog = Math.min(1.0, stateElapsed / stateDuration);
+                    catEyeL.scale.y = 0.9;
+                    catEyeR.scale.y = 0.9;
+                    catEyeMat.color.setHex(0x10b981);
+
+                    if (prog < 0.5) {
+                        // Front stretch: paws forward, chest down
+                        const p = prog * 2;
+                        catSpine.position.y = -0.06 * Math.sin(p * Math.PI);
+                        catSpine.rotation.z = 0.22 * Math.sin(p * Math.PI);
+                        legFL.rotation.z = 0.55 * Math.sin(p * Math.PI);
+                        legFR.rotation.z = 0.55 * Math.sin(p * Math.PI);
+                        catHeadGroup.rotation.x = -0.35 * Math.sin(p * Math.PI);
+                    } else {
+                        // Rear stretch: back leg back, spine arch
+                        const p = (prog - 0.5) * 2;
+                        catSpine.position.y = 0.04 * Math.sin(p * Math.PI);
+                        catSpine.rotation.z = -0.2 * Math.sin(p * Math.PI);
+                        legBL.rotation.z = -0.6 * Math.sin(p * Math.PI);
+                        legBR.rotation.z = -0.6 * Math.sin(p * Math.PI);
+                    }
+
+                    if (prog >= 1.0) {
+                        if (currentWaypointId === 'beanbag') {
+                            startJumpDown();
+                        } else {
+                            startWalkTo('center', 'walking');
+                        }
+                    }
+                }
+                else if (catState === 'jumping_down') {
+                    const prog = Math.min(1.0, stateElapsed / stateDuration);
+                    catRoot.position.x = THREE.MathUtils.lerp(jumpStartPos.x, jumpEndPos.x, prog);
+                    catRoot.position.z = THREE.MathUtils.lerp(jumpStartPos.z, jumpEndPos.z, prog);
+                    catRoot.position.y = THREE.MathUtils.lerp(jumpStartPos.y, jumpEndPos.y, prog) + Math.sin(prog * Math.PI) * 0.38;
+
+                    // Flight pose
+                    legFL.rotation.z = 0.4;
+                    legFR.rotation.z = 0.4;
+                    legBL.rotation.z = -0.5;
+                    legBR.rotation.z = -0.5;
+                    tailRoot.rotation.z = 0.8;
+
+                    if (prog >= 1.0) {
+                        currentWaypointId = 'lounge_rug';
+                        catRoot.position.copy(jumpEndPos);
+                        catSpine.position.y = -0.04;
+                        playCatMeow();
+                        if (nextActivityAfterLanding === 'running_zoomies') {
+                            catState = 'running_zoomies';
+                            nextActivityAfterLanding = null;
+                        } else if (nextActivityAfterLanding) {
+                            const target = nextActivityAfterLanding;
+                            nextActivityAfterLanding = null;
+                            startWalkTo(target, 'walking');
+                        } else {
+                            startWalkTo('center', 'walking');
+                        }
+                    }
+                }
+                else if (catState === 'jumping_up') {
+                    const prog = Math.min(1.0, stateElapsed / stateDuration);
+                    catRoot.position.x = THREE.MathUtils.lerp(jumpStartPos.x, jumpEndPos.x, prog);
+                    catRoot.position.z = THREE.MathUtils.lerp(jumpStartPos.z, jumpEndPos.z, prog);
+                    catRoot.position.y = THREE.MathUtils.lerp(jumpStartPos.y, jumpEndPos.y, prog) + Math.sin(prog * Math.PI) * 0.42;
+
+                    legFL.rotation.z = 0.3;
+                    legFR.rotation.z = 0.3;
+                    legBL.rotation.z = -0.4;
+                    legBR.rotation.z = -0.4;
+
+                    if (prog >= 1.0) {
+                        currentWaypointId = 'beanbag';
+                        catRoot.position.copy(jumpEndPos);
+                        catState = 'sleeping';
+                        stateStartTime = performance.now();
+                    }
+                }
+                else if (catState === 'walking') {
+                    catRoot.position.y = 0.16;
+                    catSpine.scale.set(1.0, 1.0, 1.0);
+                    catEyeL.scale.y = 1.0;
+                    catEyeR.scale.y = 1.0;
+                    catEyeMat.color.setHex(0x10b981);
+
+                    let targetX = 0, targetZ = 0;
+                    if (pathQueue.length > 0) {
+                        const targetWp = KOTETSU_WAYPOINTS[pathQueue[0]];
+                        targetX = targetWp.x;
+                        targetZ = targetWp.z;
+                    } else {
+                        targetX = KOTETSU_WAYPOINTS[currentWaypointId].x;
+                        targetZ = KOTETSU_WAYPOINTS[currentWaypointId].z;
+                    }
+
+                    const dx = targetX - catRoot.position.x;
+                    const dz = targetZ - catRoot.position.z;
+                    const dist = Math.hypot(dx, dz);
+
+                    if (dist > 0.08) {
+                        const targetRotY = -Math.atan2(dz, dx);
+                        catRoot.rotation.y = lerpAngle(catRoot.rotation.y, targetRotY, Math.min(1.0, dt * 7.0));
+
+                        const walkSpeed = 0.88;
+                        const step = Math.min(dist, walkSpeed * dt);
+                        catRoot.position.x += (dx / dist) * step;
+                        catRoot.position.z += (dz / dist) * step;
+
+                        // Quadruped walking gait
+                        walkPhase += dt * 7.5;
+                        legFL.rotation.z = Math.sin(walkPhase) * 0.45;
+                        legBR.rotation.z = Math.sin(walkPhase + 0.3) * 0.45;
+                        legFR.rotation.z = Math.sin(walkPhase + Math.PI) * 0.45;
+                        legBL.rotation.z = Math.sin(walkPhase + Math.PI + 0.3) * 0.45;
+
+                        legFL.position.y = -0.05 + Math.max(0, Math.sin(walkPhase)) * 0.035;
+                        legFR.position.y = -0.05 + Math.max(0, Math.sin(walkPhase + Math.PI)) * 0.035;
+                        legBL.position.y = -0.03 + Math.max(0, Math.sin(walkPhase + Math.PI + 0.3)) * 0.03;
+                        legBR.position.y = -0.03 + Math.max(0, Math.sin(walkPhase + 0.3)) * 0.03;
+
+                        catSpine.position.y = Math.sin(walkPhase * 2) * 0.012;
+                        catHeadGroup.rotation.y = Math.sin(walkPhase * 0.5) * 0.08;
+
+                        // Happy upright "question mark" tail
+                        tailRoot.rotation.set(0.08, 0, 0.65 + Math.sin(walkPhase * 0.7) * 0.12);
+                        tailMid.rotation.z = 0.35;
+                        tailTipGroup.rotation.z = 0.25;
+                    } else {
+                        // Waypoint reached
+                        if (pathQueue.length > 0) {
+                            currentWaypointId = pathQueue.shift();
+                        }
+                        if (pathQueue.length === 0) {
+                            // Arrived at destination waypoint!
+                            if (currentWaypointId === 'desk_robot') {
+                                isCatVisitingDesk = true;
+                                catState = 'investigating';
+                                stateStartTime = performance.now();
+                                stateDuration = 9.0;
+                                playCatMeow();
+                            } else if (currentWaypointId === 'lounge_rug' && catState !== 'waking') {
+                                startJumpUp();
+                            } else {
+                                catState = 'investigating';
+                                stateStartTime = performance.now();
+                                stateDuration = 5.0;
+                            }
+                        }
+                    }
+                }
+                else if (catState === 'running_zoomies') {
+                    catEyeL.scale.y = 1.0;
+                    catEyeR.scale.y = 1.0;
+                    catEyeMat.color.setHex(0x34d399);
+
+                    // Running towards the toy ball!
+                    const dx = toyPos.x - catRoot.position.x;
+                    const dz = toyPos.z - catRoot.position.z;
+                    const distToToy = Math.hypot(dx, dz);
+
+                    if (distToToy > 0.42) {
+                        const targetRotY = -Math.atan2(dz, dx);
+                        catRoot.rotation.y = lerpAngle(catRoot.rotation.y, targetRotY, Math.min(1.0, dt * 10.0));
+
+                        const runSpeed = 2.4;
+                        const step = Math.min(distToToy, runSpeed * dt);
+                        catRoot.position.x += (dx / distToToy) * step;
+                        catRoot.position.z += (dz / distToToy) * step;
+
+                        // High speed gallop bounding
+                        runPhase += dt * 17.0;
+                        catRoot.position.y = 0.16 + Math.abs(Math.sin(runPhase)) * 0.075;
+                        catSpine.scale.x = 1.0 + Math.sin(runPhase) * 0.22;
+
+                        legFL.rotation.z = Math.sin(runPhase) * 0.85;
+                        legFR.rotation.z = Math.sin(runPhase + 0.2) * 0.85;
+                        legBL.rotation.z = -Math.sin(runPhase) * 0.95;
+                        legBR.rotation.z = -Math.sin(runPhase + 0.2) * 0.95;
+
+                        // Sleek racing tail
+                        tailRoot.rotation.set(0, 0, -0.15 + Math.sin(runPhase * 2) * 0.12);
+                        tailMid.rotation.z = 0.15;
+                        tailTipGroup.rotation.z = 0.2;
+
+                        if (Math.random() < 0.25) spawnCatHearts(catRoot.position);
+                    } else {
+                        // Reached ball: prepare to hunt & pounce!
+                        startHuntingWiggle();
+                    }
+                }
+                else if (catState === 'hunting_wiggle') {
+                    // Crouched hunting posture facing toy
+                    const dx = toyPos.x - catRoot.position.x;
+                    const dz = toyPos.z - catRoot.position.z;
+                    const targetRotY = -Math.atan2(dz, dx);
+                    catRoot.rotation.y = lerpAngle(catRoot.rotation.y, targetRotY, Math.min(1.0, dt * 9.0));
+
+                    catRoot.position.y = 0.15;
+                    catSpine.position.y = -0.055;
+                    catSpine.scale.set(1.1, 0.9, 1.0);
+
+                    // Front legs crouched, hind legs coiled
+                    legFL.rotation.z = 0.35;
+                    legFR.rotation.z = 0.35;
+                    legBL.rotation.z = -0.45;
+                    legBR.rotation.z = -0.45;
+
+                    // Classic Cat Butt/Hip Wiggle!
+                    const wT = stateElapsed;
+                    catSpine.rotation.y = Math.sin(wT * 28.0) * 0.16;
+                    tailRoot.rotation.set(0, 0, 0.35);
+                    tailTipGroup.rotation.z = Math.sin(wT * 24.0) * 0.55;
+
+                    if (stateElapsed > stateDuration) {
+                        startPounce();
+                    }
+                }
+                else if (catState === 'pouncing') {
+                    const prog = Math.min(1.0, stateElapsed / stateDuration);
+
+                    // Forward leap towards ball
+                    const dx = toyPos.x - catRoot.position.x;
+                    const dz = toyPos.z - catRoot.position.z;
+                    const dist = Math.hypot(dx, dz);
+                    if (dist > 0.05) {
+                        catRoot.position.x += (dx / dist) * Math.min(dist, dt * 2.2);
+                        catRoot.position.z += (dz / dist) * Math.min(dist, dt * 2.2);
+                    }
+                    catRoot.position.y = 0.15 + Math.sin(prog * Math.PI) * 0.12;
+
+                    // Front right paw lightning swat!
+                    legFR.rotation.z = Math.sin(prog * Math.PI) * 1.35;
+                    legFL.rotation.z = 0.2;
+
+                    // Contact moment (at 50% through pounce)
+                    if (prog >= 0.45 && prog <= 0.65 && toyVel.lengthSq() < 0.2) {
+                        playToyBounceSound();
+                        const swatAngle = catRoot.rotation.y + (Math.random() - 0.5) * 1.2;
+                        const impulse = 2.8 + Math.random() * 1.6;
+                        toyVel.x = Math.cos(swatAngle) * impulse;
+                        toyVel.y = -Math.sin(swatAngle) * impulse;
+                        spawnCatHearts(toyPos);
+                    }
+
+                    if (prog >= 1.0) {
+                        pounceCount++;
+                        if (pounceCount < 3) {
+                            // Immediately sprint after the rolling ball!
+                            catState = 'running_zoomies';
+                        } else {
+                            pounceCount = 0;
+                            catState = 'investigating';
+                            stateStartTime = performance.now();
+                            stateDuration = 4.0;
+                            playCatPurr();
+                        }
+                    }
+                }
+                else if (catState === 'investigating') {
+                    catRoot.position.y = 0.16;
+                    catSpine.position.set(0, 0, 0);
+                    catSpine.scale.set(1.0, 1.0, 1.0);
+                    legFL.rotation.set(0, 0, 0);
+                    legFR.rotation.set(0, 0, 0);
+                    legBL.rotation.set(0, 0, 0);
+                    legBR.rotation.set(0, 0, 0);
+
+                    // Sniffing around, ears twitching, tail flicking
+                    catHeadGroup.rotation.set(Math.sin(t * 2.2) * 0.08, Math.sin(t * 1.6) * 0.14, Math.sin(t * 2.8) * 0.05);
+                    earL.rotation.x = -0.15 + Math.sin(t * 3.8) * 0.12;
+                    earR.rotation.x = 0.15 + Math.cos(t * 3.2) * 0.12;
+                    tailRoot.rotation.z = 0.45 + Math.sin(t * 2.0) * 0.18;
+
+                    if (isCatVisitingDesk) {
+                        // Looking up at EduBot
+                        catHeadGroup.rotation.x = 0.38 + Math.sin(t * 2) * 0.05;
+                    }
+
+                    if (stateElapsed > stateDuration) {
+                        catState = 'grooming';
+                        stateStartTime = performance.now();
+                        stateDuration = 4.2;
+                    }
+                }
+                else if (catState === 'grooming') {
+                    // Sits on haunches, washes face with front paw
+                    catSpine.rotation.x = -0.22;
+                    legBL.rotation.x = 0.9;
+                    legBR.rotation.x = 0.9;
+
+                    const groomT = stateElapsed * 3.5;
+                    legFL.position.set(0.12, 0.07 + Math.sin(groomT) * 0.02, -0.03);
+                    legFL.rotation.set(0.3, 0.5, 1.1 + Math.sin(groomT) * 0.2);
+
+                    catHeadGroup.rotation.set(0.15, -0.18 + Math.sin(groomT) * 0.1, 0.1);
+                    tailRoot.rotation.set(0.2, 0.8, -0.2);
+
+                    if (stateElapsed > stateDuration) {
+                        if (Math.random() < 0.45) {
+                            sendCatToSleep();
+                        } else {
+                            startCatPlayActivity();
+                        }
+                    }
+                }
+
+                // Steam animation over espresso coffee mug
+                const steamPos = steamGeo.attributes.position.array;
+                const steamSpeed = isTurboActive ? 0.38 : 0.14;
+                for (let i = 0; i < steamCount; i++) {
+                    steamPos[i * 3 + 1] += dt * steamSpeed;
+                    steamPos[i * 3] += Math.sin(t * 3.5 + steamPhases[i]) * 0.0008;
+                    steamPos[i * 3 + 2] += Math.cos(t * 2.8 + steamPhases[i]) * 0.0008;
+                    if (steamPos[i * 3 + 1] > 0.48) {
+                        steamPos[i * 3 + 1] = 0.12;
+                        steamPos[i * 3] = (Math.random() - 0.5) * 0.04;
+                        steamPos[i * 3 + 2] = (Math.random() - 0.5) * 0.04;
+                    }
+                }
+                steamGeo.attributes.position.needsUpdate = true;
+                steamMat.opacity = isTurboActive ? 0.75 : 0.35;
+                coasterGlowMat.color.setHex(isTurboActive ? 0x38bdf8 : 0xf59e0b);
 
                 // Dust motes drifting
                 dust.rotation.y = Math.sin(t * 0.05) * 0.08;
@@ -5671,6 +7061,13 @@
                 if (!animId) animId = requestAnimationFrame(frame);
             }, 120);
         }
+
+        // Automatic first-time welcome greeting after boot screen fades
+        setTimeout(() => {
+            if (window.eduRobotAssistant && window.eduRobotAssistant.triggerWelcomeGreeting) {
+                window.eduRobotAssistant.triggerWelcomeGreeting();
+            }
+        }, 1600);
 
         return true;
     }

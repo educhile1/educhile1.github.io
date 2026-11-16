@@ -1389,8 +1389,10 @@ body.full-scroll-active #party-music-hud {
    ================================================================= */
 .edubot-bubble {
     position: fixed;
+    top: 0;
+    left: 0;
     z-index: 25;
-    width: 320px;
+    width: 340px;
     max-width: calc(100vw - 28px);
     background: linear-gradient(145deg, rgba(10, 16, 32, 0.94), rgba(7, 10, 20, 0.97));
     backdrop-filter: blur(16px);
@@ -1556,6 +1558,143 @@ body.full-scroll-active #party-music-hud {
 .edubot-btn-accent:hover {
     background: linear-gradient(135deg, rgba(236, 72, 153, 0.38), rgba(244, 114, 182, 0.5));
     border-color: #f472b6;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* =================================================================
+   KOTETSU CAT MASCOT - THOUGHT / SPEECH BUBBLE
+   ================================================================= */
+.cat-bubble {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 25;
+    width: 320px;
+    max-width: calc(100vw - 28px);
+    background: linear-gradient(145deg, rgba(26, 12, 28, 0.95), rgba(12, 7, 20, 0.98));
+    backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(244, 114, 182, 0.45);
+    border-radius: 16px;
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.8),
+        0 0 25px rgba(244, 114, 182, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 14px 16px;
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transform-origin: bottom center;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: auto;
+}
+
+.cat-bubble.hidden {
+    opacity: 0;
+    transform: scale(0.88) translateY(10px) !important;
+    pointer-events: none !important;
+}
+
+.cat-bubble-tail {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #150a18;
+    transform: rotate(45deg);
+    transition: all 0.2s ease;
+    bottom: -7px;
+    left: 42px;
+    border-right: 1.5px solid rgba(244, 114, 182, 0.45);
+    border-bottom: 1.5px solid rgba(244, 114, 182, 0.45);
+}
+
+.cat-bubble-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.cat-tip-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #f472b6;
+    background: rgba(244, 114, 182, 0.15);
+    border: 1px solid rgba(244, 114, 182, 0.3);
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 7px;
+}
+
+.cat-btn-pet {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(244, 114, 182, 0.38));
+    border: 1px solid rgba(244, 114, 182, 0.5);
+    color: #fce7f3;
+}
+
+.cat-btn-pet:hover {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.45), rgba(244, 114, 182, 0.6));
+    border-color: #f472b6;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.cat-btn-play {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(236, 72, 153, 0.38));
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    color: #fef08a;
+}
+
+.cat-btn-play:hover {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.45), rgba(236, 72, 153, 0.6));
+    border-color: #fbbf24;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.cat-btn-desk {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.38);
+    color: #bae6fd;
+}
+
+.cat-btn-desk:hover {
+    background: rgba(56, 189, 248, 0.3);
+    border-color: #38bdf8;
     color: #ffffff;
     transform: translateY(-1px);
 }
