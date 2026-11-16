@@ -785,14 +785,73 @@
         window._debugScenic = { scenicGroup, scenicMeshA, scenicMeshB, scenicTextures, sunbeamGroup, glass };
 
         /* ---------------------------------------------------------
-           EXECUTIVE DESK WITH LED STRIP
+           SHARED EXECUTIVE FURNITURE SKIN (SMOKED WALNUT,
+           CALACATTA MARBLE & BRUSHED BRASS)
+        --------------------------------------------------------- */
+        const walnutTex = canvasTexture(1024, 512, (ctx, w, h) => {
+            const grad = ctx.createLinearGradient(0, 0, w, 0);
+            grad.addColorStop(0, '#26160e');
+            grad.addColorStop(0.3, '#351f15');
+            grad.addColorStop(0.65, '#2c1910');
+            grad.addColorStop(1, '#23140c');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+            const rand = seededRandom(108);
+            for (let y = 0; y < h; y += 2) {
+                const alpha = 0.03 + rand() * 0.05;
+                ctx.fillStyle = rand() > 0.5 ? `rgba(255,255,255,${alpha})` : `rgba(0,0,0,${alpha * 1.6})`;
+                const wave = Math.sin(y * 0.04) * 3 + Math.sin(y * 0.12) * 1.5;
+                ctx.fillRect(0, y + wave, w, 1.8);
+            }
+        });
+
+        const marbleTex = canvasTexture(1024, 512, (ctx, w, h) => {
+            ctx.fillStyle = '#f7f4ee';
+            ctx.fillRect(0, 0, w, h);
+            const rand = seededRandom(240);
+            const drawVein = (color, width, alpha) => {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                let x = rand() * w * 0.4;
+                let y = 0;
+                ctx.moveTo(x, y);
+                while (y < h) {
+                    x += (rand() - 0.35) * 45;
+                    y += 20 + rand() * 30;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            };
+            for (let i = 0; i < 6; i++) {
+                drawVein('#574b42', 2.5 + rand() * 2, 0.15 + rand() * 0.15);
+                drawVein('#b58d5a', 1.5 + rand() * 1.5, 0.18 + rand() * 0.15);
+            }
+            ctx.globalAlpha = 1.0;
+        });
+
+        const walnutMat = std(0x2d1a11, 0.55, 0.15, { map: walnutTex });
+        const marbleMat = std(0xfaf7f2, 0.28, 0.08, { map: marbleTex });
+        const credenzaBrassMat = std(0xd4a24c, 0.25, 0.90);
+        const credenzaDarkMat = std(0x1a120c, 0.65, 0.10);
+
+        /* ---------------------------------------------------------
+           EXECUTIVE DESK WITH LED STRIP (MATCHING WALNUT & MARBLE SKIN)
         --------------------------------------------------------- */
         const desk = new THREE.Group();
         desk.position.set(0.2, 0, 0.25);
         scene.add(desk);
 
-        addMesh(new THREE.BoxGeometry(3.3, 0.94, 1.3), std(0x2b2d34, 0.55, 0.15), [0, 0.47, 0], desk);
-        addMesh(new THREE.BoxGeometry(3.7, 0.1, 1.72), std(0x111215, 0.3, 0.35), [0, 1.0, 0], desk);
+        // Walnut pedestal body + fluted front slats + brass plinth trim
+        addMesh(new THREE.BoxGeometry(3.3, 0.94, 1.3), walnutMat, [0, 0.47, 0], desk);
+        addMesh(new THREE.BoxGeometry(3.32, 0.04, 1.32), credenzaBrassMat, [0, 0.02, 0], desk, { cast: false });
+        for (let sx = -1.45; sx <= 1.45; sx += 0.065) {
+            addMesh(new THREE.BoxGeometry(0.028, 0.82, 0.014), credenzaDarkMat, [sx, 0.48, 0.657], desk, { cast: false });
+        }
+        // Calacatta marble executive tabletop + brass under-rim
+        addMesh(new THREE.BoxGeometry(3.7, 0.09, 1.72), marbleMat, [0, 1.005, 0], desk);
+        addMesh(new THREE.BoxGeometry(3.72, 0.014, 1.74), credenzaBrassMat, [0, 0.956, 0], desk, { cast: false });
         const ledMat = basic({ color: 0xffb066 });
         ledMatRef = ledMat;
         addMesh(new THREE.BoxGeometry(3.74, 0.025, 1.76), ledMat, [0, 0.945, 0], desk, { cast: false, receive: false });
@@ -3193,11 +3252,13 @@
         addMesh(new THREE.BoxGeometry(0.82, 1.0, 0.05), std(0xe5e7eb, 0.5), [0, 0, 0], art);
         addMesh(new THREE.PlaneGeometry(0.7, 0.88), std(0xffffff, 0.6, 0, { map: artTex }), [0, 0, 0.027], art, { cast: false });
 
-        // Floating bookshelf
+        // Floating bookshelf (matching walnut + marble + brass skin)
         const shelf = new THREE.Group();
         shelf.position.set(-5.78, 2.3, -2.5);
         scene.add(shelf);
-        addMesh(new THREE.BoxGeometry(0.42, 0.06, 2.9), std(0x15161b, 0.5, 0.3), [0, 0, 0], shelf);
+        addMesh(new THREE.BoxGeometry(0.42, 0.05, 2.9), walnutMat, [0, -0.005, 0], shelf);
+        addMesh(new THREE.BoxGeometry(0.43, 0.016, 2.92), marbleMat, [0, 0.026, 0], shelf);
+        addMesh(new THREE.BoxGeometry(0.012, 0.014, 2.92), credenzaBrassMat, [0.214, 0.012, 0], shelf, { cast: false });
         addMesh(new THREE.BoxGeometry(0.03, 0.02, 2.8), basic({ color: 0xffb066 }), [0.18, -0.04, 0], shelf, { cast: false, receive: false });
         glowPlane(3.6, 1.6, '255,170,90', 0.4, [-0.2, -0.55, 0], [0, Math.PI / 2, 0], shelf);
         const shelfLight = new THREE.PointLight(0xffb066, 0.6, 3.2, 2);
@@ -4846,14 +4907,37 @@
 
         /* ---------------------------------------------------------
            CABINET + SPEAKER & TURNTABLE (→ Música IA)
+           Matching Smoked Walnut, Calacatta Marble & Brushed Brass Skin
         --------------------------------------------------------- */
         const cabinet = new THREE.Group();
         cabinet.position.set(4.15, 0, -4.55);
         scene.add(cabinet);
-        addMesh(new THREE.BoxGeometry(2.1, 0.78, 0.75), std(0x1c1d23, 0.55, 0.15), [0, 0.39, 0], cabinet);
-        addMesh(new THREE.BoxGeometry(0.01, 0.6, 0.01), std(0x0a0a0d, 0.5), [0, 0.4, 0.376], cabinet, { cast: false });
-        addMesh(new THREE.BoxGeometry(0.03, 0.14, 0.03), std(0xd4a24c, 0.3, 0.9), [-0.08, 0.42, 0.39], cabinet, { cast: false });
-        addMesh(new THREE.BoxGeometry(0.03, 0.14, 0.03), std(0xd4a24c, 0.3, 0.9), [0.08, 0.42, 0.39], cabinet, { cast: false });
+
+        const mCabW = 2.1;
+        const mCabH = 0.62;
+        const mCabD = 0.72;
+        // 1. Smoked Walnut main body
+        addMesh(new THREE.BoxGeometry(mCabW, mCabH, mCabD), walnutMat, [0, 0.43, 0], cabinet);
+        // 2. Calacatta Marble top + Brushed Brass under-trim (top sits at y = 0.78)
+        addMesh(new THREE.BoxGeometry(mCabW + 0.04, 0.026, mCabD + 0.04), marbleMat, [0, 0.767, 0], cabinet);
+        addMesh(new THREE.BoxGeometry(mCabW + 0.046, 0.008, mCabD + 0.046), credenzaBrassMat, [0, 0.750, 0], cabinet, { cast: false });
+        // 3. Center fluted tambour slats + Left/Right door seams & Brass handles
+        for (let ms = -0.34; ms <= 0.34; ms += 0.036) {
+            addMesh(new THREE.BoxGeometry(0.02, 0.55, 0.014), credenzaDarkMat, [ms, 0.43, mCabD / 2 + 0.007], cabinet, { cast: false });
+        }
+        addMesh(new THREE.BoxGeometry(0.01, 0.56, 0.01), credenzaDarkMat, [-0.42, 0.43, mCabD / 2 + 0.006], cabinet, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.01, 0.56, 0.01), credenzaDarkMat, [0.42, 0.43, mCabD / 2 + 0.006], cabinet, { cast: false });
+        addMesh(new THREE.CylinderGeometry(0.007, 0.007, 0.16, 12), credenzaBrassMat, [-0.49, 0.43, mCabD / 2 + 0.02], cabinet, { cast: false });
+        addMesh(new THREE.CylinderGeometry(0.007, 0.007, 0.16, 12), credenzaBrassMat, [0.49, 0.43, mCabD / 2 + 0.02], cabinet, { cast: false });
+        // 4. Tapered Brushed Brass legs
+        [
+            [-mCabW / 2 + 0.12, -mCabD / 2 + 0.10],
+            [mCabW / 2 - 0.12, -mCabD / 2 + 0.10],
+            [-mCabW / 2 + 0.12, mCabD / 2 - 0.10],
+            [mCabW / 2 - 0.12, mCabD / 2 - 0.10]
+        ].forEach(([lx, lz]) => {
+            addMesh(new THREE.CylinderGeometry(0.020, 0.012, 0.12, 12), credenzaBrassMat, [lx, 0.06, lz], cabinet);
+        });
 
         const speaker = new THREE.Group();
         speaker.position.set(-0.55, 0.78, 0);
@@ -6869,58 +6953,7 @@
         globeCredenzaGroup.position.set(1.75, 0, -4.42);
         scene.add(globeCredenzaGroup);
 
-        // Textura procedural de Madera de Nogal Smoked de Alta Definición
-        const walnutTex = canvasTexture(1024, 512, (ctx, w, h) => {
-            const grad = ctx.createLinearGradient(0, 0, w, 0);
-            grad.addColorStop(0, '#26160e');
-            grad.addColorStop(0.3, '#351f15');
-            grad.addColorStop(0.65, '#2c1910');
-            grad.addColorStop(1, '#23140c');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-            const rand = seededRandom(108);
-            for (let y = 0; y < h; y += 2) {
-                const alpha = 0.03 + rand() * 0.05;
-                ctx.fillStyle = rand() > 0.5 ? `rgba(255,255,255,${alpha})` : `rgba(0,0,0,${alpha * 1.6})`;
-                const wave = Math.sin(y * 0.04) * 3 + Math.sin(y * 0.12) * 1.5;
-                ctx.fillRect(0, y + wave, w, 1.8);
-            }
-        });
-
-        // Textura procedural de Mármol Calacatta Oro para la cubierta superior
-        const marbleTex = canvasTexture(1024, 512, (ctx, w, h) => {
-            ctx.fillStyle = '#f7f4ee';
-            ctx.fillRect(0, 0, w, h);
-            // Sutiles vetas minerales ahumadas y doradas
-            const rand = seededRandom(240);
-            const drawVein = (color, width, alpha) => {
-                ctx.strokeStyle = color;
-                ctx.lineWidth = width;
-                ctx.globalAlpha = alpha;
-                ctx.beginPath();
-                let x = rand() * w * 0.4;
-                let y = 0;
-                ctx.moveTo(x, y);
-                while (y < h) {
-                    x += (rand() - 0.35) * 45;
-                    y += 20 + rand() * 30;
-                    ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            };
-            for (let i = 0; i < 6; i++) {
-                drawVein('#574b42', 2.5 + rand() * 2, 0.15 + rand() * 0.15);
-                drawVein('#b58d5a', 1.5 + rand() * 1.5, 0.18 + rand() * 0.15);
-            }
-            ctx.globalAlpha = 1.0;
-        });
-
-        const walnutMat = std(0x2d1a11, 0.55, 0.15, { map: walnutTex });
-        const marbleMat = std(0xfaf7f2, 0.28, 0.08, { map: marbleTex });
-        const credenzaBrassMat = std(0xd4a24c, 0.25, 0.90);
-        const credenzaDarkMat = std(0x1a120c, 0.65, 0.10);
-
-        // 1. Cuerpo principal del mueble (Nogal oscuro con bisel)
+        // 1. Cuerpo principal del mueble (Nogal oscuro con bisel - usa skin compartida)
         const credW = 1.72;
         const credH = 0.60;
         const credD = 0.50;
