@@ -626,16 +626,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Background Music Tracks
-    const musicTracks = [
-        new Audio(encodeURI('music/Cruzando Cielos.mp3')),
-        new Audio(encodeURI('music/Opa Amor.mp3')),
-        new Audio(encodeURI('music/Together.mp3'))
+    // Background Music Tracks - Asignadas exclusivamente desde music/tetris/
+    const TETRIS_PLAYLIST = [
+        { title: 'Tetris Chill 1', file: 'music/tetris/tetrisChil1.mp3' },
+        { title: 'Tetris Chill 2', file: 'music/tetris/TetrisChil2.mp3' },
+        { title: 'Tetris HyperDrive 1', file: 'music/tetris/TetrisHyperDr.mp3' },
+        { title: 'Tetris HyperDrive 2', file: 'music/tetris/TetrisHyperDr2.mp3' },
+        { title: 'Ult Tetris Rush 1', file: 'music/tetris/UltTetrisRush1.mp3' },
+        { title: 'Ult Tetris Rush 2', file: 'music/tetris/UltTetrisRush2.mp3' }
     ];
-    musicTracks.forEach(track => {
-        track.loop = true;
+
+    const nowPlayingLabel = document.getElementById('now-playing-label');
+
+    function updateTrackUI(index) {
+        if (nowPlayingLabel && TETRIS_PLAYLIST[index]) {
+            nowPlayingLabel.textContent = `🎵 ${TETRIS_PLAYLIST[index].title}`;
+            nowPlayingLabel.title = `Reproduciendo: ${TETRIS_PLAYLIST[index].title}`;
+        }
+        const currentBtns = document.querySelectorAll('.music-track-btn');
+        currentBtns.forEach(btn => {
+            const btnIdx = parseInt(btn.dataset.track, 10);
+            btn.classList.toggle('active', btnIdx === index);
+        });
+    }
+
+    const musicTracks = TETRIS_PLAYLIST.map((item, idx) => {
+        const track = new Audio(encodeURI(item.file));
         track.preload = 'auto';
+        track.addEventListener('ended', () => {
+            // Auto advance to next song in playlist
+            const nextTrack = (idx + 1) % TETRIS_PLAYLIST.length;
+            switchTrack(nextTrack);
+        });
+        return track;
     });
+
+    function switchTrack(trackIndex) {
+        if (trackIndex < 0 || trackIndex >= musicTracks.length) return;
+        if (musicTracks[currentTrack]) {
+            musicTracks[currentTrack].pause();
+            musicTracks[currentTrack].currentTime = 0;
+        }
+        currentTrack = trackIndex;
+        updateTrackUI(currentTrack);
+        if (!isMuted && !gameOver && !paused) {
+            startCurrentMusic();
+        }
+    }
 
     function updateVolumeDisplay() {
         const displayVal = isMuted ? '0' : Math.round(volume * 10);
@@ -703,19 +740,12 @@ document.addEventListener('DOMContentLoaded', () => {
     musicTrackBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const trackIndex = parseInt(btn.dataset.track, 10);
-            musicTrackBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if (currentTrack !== trackIndex) {
-                musicTracks[currentTrack].pause();
-                musicTracks[currentTrack].currentTime = 0;
-                currentTrack = trackIndex;
-                if (!isMuted && !gameOver && !paused) {
-                    startCurrentMusic();
-                }
-            }
+            switchTrack(trackIndex);
         });
     });
+
+    // Initialize UI for starting track
+    updateTrackUI(currentTrack);
 
     // =================================================================
     // RESPONSIVE SIZING & BOARD GEOMETRY
