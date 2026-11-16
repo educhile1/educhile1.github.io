@@ -210,7 +210,186 @@
             </a>
         </div>
 
-        <!-- Bottom Nav Pill -->
+        <!-- Certifications & Tech Stack Whiteboard Inspector Modal -->
+        <div id="cert-inspector-modal"
+            class="credential-inspector hidden pointer-events-auto fixed bottom-24 left-4 sm:left-6 md:left-8 z-30 w-[calc(100%-2rem)] max-w-[460px] transition-all duration-300 opacity-0 translate-y-4 scale-95"
+            role="dialog" aria-label="Certificaciones y Stack Tecnológico">
+            <div class="cred-inspector-panel">
+                <!-- Panel Header -->
+                <div class="cred-panel-header">
+                    <div class="flex items-center gap-2">
+                        <span id="cert-tag-badge" class="cred-tag-badge bg-sky-500/20 text-sky-300 border-sky-400/30">CERTIFICACIÓN OFICIAL</span>
+                        <span id="cert-index-badge" class="cred-counter-badge">1 / 6</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="cert-close-btn" type="button" class="cred-close-btn" title="Cerrar ventana" aria-label="Cerrar">×</button>
+                    </div>
+                </div>
+
+                <!-- Modal Body with Certificate Info -->
+                <div class="p-5 sm:p-6 space-y-4 text-left">
+                    <div class="flex items-start gap-3.5">
+                        <div id="cert-modal-icon" class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-white/20 bg-white/5 text-xl font-bold font-mono-tech shadow-md">
+                            MIT
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div id="cert-modal-year" class="font-mono-tech text-[11px] text-sky-400 font-bold mb-0.5">2025 – 2026</div>
+                            <h3 id="cert-modal-title" class="font-display text-base font-bold text-white leading-snug">IA Generativa, Transformación Digital &amp; IoT</h3>
+                            <div id="cert-modal-inst" class="text-xs text-slate-300 mt-0.5">Massachusetts Institute of Technology (MIT xPRO)</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-slate-200 leading-relaxed" id="cert-modal-desc">
+                        Especialización ejecutiva en adopción de IA generativa empresarial, IoT industrial, arquitecturas de datos e innovación tecnológica disruptiva.
+                    </div>
+
+                    <div>
+                        <div class="font-mono-tech text-[10px] uppercase tracking-wider text-slate-400 mb-2">⚡ COMPETENCIAS CLAVE &amp; STACK:</div>
+                        <div id="cert-modal-tags" class="flex flex-wrap gap-1.5 font-mono-tech text-[11px]">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono-tech text-slate-400">
+                        <span>IDENTIFICADOR:</span>
+                        <span id="cert-modal-code" class="text-slate-200">MIT-xPRO-GENAI-2025</span>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="cred-panel-footer">
+                    <div class="flex items-center gap-1.5">
+                        <button id="cert-prev-btn" type="button" class="cred-nav-btn" title="Anterior">‹ Ant</button>
+                        <button id="cert-next-btn" type="button" class="cred-nav-btn" title="Siguiente">Sig ›</button>
+                    </div>
+                    <a href="#credentials" id="cert-view-cv-btn" class="cred-action-cv-btn" title="Ver sección completa en 2D">
+                        <span>Ver en CV 2D ↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credential & Projects 3D Flip Inspector -->
+        <div id="credential-inspector-modal"
+            class="credential-inspector hidden pointer-events-auto fixed bottom-24 right-4 sm:right-6 md:right-8 z-30 w-[calc(100%-2rem)] max-w-[430px] transition-all duration-300 opacity-0 translate-y-4 scale-95"
+            role="dialog" aria-label="Detalle de Credencial y Proyectos">
+            <div class="cred-inspector-panel">
+                <!-- Panel Header -->
+                <div class="cred-panel-header">
+                    <div class="flex items-center gap-2">
+                        <span id="cred-tag-badge" class="cred-tag-badge">LÍDER TI & SEC</span>
+                        <span id="cred-index-badge" class="cred-counter-badge">1 / 6</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="cred-flip-btn-header" type="button" class="cred-flip-quick-btn" title="Girar credencial">
+                            <span>↻ Girar</span>
+                        </button>
+                        <button id="cred-close-btn" type="button" class="cred-close-btn" title="Cerrar ventana" aria-label="Cerrar">×</button>
+                    </div>
+                </div>
+
+                <!-- 3D Flip Card Container -->
+                <div class="cred-flip-viewport">
+                    <div id="cred-flip-card" class="cred-flip-card">
+                        <!-- Front Face (ID Badge with photo) -->
+                        <div class="cred-face cred-face-front">
+                            <div class="cred-card-inner">
+                                <div id="cred-front-accent-bar" class="cred-front-accent-bar">
+                                    <div class="cred-clip-slit"></div>
+                                    <div id="cred-front-tag" class="cred-front-tag">LÍDER TI & SEC</div>
+                                </div>
+                                <div class="cred-front-body">
+                                    <div class="cred-avatar-wrapper">
+                                        <div id="cred-avatar-ring" class="cred-avatar-ring">
+                                            <img src="images/perfil_pro_eduf.jpg" alt="Eduardo Cayún" class="cred-avatar-img">
+                                            <span class="cred-avatar-status" title="Disponible"></span>
+                                        </div>
+                                    </div>
+                                    <div id="cred-front-company" class="cred-company-title">TIERRA AYNI</div>
+                                    <div id="cred-front-role" class="cred-role-title">Jefe Proyectos & Sec</div>
+                                    <div id="cred-front-dates" class="cred-dates-text">2018 – Presente</div>
+                                    <div id="cred-front-scope" class="cred-scope-text">PSE · ANCI · Cloud AWS</div>
+
+                                    <div class="cred-barcode-box">
+                                        <div class="cred-barcode-lines"></div>
+                                        <div id="cred-front-pass-id" class="cred-pass-id">ID-PASS · TIER-2026</div>
+                                    </div>
+
+                                    <button id="cred-front-flip-cta" type="button" class="cred-face-flip-btn">
+                                        <span>↻ Clic para ver Rol en CV y Proyectos</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Back Face (CV Role & Detailed Projects) -->
+                        <div class="cred-face cred-face-back">
+                            <div class="cred-card-inner">
+                                <div id="cred-back-accent-bar" class="cred-back-accent-bar">
+                                    <div class="cred-clip-slit"></div>
+                                    <div id="cred-back-header" class="cred-back-header">TIERRA AYNI · PROYECTOS & CV</div>
+                                </div>
+                                <div class="cred-back-body">
+                                    <div class="cred-role-box">
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="text-xs text-amber-400">★</span>
+                                            <span class="cred-box-label">ROL PRINCIPAL SEGÚN CV</span>
+                                        </div>
+                                        <div id="cred-back-cv-role" class="cred-cv-role-title">Jefe de Proyectos & Delegado Ciberseguridad</div>
+                                        <div id="cred-back-period-cat" class="cred-cv-period">Ago 2018 – Presente · Misión Crítica</div>
+                                    </div>
+
+                                    <div class="cred-projects-section">
+                                        <div class="cred-section-title">⚡ DETALLE DE PROYECTOS & LOGROS:</div>
+                                        <div id="cred-back-projects-list" class="cred-projects-list">
+                                            <!-- Dynamically populated -->
+                                        </div>
+                                    </div>
+
+                                    <div class="cred-stack-section">
+                                        <div class="cred-section-title">STACK & HERRAMIENTAS:</div>
+                                        <div id="cred-back-stack-list" class="cred-stack-tags">
+                                            <!-- Dynamically populated -->
+                                        </div>
+                                    </div>
+
+                                    <button id="cred-back-flip-cta" type="button" class="cred-face-flip-btn is-back">
+                                        <span>↻ Voltear credencial al frente</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="cred-panel-footer">
+                    <div class="flex items-center gap-1.5">
+                        <button id="cred-prev-btn" type="button" class="cred-nav-btn" title="Credencial anterior">‹ Ant</button>
+                        <button id="cred-next-btn" type="button" class="cred-nav-btn" title="Siguiente credencial">Sig ›</button>
+                    </div>
+                    <button id="cred-main-flip-btn" type="button" class="cred-action-flip-btn">
+                        <span>↻ Girar Credencial</span>
+                    </button>
+                    <a href="#credentials" id="cred-view-full-cv-link" class="cred-action-cv-btn" title="Ver sección completa en 2D">
+                        <span>CV 2D ↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hint Pill when at credentials station -->
+        <div id="stage-credentials-hint"
+            class="pointer-events-none fixed top-[4.6rem] left-1/2 -translate-x-1/2 z-20 hidden transition-all duration-300 opacity-0 -translate-y-2">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0b0a14]/90 backdrop-blur-xl border border-sky-400/30 text-white font-mono-tech text-xs shadow-2xl">
+                <span class="text-sky-400 animate-pulse text-sm">🪪</span>
+                <span>Haz clic en una credencial para <strong>girarla</strong> y ver los proyectos</span>
+                <span class="text-pink-400 font-bold">↻</span>
+            </div>
+        </div>
+
+        <!-- Bottom Nav Pill (Oculto / Comentado a solicitud del usuario) -->
+        <!--
         <nav id="stage-dock" aria-label="Secciones de la oficina 3D"
             class="pointer-events-auto fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-3xl flex justify-center">
             <div class="stage-dock-shell flex items-center gap-1 px-1.5 py-1.5 rounded-xl overflow-x-auto max-w-full">
@@ -239,6 +418,7 @@
                 </button>
             </div>
         </nav>
+        -->
     </div>
 
     <!-- =================================================================
@@ -274,6 +454,11 @@
                     class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
                     <span class="font-mono-tech text-[10px] text-sky-400">03</span>
                     <span>Proyectos</span>
+                </a>
+                <a href="#credentials" data-section="credentials" data-station-target="certifications" data-index="06"
+                    class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
+                    <span class="font-mono-tech text-[10px] text-amber-400">06</span>
+                    <span>Certificaciones</span>
                 </a>
                 <a href="#contact" data-section="contact" data-station-target="contact" data-index="04"
                     class="nav-link px-3 py-1.5 rounded-full hover:text-white transition flex items-center gap-1.5">
@@ -353,6 +538,10 @@
             <a href="#projects" data-station-target="music"
                 class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-[#1ed760] hover:bg-white/[0.06] transition">
                 <span class="text-xs text-[#1ed760]">06</span> Spotify &amp; Música IA
+            </a>
+            <a href="#credentials" data-station-target="certifications"
+                class="flex items-center gap-2.5 py-2.5 px-4 rounded-2xl text-sm font-mono-tech text-amber-300 hover:bg-white/[0.06] transition">
+                <span class="text-xs text-amber-400">07</span> Certificaciones &amp; Stack
             </a>
             <div class="pt-2.5 mt-1 border-t border-white/10">
                 <a href="https://calendar.app.google/bLJvGyt2hxUdHTNG7" target="_blank" rel="noopener noreferrer"
@@ -1651,7 +1840,7 @@
                                     <!-- Contact Cards (Agrandados & Mejor Espaciados) -->
                                     <div class="space-y-3.5 sm:space-y-4">
                                         <!-- Direct Email / Contact Card -->
-                                        <a href="mailto:contacto@eduardocayun.com"
+                                        <a href="mailto:eduasesorti@gmail.com"
                                             class="phone-card group block p-4 sm:p-5 rounded-3xl">
                                             <div
                                                 class="flex items-center justify-between text-[11px] font-mono-tech text-slate-400 mb-1.5">
@@ -1676,7 +1865,7 @@
                                             </div>
                                             <div
                                                 class="text-sm sm:text-base font-mono-tech font-bold text-white group-hover:text-sky-300 transition truncate">
-                                                contacto@eduardocayun.com
+                                                eduasesorti@gmail.com
                                             </div>
                                             <div class="text-xs text-slate-400 font-medium mt-1 truncate">
                                                 Liderazgo Estratégico · Ciberseguridad · IA Cloud
@@ -1767,7 +1956,7 @@
 
                                     <!-- Bottom App Dock (Agrandado) -->
                                     <div class="flex items-center justify-around pt-5 sm:pt-6">
-                                        <a href="mailto:contacto@eduardocayun.com" class="phone-dock-icon"
+                                        <a href="mailto:eduasesorti@gmail.com" class="phone-dock-icon"
                                             title="Enviar Email Directo" aria-label="Email">
                                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                                 stroke-width="2" aria-hidden="true">

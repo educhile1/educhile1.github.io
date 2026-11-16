@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const FULL_SECTIONS_ORDER = ['home', 'credentials', 'projects', 'contact'];
-    const STATIONS_ORDER = ['overview', 'projects', 'credentials', 'home', 'contact', 'arcade', 'music'];
+    const STATIONS_ORDER = ['overview', 'projects', 'credentials', 'home', 'contact', 'arcade', 'music', 'certifications'];
 
     const STATION_META = {
         overview: {
@@ -32,6 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
             navSection: 'credentials',
             path: '~/credenciales/mba-mit-certificaciones',
             hudLabel: 'CAM // 02-CREDENCIALES'
+        },
+        certifications: {
+            code: '07',
+            section: 'credentials',
+            group: null,
+            navSection: 'credentials',
+            path: '~/certificaciones/stack-tecnologico',
+            hudLabel: 'CAM // 07-CERTIFICACIONES'
         },
         home: {
             code: '03',
