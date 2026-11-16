@@ -846,57 +846,309 @@
         });
         glowPlane(2.4, 1.6, '249,168,212', 0.12, [0, 0.8, 0.045], null, monitor, true);
 
-        // Keyboard, mousepad, mouse, notebook right at the robot's workspace
-        addMesh(new THREE.BoxGeometry(0.9, 0.035, 0.3), std(0xd9dbe1, 0.5, 0.05), [0.30, 1.068, -0.46], desk);
-        for (let r = 0; r < 4; r++) {
-            addMesh(new THREE.BoxGeometry(0.82, 0.012, 0.045), std(0xf4f4f5, 0.6), [0.30, 1.09, -0.54 + r * 0.056], desk, { cast: false });
+        /* ---------------------------------------------------------
+           CUSTOM MECHANICAL KEYBOARD & ERGONOMIC MOUSE WITH DYNAMIC RGB
+        --------------------------------------------------------- */
+        // XL Desk Mat / Deskpad (1.14m x 0.44m) with glowing RGB optical fiber perimeter
+        const deskMatBase = addMesh(new THREE.BoxGeometry(1.14, 0.005, 0.44), std(0x0e131d, 0.88, 0.08), [0.52, 1.053, -0.44], desk);
+        const deskMatRgbMat = basic({ color: 0x00f0ff });
+        // 4 perimeter fiber optic border segments
+        addMesh(new THREE.BoxGeometry(1.146, 0.006, 0.006), deskMatRgbMat, [0.52, 1.055, -0.66], desk, { cast: false });
+        addMesh(new THREE.BoxGeometry(1.146, 0.006, 0.006), deskMatRgbMat, [0.52, 1.055, -0.22], desk, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.006, 0.006, 0.44), deskMatRgbMat, [-0.05, 1.055, -0.44], desk, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.006, 0.006, 0.44), deskMatRgbMat, [1.09, 1.055, -0.44], desk, { cast: false });
+
+        // Custom Mechanical Keyboard Group (Tilted at 6.3 degrees ergonomic typing angle)
+        const kbGroup = new THREE.Group();
+        kbGroup.position.set(0.28, 1.060, -0.45);
+        kbGroup.rotation.x = 0.11; // 6.3 degree ergonomic slope
+        desk.add(kbGroup);
+
+        // CNC Milled Anodized Aluminum Bottom Case (Space Gray / Slate)
+        addMesh(new THREE.BoxGeometry(0.60, 0.018, 0.22), std(0x181e28, 0.35, 0.65), [0, 0.009, 0], kbGroup);
+
+        // Frosted Acrylic Underglow Diffuser (Dynamic RGB)
+        const keyboardUnderglowRgbMat = basic({ color: 0x38bdf8 });
+        addMesh(new THREE.BoxGeometry(0.606, 0.006, 0.226), keyboardUnderglowRgbMat, [0, 0.016, 0], kbGroup, { cast: false });
+
+        // Top Aluminum Bezel / Integrated Plate
+        addMesh(new THREE.BoxGeometry(0.60, 0.010, 0.22), std(0x121720, 0.4, 0.5), [0, 0.022, 0], kbGroup);
+
+        // Sculpted Double-Shot Keycaps (5 Rows with per-row dynamic RGB illumination)
+        const keyRowRgbMats = [];
+        const keyCapMatDark = std(0x1f2937, 0.55, 0.1);
+        const escKeyMat = basic({ color: 0xf43f5e }); // Cyberpunk Hot Pink Esc
+        const enterKeyMat = basic({ color: 0x06b6d4 }); // Electric Cyan Accent Enter
+        const spaceBarMat = std(0x334155, 0.5, 0.15);
+
+        // Keycap row offsets (z coordinates from back to front)
+        const rowZ = [-0.076, -0.038, 0.000, 0.038, 0.076];
+        for (let r = 0; r < 5; r++) {
+            const rowMat = basic({ color: 0x38bdf8 });
+            keyRowRgbMats.push(rowMat);
+
+            // Under-keycap RGB lighting strip for this row
+            addMesh(new THREE.BoxGeometry(0.56, 0.003, 0.032), rowMat, [0, 0.027, rowZ[r]], kbGroup, { cast: false });
+
+            // Keycaps for Row 0: Function Row (Esc key + F1-F12 segments)
+            if (r === 0) {
+                // Esc key
+                addMesh(new THREE.BoxGeometry(0.040, 0.014, 0.028), escKeyMat, [-0.255, 0.034, rowZ[0]], kbGroup, { cast: false });
+                // F-key blocks
+                for (let k = 0; k < 3; k++) {
+                    addMesh(new THREE.BoxGeometry(0.14, 0.013, 0.028), keyCapMatDark, [-0.13 + k * 0.165, 0.034, rowZ[0]], kbGroup, { cast: false });
+                }
+            } else if (r === 3) {
+                // Home Row with Enter accent key
+                addMesh(new THREE.BoxGeometry(0.46, 0.014, 0.032), keyCapMatDark, [-0.045, 0.034, rowZ[3]], kbGroup, { cast: false });
+                // Neon Enter Key
+                addMesh(new THREE.BoxGeometry(0.065, 0.014, 0.032), enterKeyMat, [0.245, 0.034, rowZ[3]], kbGroup, { cast: false });
+            } else if (r === 4) {
+                // Bottom Row: Modifiers, Sculpted Spacebar, Arrow Cluster
+                // Left modifiers (Ctrl, Win, Alt)
+                addMesh(new THREE.BoxGeometry(0.12, 0.014, 0.032), keyCapMatDark, [-0.215, 0.034, rowZ[4]], kbGroup, { cast: false });
+                // Wide Custom Spacebar with center accent line
+                addMesh(new THREE.BoxGeometry(0.24, 0.014, 0.032), spaceBarMat, [-0.015, 0.034, rowZ[4]], kbGroup, { cast: false });
+                addMesh(new THREE.BoxGeometry(0.18, 0.004, 0.005), rowMat, [-0.015, 0.041, rowZ[4]], kbGroup, { cast: false });
+                // Right modifiers & Arrow Cluster (Inverted-T)
+                addMesh(new THREE.BoxGeometry(0.05, 0.014, 0.032), keyCapMatDark, [0.155, 0.034, rowZ[4]], kbGroup, { cast: false });
+                addMesh(new THREE.BoxGeometry(0.07, 0.014, 0.032), enterKeyMat, [0.240, 0.034, rowZ[4]], kbGroup, { cast: false });
+            } else {
+                // Regular alphanumeric rows
+                addMesh(new THREE.BoxGeometry(0.55, 0.014, 0.032), keyCapMatDark, [0, 0.034, rowZ[r]], kbGroup, { cast: false });
+            }
         }
-        // Sleek dark mousepad & ergonomic mouse right beside the keyboard
-        addMesh(new THREE.BoxGeometry(0.30, 0.005, 0.32), std(0x181b24, 0.75, 0.3), [0.86, 1.053, -0.44], desk);
-        addMesh(new THREE.BoxGeometry(0.11, 0.035, 0.17), std(0xd9dbe1, 0.45), [0.86, 1.068, -0.44], desk);
+
+        // Custom Coiled Aviator Cable (from keyboard back into desk grommet)
+        const cableMat = std(0x0f172a, 0.75, 0.1);
+        const chromeMat = std(0xe2e8f0, 0.15, 0.95);
+        // Short straight lead out of keyboard
+        addMesh(new THREE.CylinderGeometry(0.004, 0.004, 0.07, 10), cableMat, [-0.15, 0.016, -0.14], kbGroup, { rot: [Math.PI / 2, 0, 0] });
+        // Heavy Chrome Aviator Quick-Disconnect Coupling
+        addMesh(new THREE.CylinderGeometry(0.010, 0.010, 0.028, 16), chromeMat, [-0.15, 0.016, -0.18], kbGroup, { rot: [Math.PI / 2, 0, 0] });
+        // Coiled cable loops (spring coils)
+        for (let c = 0; c < 7; c++) {
+            addMesh(new THREE.TorusGeometry(0.014, 0.0035, 10, 18), cableMat, [-0.15 + (c - 3) * 0.008, 0.017, -0.22], kbGroup, { rot: [0, Math.PI / 2, 0] });
+        }
+        // Cable path to desk grommet
+        addMesh(new THREE.CylinderGeometry(0.004, 0.004, 0.14, 10), cableMat, [-0.15, 1.056, -0.73], desk, { rot: [Math.PI / 2, 0, 0] });
+        // Brushed metal desk grommet ring
+        addMesh(new THREE.TorusGeometry(0.022, 0.004, 12, 24), chromeMat, [-0.15, 1.054, -0.80], desk, { rot: [-Math.PI / 2, 0, 0] });
+
+        // Ergonomic Gamer Mouse Group with RGB Perimeter Halo & Light Wheel
+        const mouseGroup = new THREE.Group();
+        mouseGroup.position.set(0.80, 1.054, -0.44);
+        mouseGroup.rotation.y = -0.10; // Natural ergonomic resting angle
+        desk.add(mouseGroup);
+
+        const mouseBodyMat = std(0x181e28, 0.38, 0.35);
+        const mouseAccentMat = std(0x0f172a, 0.65, 0.15);
+        const mouseBaseRgbMat = basic({ color: 0x00f0ff });
+        const mouseWheelRgbMat = basic({ color: 0x38bdf8 });
+        const mouseLogoRgbMat = basic({ color: 0x38bdf8 });
+
+        // Mouse Underglow Base Halo Strip (projects dynamic RGB neon directly onto mousepad)
+        addMesh(new THREE.BoxGeometry(0.125, 0.005, 0.185), mouseBaseRgbMat, [0, 0.003, 0], mouseGroup, { cast: false });
+        // Mouse Lower Chassis & Left Ergonomic Thumb Flare
+        addMesh(new THREE.BoxGeometry(0.118, 0.018, 0.178), mouseBodyMat, [0, 0.014, 0], mouseGroup);
+        // Left thumb rest wing
+        addMesh(new THREE.BoxGeometry(0.026, 0.012, 0.11), mouseAccentMat, [-0.064, 0.008, 0.01], mouseGroup);
+        // Dual side thumb buttons (Forward / Back)
+        addMesh(new THREE.BoxGeometry(0.006, 0.007, 0.022), chromeMat, [-0.061, 0.020, -0.016], mouseGroup, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.006, 0.007, 0.022), chromeMat, [-0.061, 0.020, 0.014], mouseGroup, { cast: false });
+
+        // Sculpted Ergonomic Palm Arch (Curved palm hump)
+        const mousePalm = addMesh(new THREE.SphereGeometry(0.058, 20, 16), mouseBodyMat, [0.004, 0.024, 0.018], mouseGroup);
+        mousePalm.scale.set(0.96, 0.52, 1.38);
+
+        // Split Left & Right Click Paddles (with tactile center separation slit)
+        addMesh(new THREE.BoxGeometry(0.052, 0.012, 0.075), mouseBodyMat, [-0.028, 0.026, -0.052], mouseGroup, { rot: [0.12, 0, 0] });
+        addMesh(new THREE.BoxGeometry(0.052, 0.012, 0.075), mouseBodyMat, [0.032, 0.026, -0.052], mouseGroup, { rot: [0.12, 0, 0] });
+        // Center slit between clickers
+        addMesh(new THREE.BoxGeometry(0.004, 0.014, 0.078), mouseAccentMat, [0.002, 0.027, -0.052], mouseGroup, { rot: [0.12, 0, 0], cast: false });
+
+        // Tactile RGB Scroll Wheel (Rubber ribbed outer tread + glowing RGB core)
+        addMesh(new THREE.CylinderGeometry(0.014, 0.014, 0.006, 18), mouseWheelRgbMat, [0.002, 0.033, -0.050], mouseGroup, { rot: [0, 0, Math.PI / 2], cast: false });
+        addMesh(new THREE.TorusGeometry(0.014, 0.003, 10, 20), std(0x111827, 0.9), [0.002, 0.033, -0.050], mouseGroup, { rot: [0, Math.PI / 2, 0] });
+
+        // Illuminated RGB Palm Rest Logo
+        addMesh(new THREE.PlaneGeometry(0.022, 0.022), mouseLogoRgbMat, [0.004, 0.043, 0.036], mouseGroup, { rot: [-Math.PI / 2.3, 0, 0], cast: false });
+
         // Executive notebook on desk left
         addMesh(new THREE.BoxGeometry(0.38, 0.02, 0.26), std(0x1e1f26, 0.8), [-1.15, 1.06, -0.38], desk, { rot: [0, 0.15, 0] });
 
         /* ---------------------------------------------------------
-           EXECUTIVE ESPRESSO COFFEE MUG & STEAM (Interactive → Modo Turbo)
+           ARTISANAL ESPRESSO COFFEE MUG & INDUCTION COASTER
+           (Interactive Pressable Object → Dar Café a EduBot → Cámara Dinámica)
         --------------------------------------------------------- */
         const coffeeGroup = new THREE.Group();
         coffeeGroup.position.set(0.66, 1.052, -0.16);
         desk.add(coffeeGroup);
 
-        // Thermal cyber coaster with amber LED ring
-        addMesh(new THREE.CylinderGeometry(0.09, 0.09, 0.012, 24), std(0x181a22, 0.6, 0.4), [0, 0.006, 0], coffeeGroup, { cast: false });
+        // Thermal cyber coaster with chamfered rim & pulsing induction ring
+        const coasterBase = addMesh(new THREE.CylinderGeometry(0.096, 0.098, 0.014, 32), std(0x161a22, 0.45, 0.4), [0, 0.007, 0], coffeeGroup, { station: 'coffee' });
+        coasterBase.userData.isCoffee = true;
         const coasterGlowMat = basic({ color: 0xf59e0b });
-        addMesh(new THREE.CylinderGeometry(0.092, 0.092, 0.004, 24), coasterGlowMat, [0, 0.008, 0], coffeeGroup, { cast: false });
+        const coasterRing = addMesh(new THREE.CylinderGeometry(0.097, 0.097, 0.004, 32), coasterGlowMat, [0, 0.010, 0], coffeeGroup, { cast: false, station: 'coffee' });
+        coasterRing.userData.isCoffee = true;
+        // Induction status micro-LED
+        addMesh(new THREE.SphereGeometry(0.0035, 10, 10), basic({ color: 0x38bdf8 }), [0, 0.014, 0.088], coffeeGroup, { cast: false });
 
-        // Ceramic matte coffee mug
-        const mugMat = std(0x1e293b, 0.35, 0.2);
-        const mugMesh = addMesh(new THREE.CylinderGeometry(0.062, 0.052, 0.115, 24), mugMat, [0, 0.065, 0], coffeeGroup, { station: 'coffee' });
+        // Glazed Ceramic Coffee Mug (Obsidian Slate / Deep Executive Navy with smooth specular luster)
+        const mugMat = std(0x192231, 0.22, 0.32);
+        const mugInteriorMat = std(0x111722, 0.35, 0.2);
+
+        // Outer flared mug body (open ended to reveal liquid surface)
+        const mugMesh = addMesh(new THREE.CylinderGeometry(0.065, 0.054, 0.120, 32, 1, true), mugMat, [0, 0.071, 0], coffeeGroup, { station: 'coffee' });
         mugMesh.userData.isCoffee = true;
 
-        // Mug handle
-        addMesh(new THREE.TorusGeometry(0.035, 0.010, 12, 20, Math.PI * 1.35), mugMat, [0.062, 0.065, 0], coffeeGroup, { rot: [0, 0, -Math.PI / 2] });
+        // Rounded ergonomic cup rim / lip (gives high tactile smoothness)
+        const mugLip = addMesh(new THREE.TorusGeometry(0.061, 0.005, 16, 32), mugMat, [0, 0.128, 0], coffeeGroup, { rot: [-Math.PI / 2, 0, 0], station: 'coffee' });
+        mugLip.userData.isCoffee = true;
 
-        // Hot coffee liquid surface
-        addMesh(new THREE.CircleGeometry(0.058, 20), std(0x23140b, 0.2, 0.9), [0, 0.115, 0], coffeeGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
+        // Recessed mug interior wall (open ended)
+        const mugInterior = addMesh(new THREE.CylinderGeometry(0.057, 0.047, 0.114, 24, 1, true), mugInteriorMat, [0, 0.072, 0], coffeeGroup, { station: 'coffee' });
+        mugInterior.userData.isCoffee = true;
+        // Mug bottom base disc
+        addMesh(new THREE.CircleGeometry(0.054, 24), mugMat, [0, 0.012, 0], coffeeGroup, { rot: [Math.PI / 2, 0, 0] });
 
-        // Procedural steam particle system
-        const steamCount = 18;
+        // Ergonomic C-Handle with smooth filleted attachments
+        const mugHandle = addMesh(new THREE.TorusGeometry(0.038, 0.011, 14, 24, Math.PI * 1.35), mugMat, [0.066, 0.071, 0], coffeeGroup, { rot: [0, 0, -Math.PI / 2], station: 'coffee' });
+        mugHandle.userData.isCoffee = true;
+        // Upper & lower handle fillets
+        addMesh(new THREE.SphereGeometry(0.012, 12, 12), mugMat, [0.060, 0.098, 0], coffeeGroup, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.012, 12, 12), mugMat, [0.058, 0.044, 0], coffeeGroup, { cast: false });
+
+        // Golden Metallic Emblem on front of the mug (Embossed EC monogram crest)
+        const goldEmblemMat = std(0xfbbf24, 0.15, 0.95);
+        addMesh(new THREE.CylinderGeometry(0.016, 0.016, 0.003, 20), goldEmblemMat, [0, 0.072, 0.061], coffeeGroup, { rot: [Math.PI / 2, 0, 0] });
+        addMesh(new THREE.TorusGeometry(0.020, 0.002, 10, 24), goldEmblemMat, [0, 0.072, 0.061], coffeeGroup, { rot: [0, 0, 0] });
+
+        // Rich Espresso Crema Surface with Hand-Poured Barista Latte Art (512x512 Canvas)
+        const latteArtTex = canvasTexture(512, 512, (ctx, w, h) => {
+            const cx = w / 2;
+            const cy = h / 2;
+            const r = w / 2;
+
+            // 1. Espresso base radial gradient with rich golden crema froth
+            const grad = ctx.createRadialGradient(cx, cy, r * 0.15, cx, cy, r);
+            grad.addColorStop(0.0, '#b87c47');
+            grad.addColorStop(0.45, '#8c5224');
+            grad.addColorStop(0.82, '#4a2510');
+            grad.addColorStop(0.96, '#261207');
+            grad.addColorStop(1.0, '#1a0d05');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r - 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Delicate crema micro-bubbles along the cup rim
+            ctx.fillStyle = 'rgba(215, 160, 105, 0.35)';
+            for (let b = 0; b < 48; b++) {
+                const angle = (b / 48) * Math.PI * 2 + Math.sin(b * 3) * 0.05;
+                const dist = r * 0.88 + Math.sin(b * 7) * (r * 0.04);
+                const bx = cx + Math.cos(angle) * dist;
+                const by = cy + Math.sin(angle) * dist;
+                ctx.beginPath();
+                ctx.arc(bx, by, 2.5 + (b % 4), 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 3. Delicate outer latte art milk rings (feathered pour layers)
+            ctx.strokeStyle = 'rgba(253, 244, 227, 0.42)';
+            ctx.lineWidth = 14;
+            ctx.beginPath();
+            ctx.arc(cx, cy - 10, r * 0.58, 0.25 * Math.PI, 0.75 * Math.PI, false);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(253, 244, 227, 0.65)';
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.arc(cx, cy - 5, r * 0.44, 0.22 * Math.PI, 0.78 * Math.PI, false);
+            ctx.stroke();
+
+            // 4. Barista Latte Art Heart (Ivory micro-foam with feathered edge)
+            ctx.save();
+            ctx.translate(cx, cy - 12);
+
+            // Heart shadow / crema contour
+            ctx.fillStyle = 'rgba(92, 48, 20, 0.4)';
+            ctx.beginPath();
+            ctx.moveTo(0, 52);
+            ctx.bezierCurveTo(-58, 12, -75, -45, -34, -62);
+            ctx.bezierCurveTo(-14, -68, -4, -48, 0, -32);
+            ctx.bezierCurveTo(4, -48, 14, -68, 34, -62);
+            ctx.bezierCurveTo(75, -45, 58, 12, 0, 52);
+            ctx.fill();
+
+            // Main creamy foam heart
+            ctx.fillStyle = '#fff9ee';
+            ctx.beginPath();
+            ctx.moveTo(0, 48);
+            ctx.bezierCurveTo(-54, 10, -70, -42, -32, -58);
+            ctx.bezierCurveTo(-12, -64, -2, -45, 0, -30);
+            ctx.bezierCurveTo(2, -45, 12, -64, 32, -58);
+            ctx.bezierCurveTo(70, -42, 54, 10, 0, 48);
+            ctx.fill();
+
+            // Heart inner feathering
+            ctx.fillStyle = 'rgba(247, 235, 214, 0.9)';
+            ctx.beginPath();
+            ctx.moveTo(0, 32);
+            ctx.bezierCurveTo(-38, 4, -48, -32, -22, -44);
+            ctx.bezierCurveTo(-8, -48, -2, -34, 0, -22);
+            ctx.bezierCurveTo(2, -34, 8, -48, 22, -44);
+            ctx.bezierCurveTo(48, -32, 38, 4, 0, 32);
+            ctx.fill();
+
+            // Center barista pour line (stem down the heart)
+            ctx.strokeStyle = '#fffbf4';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(0, -58);
+            ctx.lineTo(0, 72);
+            ctx.stroke();
+
+            // Tiny droplet at tail
+            ctx.fillStyle = '#fffbf4';
+            ctx.beginPath();
+            ctx.arc(0, 80, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        });
+
+        const coffeeLiquidMesh = addMesh(new THREE.CircleGeometry(0.056, 32), basic({ map: latteArtTex }), [0, 0.116, 0], coffeeGroup, { rot: [-Math.PI / 2, 0, 0], cast: false, station: 'coffee' });
+        coffeeLiquidMesh.userData.isCoffee = true;
+
+        // Procedural Steam Particle System (Silky soft vapor puffs)
+        const steamTex = canvasTexture(64, 64, (ctx, w, h) => {
+            const grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.85)');
+            grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.45)');
+            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.12)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+        });
+
+        const steamCount = 24;
         const steamGeo = new THREE.BufferGeometry();
         const steamPositions = new Float32Array(steamCount * 3);
         const steamPhases = new Float32Array(steamCount);
         for (let i = 0; i < steamCount; i++) {
-            steamPositions[i * 3] = (Math.random() - 0.5) * 0.04;
-            steamPositions[i * 3 + 1] = 0.12 + Math.random() * 0.32;
-            steamPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.04;
+            steamPositions[i * 3] = (Math.random() - 0.5) * 0.045;
+            steamPositions[i * 3 + 1] = 0.12 + Math.random() * 0.35;
+            steamPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.045;
             steamPhases[i] = Math.random() * Math.PI * 2;
         }
         steamGeo.setAttribute('position', new THREE.BufferAttribute(steamPositions, 3));
         const steamMat = new THREE.PointsMaterial({
-            color: 0xffffff,
-            size: 0.030,
+            map: steamTex,
+            size: 0.045,
             transparent: true,
-            opacity: 0.4,
+            opacity: 0.50,
             blending: THREE.AdditiveBlending,
             depthWrite: false
         });
@@ -1677,8 +1929,11 @@
             ctx.strokeRect(8, 8, w - 16, h - 16);
 
             const isHappyOrDancing = expr === 'happy' || expr === 'dancing' || expr === 'welcome';
+            const isStretch = expr === 'stretch';
+            const isLove = expr === 'love';
+            const isGaze = expr === 'gaze';
             const isTurbo = expr === 'turbo';
-            const eyeColor = isTurbo ? '#fde047' : ((expr === 'dancing' && (beatVal || 0) > 0.45) ? '#f472b6' : '#00f0ff');
+            const eyeColor = isTurbo ? '#fde047' : (isLove ? '#f43f5e' : (isGaze ? '#fbbf24' : ((expr === 'dancing' && (beatVal || 0) > 0.45) ? '#f472b6' : '#00f0ff')));
 
             if (isTurbo) {
                 // Cheeks glow gold
@@ -1735,10 +1990,10 @@
             }
 
             // Cheeks glow
-            if (isHappyOrDancing) {
+            if (isHappyOrDancing || isStretch || isLove || isGaze) {
                 ctx.save();
-                ctx.fillStyle = 'rgba(244, 114, 182, 0.65)';
-                ctx.shadowColor = '#f472b6';
+                ctx.fillStyle = isLove ? 'rgba(244, 63, 94, 0.75)' : 'rgba(244, 114, 182, 0.65)';
+                ctx.shadowColor = isLove ? '#f43f5e' : '#f472b6';
                 ctx.shadowBlur = 18;
                 ctx.beginPath();
                 ctx.ellipse(130, 260, 32, 16, 0, 0, Math.PI * 2);
@@ -1764,6 +2019,53 @@
                 ctx.beginPath();
                 ctx.roundRect ? ctx.roundRect(317, 172, 85, 8, 4) : ctx.rect(317, 172, 85, 8);
                 ctx.fill();
+            } else if (isLove) {
+                // Loving sparkling heart eyes ♥ ♥
+                function drawHeart(cx, cy, s) {
+                    ctx.save();
+                    ctx.translate(cx, cy);
+                    ctx.scale(s, s);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 8);
+                    ctx.bezierCurveTo(-26, -18, -48, 8, 0, 44);
+                    ctx.bezierCurveTo(48, 8, 26, -18, 0, 8);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                drawHeart(152, 155, 0.95);
+                drawHeart(360, 155, 0.95);
+            } else if (isGaze) {
+                // Starry contemplative eyes ✧ ✧
+                function drawStar(cx, cy, r1, r2) {
+                    ctx.save();
+                    ctx.translate(cx, cy);
+                    ctx.beginPath();
+                    for (let i = 0; i < 8; i++) {
+                        const a = (i * Math.PI) / 4;
+                        const r = i % 2 === 0 ? r1 : r2;
+                        const x = Math.cos(a) * r;
+                        const y = Math.sin(a) * r;
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
+                drawStar(152, 175, 44, 13);
+                drawStar(360, 175, 44, 13);
+            } else if (isStretch) {
+                // Relaxed closed smiling crescent arcs ˘ ˘
+                const arcY = 175;
+                const radius = 38;
+                ctx.lineWidth = 14;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.arc(152, arcY, radius, Math.PI * 0.15, Math.PI * 0.85, false);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(360, arcY, radius, Math.PI * 0.15, Math.PI * 0.85, false);
+                ctx.stroke();
             } else if (isHappyOrDancing) {
                 // Joyful smiling arcs ^ ^
                 const arcY = 192;
@@ -1804,7 +2106,7 @@
             ctx.strokeStyle = '#f472b6';
             ctx.shadowColor = '#f472b6';
             ctx.shadowBlur = 12;
-            if (isHappyOrDancing) {
+            if (isHappyOrDancing || isStretch || isLove || isGaze) {
                 ctx.lineWidth = 8;
                 ctx.lineCap = 'round';
                 ctx.beginPath();
@@ -1859,7 +2161,7 @@
                 osc2.start(now);
                 osc1.stop(now + 0.28);
                 osc2.stop(now + 0.28);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function playRobotWelcomeSound() {
@@ -1884,10 +2186,10 @@
                     osc.start(t);
                     osc.stop(t + 0.40);
                 });
-            } catch (e) {}
+            } catch (e) { }
         }
 
-        function playCatMeow() {
+        function playCatMeow(variant = 'happy') {
             try {
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
                 if (!AudioCtx) return;
@@ -1897,49 +2199,58 @@
 
                 const filter = ctx.createBiquadFilter();
                 filter.type = 'bandpass';
-                filter.frequency.setValueAtTime(1150, now);
-                filter.Q.setValueAtTime(2.2, now);
+                filter.frequency.setValueAtTime(variant === 'chirp' ? 1450 : (variant === 'hungry' ? 980 : 1150), now);
+                filter.Q.setValueAtTime(2.4, now);
 
                 const gain = ctx.createGain();
                 gain.gain.setValueAtTime(0.001, now);
-                gain.gain.linearRampToValueAtTime(0.18, now + 0.08);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
 
                 const osc = ctx.createOscillator();
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(540, now);
-                osc.frequency.exponentialRampToValueAtTime(880, now + 0.18);
-                osc.frequency.exponentialRampToValueAtTime(620, now + 0.62);
-
                 const osc2 = ctx.createOscillator();
                 osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(1080, now);
-                osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.18);
-                osc2.frequency.exponentialRampToValueAtTime(1240, now + 0.62);
 
-                const purr = ctx.createOscillator();
-                purr.type = 'sawtooth';
-                purr.frequency.setValueAtTime(45, now + 0.42);
-                const purrGain = ctx.createGain();
-                purrGain.gain.setValueAtTime(0.001, now + 0.42);
-                purrGain.gain.linearRampToValueAtTime(0.035, now + 0.52);
-                purrGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+                if (variant === 'chirp') {
+                    // Playful trill / chirp ("brrr-mew")
+                    gain.gain.linearRampToValueAtTime(0.20, now + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+                    osc.frequency.setValueAtTime(720, now);
+                    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+                    osc.frequency.exponentialRampToValueAtTime(940, now + 0.36);
+                    osc2.frequency.setValueAtTime(1440, now);
+                    osc2.frequency.exponentialRampToValueAtTime(2640, now + 0.12);
+                    osc.start(now); osc.stop(now + 0.40);
+                    osc2.start(now); osc2.stop(now + 0.40);
+                } else if (variant === 'hungry') {
+                    // Soft gentle mew asking for food/water
+                    gain.gain.linearRampToValueAtTime(0.18, now + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+                    osc.frequency.setValueAtTime(580, now);
+                    osc.frequency.exponentialRampToValueAtTime(780, now + 0.18);
+                    osc.frequency.exponentialRampToValueAtTime(520, now + 0.52);
+                    osc2.frequency.setValueAtTime(1160, now);
+                    osc2.frequency.exponentialRampToValueAtTime(1560, now + 0.18);
+                    osc.start(now); osc.stop(now + 0.58);
+                    osc2.start(now); osc2.stop(now + 0.58);
+                } else {
+                    // Sweet happy melodic meow
+                    gain.gain.linearRampToValueAtTime(0.22, now + 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+                    osc.frequency.setValueAtTime(540, now);
+                    osc.frequency.exponentialRampToValueAtTime(890, now + 0.18);
+                    osc.frequency.exponentialRampToValueAtTime(610, now + 0.62);
+                    osc2.frequency.setValueAtTime(1080, now);
+                    osc2.frequency.exponentialRampToValueAtTime(1780, now + 0.18);
+                    osc2.frequency.exponentialRampToValueAtTime(1220, now + 0.62);
+                    osc.start(now); osc.stop(now + 0.68);
+                    osc2.start(now); osc2.stop(now + 0.68);
+                }
 
                 osc.connect(filter);
                 osc2.connect(filter);
                 filter.connect(gain);
                 gain.connect(ctx.destination);
-
-                purr.connect(purrGain);
-                purrGain.connect(ctx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.65);
-                osc2.start(now);
-                osc2.stop(now + 0.65);
-                purr.start(now + 0.42);
-                purr.stop(now + 1.15);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function playCatPurr() {
@@ -1979,7 +2290,158 @@
                 mod.stop(now + 1.55);
                 purr.start(now);
                 purr.stop(now + 1.55);
-            } catch (e) {}
+            } catch (e) { }
+        }
+
+        // LOUD, DEEP, HEARTFELT FELINE PURR (Ronroneo fuerte al recibir cariño)
+        function playLoudCatPurr() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                // Dual harmonic rumble: 34 Hz sub + 68 Hz warm body
+                const purrLow = ctx.createOscillator();
+                purrLow.type = 'sawtooth';
+                purrLow.frequency.setValueAtTime(34, now);
+
+                const purrHarm = ctx.createOscillator();
+                purrHarm.type = 'sine';
+                purrHarm.frequency.setValueAtTime(68, now);
+
+                // Cadence vibrato LFO (~22 Hz rhythm of cat throat diaphragm)
+                const mod = ctx.createOscillator();
+                mod.type = 'sine';
+                mod.frequency.setValueAtTime(22, now);
+                const modGain = ctx.createGain();
+                modGain.gain.setValueAtTime(18, now);
+                mod.connect(modGain);
+                modGain.connect(purrLow.frequency);
+                modGain.connect(purrHarm.frequency);
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(240, now);
+                filter.Q.setValueAtTime(1.9, now);
+
+                // High gain and rich extended duration
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.24, now + 0.22);
+                gain.gain.setValueAtTime(0.22, now + 1.8);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+
+                purrLow.connect(filter);
+                purrHarm.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                mod.start(now);
+                mod.stop(now + 2.85);
+                purrLow.start(now);
+                purrLow.stop(now + 2.85);
+                purrHarm.start(now);
+                purrHarm.stop(now + 2.85);
+            } catch (e) { }
+        }
+
+        function playWaterLickSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(780 + Math.random() * 220, now);
+                osc.frequency.exponentialRampToValueAtTime(320, now + 0.08);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.08, now + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.10);
+            } catch (e) { }
+        }
+
+        function playFoodCrunchSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(320 + Math.random() * 140, now);
+                osc.frequency.exponentialRampToValueAtTime(140, now + 0.06);
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(1100, now);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.07, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.09);
+            } catch (e) { }
+        }
+
+        function playToyMouseSqueak() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(2200, now);
+                osc.frequency.exponentialRampToValueAtTime(3200, now + 0.06);
+                osc.frequency.exponentialRampToValueAtTime(1800, now + 0.16);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.14, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.20);
+            } catch (e) { }
+        }
+
+        function playBedSquishSound(isJumpOn = true) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(isJumpOn ? 140 : 105, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.22);
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(220, now);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } catch (e) { }
         }
 
         function playCatPlayChirp() {
@@ -2005,7 +2467,7 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + 0.34);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function playToyBounceSound() {
@@ -2030,7 +2492,43 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + 0.2);
-            } catch (e) {}
+            } catch (e) { }
+        }
+
+        function playCupPressSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                // 1. Ceramic tactile ping
+                const oscClink = ctx.createOscillator();
+                const gainClink = ctx.createGain();
+                oscClink.type = 'sine';
+                oscClink.frequency.setValueAtTime(1760, now);
+                oscClink.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                gainClink.gain.setValueAtTime(0.09, now);
+                gainClink.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+                oscClink.connect(gainClink);
+                gainClink.connect(ctx.destination);
+                oscClink.start(now);
+                oscClink.stop(now + 0.15);
+
+                // 2. Mechanical induction micro-switch click
+                const oscClick = ctx.createOscillator();
+                const gainClick = ctx.createGain();
+                oscClick.type = 'triangle';
+                oscClick.frequency.setValueAtTime(180, now);
+                oscClick.frequency.exponentialRampToValueAtTime(60, now + 0.04);
+                gainClick.gain.setValueAtTime(0.12, now);
+                gainClick.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                oscClick.connect(gainClick);
+                gainClick.connect(ctx.destination);
+                oscClick.start(now);
+                oscClick.stop(now + 0.06);
+            } catch (e) { }
         }
 
         function playCoffeeSound() {
@@ -2056,7 +2554,166 @@
                     osc.start(t);
                     osc.stop(t + 0.35);
                 });
-            } catch (e) {}
+            } catch (e) { }
+        }
+
+        function playTurntableNeedleSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.exponentialRampToValueAtTime(35, now + 0.04);
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.06);
+            } catch (e) { }
+        }
+
+        function playTurntableStopSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.45);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch (e) { }
+        }
+
+        function playStretchSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(260, now);
+                osc.frequency.exponentialRampToValueAtTime(680, now + 0.28);
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.12, now + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const oscC = ctx.createOscillator();
+                    const gainC = ctx.createGain();
+                    const t = now + 0.15 + idx * 0.055;
+                    oscC.type = 'sine';
+                    oscC.frequency.setValueAtTime(freq, t);
+                    gainC.gain.setValueAtTime(0.001, t);
+                    gainC.gain.linearRampToValueAtTime(0.10, t + 0.015);
+                    gainC.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
+                    oscC.connect(gainC);
+                    gainC.connect(ctx.destination);
+                    oscC.start(t);
+                    oscC.stop(t + 0.4);
+                });
+            } catch (e) { }
+        }
+
+        function playGlobeSpinSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(320, now);
+                osc.frequency.exponentialRampToValueAtTime(160, now + 0.35);
+                gain.gain.setValueAtTime(0.11, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+
+                [659.25, 987.77, 1318.51].forEach((freq, idx) => {
+                    const oscC = ctx.createOscillator();
+                    const gainC = ctx.createGain();
+                    const t = now + 0.04 + idx * 0.07;
+                    oscC.type = 'sine';
+                    oscC.frequency.setValueAtTime(freq, t);
+                    gainC.gain.setValueAtTime(0.001, t);
+                    gainC.gain.linearRampToValueAtTime(0.08, t + 0.012);
+                    gainC.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+                    oscC.connect(gainC);
+                    gainC.connect(ctx.destination);
+                    oscC.start(t);
+                    oscC.stop(t + 0.45);
+                });
+            } catch (e) { }
+        }
+
+        function playChristmasJingleSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const notes = [
+                    { f: 659.25, d: 0.16 }, // E5
+                    { f: 659.25, d: 0.16 }, // E5
+                    { f: 659.25, d: 0.28 }, // E5
+                    { f: 659.25, d: 0.16 }, // E5
+                    { f: 659.25, d: 0.16 }, // E5
+                    { f: 659.25, d: 0.28 }, // E5
+                    { f: 659.25, d: 0.16 }, // E5
+                    { f: 783.99, d: 0.16 }, // G5
+                    { f: 523.25, d: 0.16 }, // C5
+                    { f: 587.33, d: 0.16 }, // D5
+                    { f: 659.25, d: 0.42 }  // E5
+                ];
+                let curTime = now;
+                notes.forEach((n) => {
+                    const osc = ctx.createOscillator();
+                    const oscHarm = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    oscHarm.type = 'triangle';
+                    osc.frequency.setValueAtTime(n.f, curTime);
+                    oscHarm.frequency.setValueAtTime(n.f * 2, curTime);
+                    gain.gain.setValueAtTime(0.001, curTime);
+                    gain.gain.linearRampToValueAtTime(0.14, curTime + 0.012);
+                    gain.gain.exponentialRampToValueAtTime(0.001, curTime + n.d);
+                    osc.connect(gain);
+                    oscHarm.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(curTime);
+                    oscHarm.start(curTime);
+                    osc.stop(curTime + n.d + 0.05);
+                    oscHarm.stop(curTime + n.d + 0.05);
+                    curTime += n.d + 0.04;
+                });
+            } catch (e) { }
         }
 
         const robotBubbleEl = document.getElementById('edubot-speech-bubble');
@@ -2064,6 +2721,7 @@
         const robotBubbleBadge = document.getElementById('edubot-bubble-badge');
         const robotCloseBtn = document.getElementById('edubot-close-btn');
         const robotNextTipBtn = document.getElementById('edubot-next-tip-btn');
+        const robotWalkBtn = document.getElementById('edubot-walk-btn');
         const robotProfileBtn = document.getElementById('edubot-profile-btn');
         const robotMeetBtn = document.getElementById('edubot-meet-btn');
 
@@ -2071,6 +2729,39 @@
         let hasShownInitialWelcome = false;
         let standProg = 1.0; // Starts standing tall on first load
         let targetStand = 1.0;
+
+        // EDUBOT MOBILITY & AUTONOMOUS WELLNESS STATE MACHINE
+        let robotState = 'SEATED'; // 'SEATED' | 'STAND_PREP' | 'STRETCHING' | 'WALK_TO_CAT' | 'PET_CAT' | 'WALK_TO_WINDOW' | 'GAZE_WINDOW' | 'WALK_TO_DESK' | 'SIT_DOWN'
+        let robotStateTime = 0;
+        let timeSinceLastBreak = 0;
+        const robotDeskSeatPos = new THREE.Vector3(0.50, 0, -0.74);
+        const robotPos = new THREE.Vector3(0.50, 0, -0.74);
+        let robotHeading = 0; // rotation.y (0 faces desk/camera, Math.PI faces window)
+        let currentNavPath = [];
+        let currentNavTargetIdx = 0;
+        let robotWalkPhase = 0;
+        let crouchProg = 0;
+
+        function showRobotBubble(badge, text, durationMs = 12000) {
+            if (robotBubbleBadge) robotBubbleBadge.textContent = badge;
+            if (robotBubbleText) robotBubbleText.innerHTML = text;
+            if (robotBubbleEl) robotBubbleEl.classList.remove('hidden');
+            if (dismissTimer) clearTimeout(dismissTimer);
+            dismissTimer = setTimeout(() => {
+                hideBubble();
+            }, durationMs);
+        }
+
+        function triggerStretchWalk() {
+            if (robotState !== 'SEATED') return;
+            isInitialWelcomeActive = false;
+            isGreetingActive = false;
+            robotState = 'STAND_PREP';
+            robotStateTime = 0;
+            targetStand = 1.0;
+            playStretchSound();
+            showRobotBubble('🧘 PAUSA ACTIVA', '¡Uff, tantas horas programando! Es momento de una pausa activa para estirar circuitos y articulaciones... 🧘‍♂️⚡', 6000);
+        }
 
         function showTip(idx) {
             isInitialWelcomeActive = false;
@@ -2142,6 +2833,7 @@
 
         if (robotCloseBtn) robotCloseBtn.addEventListener('click', hideBubble);
         if (robotNextTipBtn) robotNextTipBtn.addEventListener('click', nextTip);
+        if (robotWalkBtn) robotWalkBtn.addEventListener('click', triggerStretchWalk);
         if (robotProfileBtn) {
             robotProfileBtn.addEventListener('click', () => {
                 hideBubble();
@@ -2161,18 +2853,32 @@
         let turboStartTime = 0;
         const TURBO_DURATION = 9500;
         let turboDismissTimer = null;
+        let isCoffeeSipping = false;
+        let coffeeSipStartTime = 0;
+        let coffeePressProg = 0;
 
         function triggerCoffeeTurbo() {
             isTurboActive = true;
             turboStartTime = performance.now();
-            playCoffeeSound();
+            coffeePressProg = 1.0;
+            isCoffeeSipping = true;
+            coffeeSipStartTime = performance.now();
 
-            if (robotBubbleBadge) robotBubbleBadge.textContent = '☕ MODO TURBO ACTIVADO (200%)';
+            playCupPressSound();
+            setTimeout(() => {
+                playCoffeeSound();
+            }, 180);
+
+            if (api && api.focusStation) {
+                api.focusStation('coffee');
+            }
+
+            if (robotBubbleBadge) robotBubbleBadge.textContent = '☕ CAFÉ TURBO PARA EDUBOT';
             if (robotBubbleText) {
-                robotBubbleText.innerHTML = '¡Café de especialidad detectado! ☕⚡ <strong>Compilando arquitecturas, desplegando microservicios y liderando proyectos de misión crítica</strong> a velocidad supersónica.';
+                robotBubbleText.innerHTML = '¡Exquisito espresso artesanal! ☕⚡ <strong>Muchas gracias por el café.</strong> Mis núcleos cuánticos y algoritmos operan al 200% de potencia para asistirte.';
             }
             if (robotNextTipBtn) {
-                robotNextTipBtn.innerHTML = '<span>⚡ ¡Velocidad máxima!</span>';
+                robotNextTipBtn.innerHTML = '<span>⚡ ¡Velocidad Máxima (200%)!</span>';
             }
             if (robotBubbleEl) robotBubbleEl.classList.remove('hidden');
 
@@ -2231,8 +2937,8 @@
         function triggerCatInteraction() {
             isCatPetted = true;
             catPetStartTime = performance.now();
-            playCatPurr();
-            playCatMeow();
+            playLoudCatPurr(); // RONRONEO FUERTE Y PROFUNDO
+            playCatMeow('happy');
             if (typeof spawnCatHearts === 'function' && typeof catRoot !== 'undefined') {
                 spawnCatHearts(catRoot.position);
             }
@@ -2244,21 +2950,35 @@
             if (typeof startCatPlayActivity === 'function') {
                 startCatPlayActivity();
             }
-            showCatThought('🎾 ¡A CORRER Y JUGAR!', '¡Miau! ¡Modo zoomies activado! Persiguiendo la pelotita energética por toda la oficina virtual a velocidad supersónica.');
+            showCatThought('🎾 ¡A CORRER Y JUGAR!', '¡Miau! ¡Modo zoomies y juego activado! Persiguiendo mi ratoncito cyberpunk y la pelotita por toda la oficina virtual.');
         }
 
         function triggerCatDesk() {
             if (typeof sendCatToDesk === 'function') {
                 sendCatToDesk();
             }
-            showCatThought('📍 EN CAMINO AL ESCRITORIO', '¡Prrr! Voy directo al escritorio a hacerle compañía a EduBot y supervisar los pipelines de desarrollo.');
+            showCatThought('📍 EN CAMINO AL ESCRITORIO', '¡Prrr! Voy directo al escritorio a saltar junto a EduBot y supervisar el teclado RGB y el código.');
+        }
+
+        function triggerCatFood() {
+            if (typeof sendCatToFood === 'function') {
+                sendCatToFood();
+            }
+            showCatThought('🍽️ GOURMET BISTRO FELINO', '¡Miau! Directo a mi bebedero y comedero a disfrutar de agua fresca filtrada y croquetas de salmón 🐟💧');
+        }
+
+        function triggerCatDance() {
+            if (typeof startCatDance === 'function') {
+                startCatDance();
+            }
+            showCatThought('🕺 ¡FIESTA Y BAILE EN 2 PATAS!', '¡Prrr! ¡Sonando el mejor sintetizador! ¡Bailando en 2 piernas con ritmo felino total! 🐾🎶✨');
         }
 
         function triggerCatSleep() {
             if (typeof sendCatToSleep === 'function') {
                 sendCatToSleep();
             }
-            showCatThought('💤 HORA DE LA SIESTA', 'Miau... fue un gran día de juegos y arquitectura cloud. Me acurruco en mi puf rosado a recargar baterías.');
+            showCatThought('💤 HORA DE LA SIESTA', 'Miau... fue un gran día de aventuras. Me acurruco en mi cama nido acolchada en la esquina a recargar ronroneos.');
         }
 
         function hideCatBubble() {
@@ -2273,10 +2993,17 @@
         if (catPlayBtn) catPlayBtn.addEventListener('click', triggerCatPlay);
         if (catDeskBtn) catDeskBtn.addEventListener('click', triggerCatDesk);
 
+        const catFoodBtn = document.getElementById('cat-food-btn');
+        if (catFoodBtn) catFoodBtn.addEventListener('click', triggerCatFood);
+        const catDanceBtn = document.getElementById('cat-dance-btn');
+        if (catDanceBtn) catDanceBtn.addEventListener('click', triggerCatDance);
+
         window.eduKotetsuPet = {
             pet: triggerCatInteraction,
             play: triggerCatPlay,
             goToDesk: triggerCatDesk,
+            goToFood: triggerCatFood,
+            dance: triggerCatDance,
             goToSleep: triggerCatSleep,
             hideBubble: hideCatBubble,
             getState: () => ({
@@ -2284,7 +3011,14 @@
                 x: typeof catRoot !== 'undefined' ? Number(catRoot.position.x.toFixed(2)) : 0,
                 y: typeof catRoot !== 'undefined' ? Number(catRoot.position.y.toFixed(2)) : 0,
                 z: typeof catRoot !== 'undefined' ? Number(catRoot.position.z.toFixed(2)) : 0,
-                waypoint: typeof currentWaypointId !== 'undefined' ? currentWaypointId : ''
+                waypoint: typeof currentWaypointId !== 'undefined' ? currentWaypointId : '',
+                pathQueue: typeof pathQueue !== 'undefined' ? [...pathQueue] : [],
+                stateDuration: typeof stateDuration !== 'undefined' ? stateDuration : 0,
+                stateElapsed: typeof stateStartTime !== 'undefined' ? (performance.now() - stateStartTime) / 1000 : 0,
+                jumpStart: typeof jumpStartPos !== 'undefined' ? { x: Number(jumpStartPos.x.toFixed(2)), y: Number(jumpStartPos.y.toFixed(2)), z: Number(jumpStartPos.z.toFixed(2)) } : null,
+                jumpEnd: typeof jumpEndPos !== 'undefined' ? { x: Number(jumpEndPos.x.toFixed(2)), y: Number(jumpEndPos.y.toFixed(2)), z: Number(jumpEndPos.z.toFixed(2)) } : null,
+                isCatPetted: typeof isCatPetted !== 'undefined' ? isCatPetted : false,
+                isCatVisitingDesk: typeof isCatVisitingDesk !== 'undefined' ? isCatVisitingDesk : false
             }),
             focusCamera: () => {
                 if (api && api.focusStation) {
@@ -2298,6 +3032,14 @@
             triggerWelcomeGreeting,
             triggerCoffeeTurbo,
             triggerCatInteraction,
+            triggerStretchWalk,
+            getState: () => ({
+                state: robotState,
+                x: Number(robotPos.x.toFixed(2)),
+                y: Number(robot.position.y.toFixed(2)),
+                z: Number(robotPos.z.toFixed(2)),
+                heading: Number(robotHeading.toFixed(2))
+            }),
             nextTip,
             hideBubble,
             showTip
@@ -2610,7 +3352,7 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + dur);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         function drawAwsLogo(ctx, x, y, w, h) {
@@ -3565,104 +4307,159 @@
 
                 // Top company brand header banner
                 ctx.fillStyle = b.c;
-                ctx.fillRect(0, 0, w, 110);
+                ctx.fillRect(0, 0, w, 88);
 
                 // Clip slit cutout
                 ctx.fillStyle = '#ffffff';
-                roundRect(ctx, w / 2 - 40, 14, 80, 14, 7);
+                roundRect(ctx, w / 2 - 36, 12, 72, 12, 6);
                 ctx.fill();
 
                 // Header tag
-                ctx.font = '800 18px "JetBrains Mono", monospace';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.save();
+                ctx.font = '800 17px "JetBrains Mono", monospace';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
+                ctx.shadowBlur = 6;
+                ctx.fillStyle = '#ffffff';
                 ctx.textAlign = 'center';
-                ctx.fillText(b.tag, w / 2, 82);
+                ctx.fillText(b.tag, w / 2, 66);
+                ctx.restore();
 
-                // Circular avatar with Eduardo's photo
+                // Circular avatar with Eduardo's photo - prominent & high definition
                 const avatarCx = w / 2;
-                const avatarCy = 230;
-                const avatarR = 76;
+                const avatarCy = 212;
+                const avatarR = 118; // Large circular avatar: 236px diameter (46% width of card!)
 
+                // Soft ambient drop-shadow under avatar circle
+                ctx.save();
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+                ctx.shadowBlur = 18;
+                ctx.shadowOffsetY = 6;
+                ctx.beginPath();
+                ctx.arc(avatarCx, avatarCy, avatarR + 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.restore();
+
+                // Photo clip
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(avatarCx, avatarCy, avatarR, 0, Math.PI * 2);
                 ctx.clip();
 
                 if (portraitImg && portraitImg.complete && portraitImg.naturalWidth > 0) {
-                    const cropSize = 520;
+                    const cropSize = 480;
                     const sx = Math.max(0, (portraitImg.naturalWidth - cropSize) / 2);
-                    const sy = 80;
+                    const sy = 60;
                     ctx.drawImage(portraitImg, sx, sy, cropSize, cropSize, avatarCx - avatarR, avatarCy - avatarR, avatarR * 2, avatarR * 2);
                 } else {
-                    ctx.fillStyle = '#e2e8f0';
+                    ctx.fillStyle = '#f1f5f9';
                     ctx.fillRect(avatarCx - avatarR, avatarCy - avatarR, avatarR * 2, avatarR * 2);
                     ctx.fillStyle = b.c;
-                    ctx.font = '800 36px "Plus Jakarta Sans", sans-serif';
+                    ctx.font = '800 48px "Plus Jakarta Sans", sans-serif';
                     ctx.textAlign = 'center';
-                    ctx.fillText('EC', avatarCx, avatarCy + 12);
+                    ctx.fillText('EC', avatarCx, avatarCy + 16);
                 }
                 ctx.restore();
 
-                // Outer border in badge color
+                // Outer borders: Executive dual ring (pure white inner rim + badge color outer rim)
                 ctx.beginPath();
                 ctx.arc(avatarCx, avatarCy, avatarR, 0, Math.PI * 2);
-                ctx.strokeStyle = b.c;
-                ctx.lineWidth = 5;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 8;
                 ctx.stroke();
 
-                // Small active dot
+                ctx.beginPath();
+                ctx.arc(avatarCx, avatarCy, avatarR + 3, 0, Math.PI * 2);
+                ctx.strokeStyle = b.c;
+                ctx.lineWidth = 6;
+                ctx.stroke();
+
+                // Holographic NFC Chip on top-right of badge
+                ctx.save();
+                const chipX = w - 74;
+                const chipY = 104;
+                ctx.fillStyle = 'rgba(241, 245, 249, 0.95)';
+                roundRect(ctx, chipX, chipY, 44, 32, 6);
+                ctx.fill();
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(chipX + 8, chipY + 16); ctx.lineTo(chipX + 36, chipY + 16);
+                ctx.moveTo(chipX + 18, chipY + 6); ctx.lineTo(chipX + 18, chipY + 26);
+                ctx.moveTo(chipX + 26, chipY + 6); ctx.lineTo(chipX + 26, chipY + 26);
+                ctx.stroke();
+                ctx.restore();
+
+                // Active / Verified status badge dot (Bottom-right corner of circle)
+                const dotAngle = Math.PI * 0.25;
+                const dotX = avatarCx + Math.cos(dotAngle) * (avatarR + 2);
+                const dotY = avatarCy + Math.sin(dotAngle) * (avatarR + 2);
+                ctx.save();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(dotX, dotY, 20, 0, Math.PI * 2);
+                ctx.fill();
                 ctx.fillStyle = '#10b981';
                 ctx.beginPath();
-                ctx.arc(avatarCx + 52, avatarCy + 52, 13, 0, Math.PI * 2);
+                ctx.arc(dotX, dotY, 15.5, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 3.5;
-                ctx.stroke();
-
-                // Company Name
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '900 13px sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillStyle = '#0f172a';
-                ctx.font = '900 32px "Plus Jakarta Sans", sans-serif';
-                ctx.fillText(b.company, w / 2, 360);
+                ctx.fillText('✓', dotX, dotY + 4.5);
+                ctx.restore();
 
-                // Role / Position (High contrast deep tone)
-                ctx.fillStyle = '#0f172a';
-                ctx.font = '800 22px "JetBrains Mono", monospace';
-                ctx.fillText(b.role, w / 2, 398);
+                // Company Name (Deep contrast bold branding)
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#090d16';
+                ctx.font = '900 36px "Plus Jakarta Sans", sans-serif';
+                ctx.fillText(b.company, w / 2, 380);
 
-                // Dates
+                // Role / Position (High contrast executive typography)
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '800 23px "Plus Jakarta Sans", sans-serif';
+                ctx.fillText(b.role, w / 2, 418);
+
+                // Dates (Clear tech monospaced format)
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '800 21px "JetBrains Mono", monospace';
+                ctx.fillText(b.dates, w / 2, 452);
+
+                // Key Scope / Clients (Readable sans-serif)
                 ctx.fillStyle = '#334155';
-                ctx.font = '700 20px "JetBrains Mono", monospace';
-                ctx.fillText(b.dates, w / 2, 436);
-
-                // Key Scope / Clients
-                ctx.fillStyle = '#64748b';
-                ctx.font = '600 18px "Inter", sans-serif';
-                ctx.fillText(b.scope, w / 2, 474);
+                ctx.font = '700 19px "Plus Jakarta Sans", sans-serif';
+                ctx.fillText(b.scope, w / 2, 484);
 
                 // Security Barcode at bottom
-                ctx.fillStyle = '#0f172a';
-                const barcodeY = 515;
-                const barcodeH = 40;
-                const seedBars = [3, 6, 2, 5, 8, 3, 2, 6, 3, 5, 2, 8, 5, 3, 6, 2, 3, 5, 8, 3, 6, 2, 5, 3, 4, 2, 7, 3];
-                let curX = 60;
+                ctx.fillStyle = '#090d16';
+                const barcodeY = 516;
+                const barcodeH = 38;
+                const seedBars = [4, 7, 2, 6, 8, 4, 2, 7, 3, 6, 2, 8, 6, 3, 7, 2, 4, 6, 8, 3, 7, 2, 6, 3, 5, 2, 8, 4];
+                let curX = 58;
                 seedBars.forEach((bw) => {
                     ctx.fillRect(curX, barcodeY, bw, barcodeH);
                     curX += bw + 5;
                 });
 
-                ctx.font = '700 15px "JetBrains Mono", monospace';
-                ctx.fillStyle = '#64748b';
-                ctx.fillText(`ID-PASS · ${b.company.slice(0, 4)}-${2026 - i}`, w / 2, 584);
+                ctx.font = '800 15px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#475569';
+                ctx.fillText(`ID-PASS · ${b.company.slice(0, 4)}-${2026 - i}`, w / 2, 576);
 
                 // Interactive cue button pill (Solid prominent accent pill)
                 ctx.fillStyle = b.c;
-                roundRect(ctx, 36, 616, w - 72, 56, 14);
+                roundRect(ctx, 32, 608, w - 64, 58, 14);
                 ctx.fill();
 
-                ctx.font = '900 16px "JetBrains Mono", monospace';
+                ctx.save();
+                ctx.font = '900 18px "JetBrains Mono", monospace';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                ctx.shadowBlur = 4;
                 ctx.fillStyle = '#ffffff';
-                ctx.fillText('↺ CLIC PARA VER PROYECTOS', w / 2, 652);
+                ctx.fillText('↺ CLIC PARA VER PROYECTOS', w / 2, 645);
+                ctx.restore();
 
                 ctx.textAlign = 'left';
             });
@@ -3792,11 +4589,15 @@
                 emissive: 0xffffff,
                 emissiveMap: frontTex,
                 emissiveIntensity: 0.32
-            }), [0, 0, 0.003], cardHolder, {
+            }), [0, 0, 0.006], cardHolder, {
                 cast: false,
                 station: 'badge'
             });
             frontMesh.userData.badgeIndex = i;
+            frontMesh.renderOrder = 2;
+            frontMesh.material.polygonOffset = true;
+            frontMesh.material.polygonOffsetFactor = -1;
+            frontMesh.material.polygonOffsetUnits = -1;
 
             // Back face plane (facing backward)
             const backMesh = addMesh(new THREE.PlaneGeometry(0.33, 0.465), std(0xffffff, 0.6, 0, {
@@ -3804,15 +4605,19 @@
                 emissive: 0xffffff,
                 emissiveMap: backTex,
                 emissiveIntensity: 0.32
-            }), [0, 0, -0.003], cardHolder, {
+            }), [0, 0, -0.006], cardHolder, {
                 rot: [0, Math.PI, 0],
                 cast: false,
                 station: 'badge'
             });
             backMesh.userData.badgeIndex = i;
+            backMesh.renderOrder = 2;
+            backMesh.material.polygonOffset = true;
+            backMesh.material.polygonOffsetFactor = -1;
+            backMesh.material.polygonOffsetUnits = -1;
 
-            // Acrylic dark core for realistic card thickness
-            addMesh(new THREE.BoxGeometry(0.33, 0.465, 0.004), std(0x0a0d14, 0.4, 0.3), [0, 0, 0], cardHolder, { cast: false });
+            // Acrylic dark core for realistic card thickness (subtly recessed so front and back faces never z-fight)
+            addMesh(new THREE.BoxGeometry(0.324, 0.458, 0.004), std(0x0a0d14, 0.4, 0.3), [0, 0, 0], cardHolder, { cast: false });
 
             // Top lanyard clip
             addMesh(new THREE.BoxGeometry(0.065, 0.026, 0.016), std(0xd1d5db, 0.2, 0.9), [0, 0.235, 0], cardHolder, { cast: false });
@@ -3861,7 +4666,7 @@
 
                 osc.start(now);
                 osc.stop(now + 0.1);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         let activeBadgeIdx = 0;
@@ -3983,6 +4788,8 @@
             flipBadge,
             openInspector,
             closeInspector,
+            getBadges: () => badgeList,
+            BADGES,
             nextBadge() {
                 const nextIdx = (activeBadgeIdx + 1) % BADGES.length;
                 updateInspectorDOM(nextIdx);
@@ -4203,13 +5010,186 @@
             });
         }
 
+        /* ---------------------------------------------------------
+           AUDIOPHILE HIGH-FIDELITY TURNTABLE & ARTICULATED TONEARM (→ Música IA)
+        --------------------------------------------------------- */
         const turntable = new THREE.Group();
         turntable.position.set(0.42, 0.78, 0);
         cabinet.add(turntable);
-        addMesh(new THREE.BoxGeometry(0.85, 0.09, 0.6), std(0x2a2b31, 0.5, 0.3), [0, 0.045, 0], turntable, { station: 'music' });
-        const vinyl = addMesh(new THREE.CylinderGeometry(0.23, 0.23, 0.02, 32), std(0x09090b, 0.25, 0.5), [-0.1, 0.1, 0], turntable, { station: 'music' });
-        addMesh(new THREE.CylinderGeometry(0.075, 0.075, 0.022, 20), basic({ color: 0x1ed760 }), [-0.1, 0.102, 0], turntable, { cast: false });
-        addMesh(new THREE.BoxGeometry(0.02, 0.02, 0.32), std(0xd4d4d8, 0.3, 0.8), [0.25, 0.12, 0.02], turntable, { rot: [0, 0.4, 0] });
+
+        // 1. Sleek piano-black damped plinth with beveled chassis
+        const plinthMat = std(0x13141a, 0.35, 0.45);
+        addMesh(new THREE.BoxGeometry(0.86, 0.08, 0.62), plinthMat, [0, 0.04, 0], turntable, { station: 'music', isTurntable: true });
+        addMesh(new THREE.BoxGeometry(0.88, 0.012, 0.64), std(0x232630, 0.4, 0.5), [0, 0.076, 0], turntable, { station: 'music', isTurntable: true });
+
+        // 4 Isolation rubber feet with brass rings
+        const footMat = std(0x181920, 0.6, 0.2);
+        const brassMat = std(0xd4a24c, 0.25, 0.9);
+        [[-0.36, -0.24], [0.36, -0.24], [-0.36, 0.24], [0.36, 0.24]].forEach(([fx, fz]) => {
+            addMesh(new THREE.CylinderGeometry(0.038, 0.042, 0.024, 16), footMat, [fx, -0.012, fz], turntable);
+            addMesh(new THREE.CylinderGeometry(0.042, 0.042, 0.008, 16), brassMat, [fx, 0.002, fz], turntable);
+        });
+
+        // Power switch & 33/45 RPM buttons with indicator micro-LED
+        addMesh(new THREE.BoxGeometry(0.04, 0.018, 0.04), std(0x3f3f46, 0.4, 0.6), [-0.34, 0.088, 0.22], turntable, { isTurntable: true });
+        addMesh(new THREE.CylinderGeometry(0.012, 0.012, 0.016, 12), brassMat, [-0.26, 0.088, 0.22], turntable, { isTurntable: true });
+        const turntablePowerLedMat = basic({ color: 0x1ed760 });
+        const turntablePowerLed = addMesh(new THREE.SphereGeometry(0.006, 8, 8), turntablePowerLedMat, [-0.34, 0.10, 0.22], turntable, { cast: false });
+
+        // Strobe light tower at back-left
+        addMesh(new THREE.CylinderGeometry(0.018, 0.022, 0.045, 12), std(0x27272a, 0.4, 0.6), [-0.36, 0.10, -0.22], turntable);
+        const strobeLamp = addMesh(new THREE.SphereGeometry(0.008, 8, 8), basic({ color: 0xff3b30 }), [-0.35, 0.118, -0.21], turntable, { cast: false });
+
+        // 2. Heavy Machined Aluminum Platter (Plato) with Strobe Dots Rim
+        const platterGroup = new THREE.Group();
+        platterGroup.position.set(-0.09, 0.08, 0);
+        turntable.add(platterGroup);
+
+        const alumPlatterMat = std(0xd1d5db, 0.22, 0.88);
+        addMesh(new THREE.CylinderGeometry(0.245, 0.245, 0.024, 48), alumPlatterMat, [0, 0.012, 0], platterGroup, { station: 'music', isTurntable: true });
+        // Strobe rim dots ring
+        addMesh(new THREE.CylinderGeometry(0.247, 0.247, 0.008, 36), std(0x18181b, 0.5, 0.3), [0, 0.012, 0], platterGroup, { cast: false });
+        // Anti-static rubber slipmat
+        addMesh(new THREE.CylinderGeometry(0.238, 0.238, 0.005, 36), std(0x111216, 0.7, 0.1), [0, 0.026, 0], platterGroup, { isTurntable: true });
+        // Polished center chrome spindle pin
+        const spindlePin = addMesh(new THREE.CylinderGeometry(0.0065, 0.0065, 0.042, 16), std(0xffffff, 0.1, 0.98), [0, 0.038, 0], platterGroup, { cast: false });
+
+        // 3. High-Definition Vinyl Record Assembly (Placed on Platter, spins with it)
+        const vinylGroup = new THREE.Group();
+        vinylGroup.position.set(-0.09, 0.108, 0);
+        turntable.add(vinylGroup);
+        const vinyl = vinylGroup; // Maintain alias so any legacy reference remains valid
+
+        // Vinyl Groove Texture Canvas (512x512 with light diffraction & micro-grooves)
+        const vinylGrooveTex = canvasTexture(512, 512, (ctx, w, h) => {
+            ctx.fillStyle = '#08090b';
+            ctx.fillRect(0, 0, w, h);
+            const cx = w / 2;
+            const cy = h / 2;
+            for (let r = 85; r < 240; r += 2) {
+                const alpha = 0.03 + (Math.sin(r * 0.4) * 0.025) + ((r % 12 === 0) ? 0.06 : 0);
+                ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            [125, 165, 205].forEach(gapR => {
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(cx, cy, gapR, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 78, 0, Math.PI * 2);
+            ctx.stroke();
+        });
+
+        // Vinyl center label canvas texture (updates dynamically with current song)
+        const vinylLabelTex = canvasTexture(256, 256, (ctx, w, h) => {
+            const cx = w / 2;
+            const cy = h / 2;
+            ctx.fillStyle = '#0a0a0c';
+            ctx.fillRect(0, 0, w, h);
+            ctx.beginPath();
+            ctx.arc(cx, cy, 120, 0, Math.PI * 2);
+            ctx.fillStyle = '#121216';
+            ctx.fill();
+            ctx.strokeStyle = '#1ed760';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(212, 162, 76, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 108, 0, Math.PI * 2);
+            ctx.stroke();
+
+            if (coverImg) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(cx, cy, 48, 0, Math.PI * 2);
+                ctx.clip();
+                drawCover(ctx, coverImg, cx - 48, cy - 48, 96, 96);
+                ctx.restore();
+            }
+
+            ctx.fillStyle = '#1ed760';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('EDUARDO HI-FI', cx, 42);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText('STEREO 33 ⅓ RPM', cx, 222);
+
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        });
+
+        if (window.eduSpotifyPlayer && window.eduSpotifyPlayer.onStateChange) {
+            window.eduSpotifyPlayer.onStateChange((state) => {
+                if (state && state.currentTrack && state.currentTrack.cover) {
+                    vinylLabelTex.userData.redraw();
+                }
+            });
+        }
+
+        const vinylDiscMat = std(0x0a0a0d, 0.22, 0.65, {
+            map: vinylGrooveTex,
+            roughnessMap: vinylGrooveTex
+        });
+        const vinylMesh = addMesh(new THREE.CylinderGeometry(0.235, 0.235, 0.014, 48), vinylDiscMat, [0, 0, 0], vinylGroup, { station: 'music', isTurntable: true });
+
+        // Center Label Disc (rotates WITH the vinyl)
+        const vinylLabelMat = basic({ map: vinylLabelTex });
+        const vinylLabelMesh = addMesh(new THREE.CylinderGeometry(0.082, 0.082, 0.016, 32), vinylLabelMat, [0, 0.001, 0], vinylGroup, { station: 'music', isTurntable: true, cast: false });
+
+        // 4. Articulated Audiophile Tonearm (Brazo Fonocaptor)
+        const tonearmBaseGroup = new THREE.Group();
+        tonearmBaseGroup.position.set(0.25, 0.08, -0.16);
+        turntable.add(tonearmBaseGroup);
+
+        addMesh(new THREE.CylinderGeometry(0.028, 0.034, 0.045, 20), brassMat, [0, 0.022, 0], tonearmBaseGroup);
+        addMesh(new THREE.CylinderGeometry(0.018, 0.018, 0.022, 16), std(0x27272a, 0.3, 0.7), [0, 0.048, 0], tonearmBaseGroup);
+
+        const tonearmArmGroup = new THREE.Group();
+        tonearmArmGroup.position.set(0, 0.054, 0);
+        tonearmBaseGroup.add(tonearmArmGroup);
+
+        addMesh(new THREE.CylinderGeometry(0.005, 0.005, 0.09, 12), std(0xffffff, 0.15, 0.9), [0, 0, -0.045], tonearmArmGroup, { rot: [Math.PI / 2, 0, 0] });
+        addMesh(new THREE.CylinderGeometry(0.024, 0.024, 0.032, 20), std(0x27272a, 0.3, 0.8), [0, 0, -0.065], tonearmArmGroup, { rot: [Math.PI / 2, 0, 0] });
+        addMesh(new THREE.CylinderGeometry(0.025, 0.025, 0.008, 20), brassMat, [0, 0, -0.052], tonearmArmGroup, { rot: [Math.PI / 2, 0, 0] });
+
+        const chromeWandMat = std(0xf4f4f5, 0.15, 0.95);
+        addMesh(new THREE.CylinderGeometry(0.0045, 0.0045, 0.34, 12), chromeWandMat, [0, 0, 0.17], tonearmArmGroup, { rot: [Math.PI / 2, 0, 0] });
+
+        const headshellGroup = new THREE.Group();
+        headshellGroup.position.set(0, 0, 0.34);
+        tonearmArmGroup.add(headshellGroup);
+        addMesh(new THREE.BoxGeometry(0.022, 0.014, 0.048), std(0x18181b, 0.5, 0.4), [-0.005, -0.004, 0.018], headshellGroup, { rot: [0, -0.16, 0] });
+        addMesh(new THREE.BoxGeometry(0.016, 0.015, 0.026), std(0xdc2626, 0.35, 0.3), [-0.005, -0.014, 0.020], headshellGroup, { rot: [0, -0.16, 0] });
+        addMesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.012, 8), std(0xffffff, 0.1, 0.9), [-0.005, -0.022, 0.028], headshellGroup, { rot: [0.35, -0.16, 0] });
+        addMesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.025, 8), chromeWandMat, [0.012, 0.008, 0.015], headshellGroup, { rot: [0, 0, -Math.PI / 3] });
+
+        const tonearmRest = new THREE.Group();
+        tonearmRest.position.set(0.24, 0.08, 0.14);
+        turntable.add(tonearmRest);
+        addMesh(new THREE.CylinderGeometry(0.008, 0.010, 0.052, 12), std(0x3f3f46, 0.4, 0.6), [0, 0.026, 0], tonearmRest);
+        addMesh(new THREE.BoxGeometry(0.024, 0.010, 0.016), std(0x18181b, 0.5, 0.3), [0, 0.054, 0], tonearmRest);
+
+        let vinylSpinSpeed = 0;
+        let tonearmAngle = -0.03;
+        let tonearmCueLift = 1.0;
+        let vinylPlacementProg = 1.0;
+        let isTurntablePlayingPrev = false;
 
         // Plant next to window
         const plant = new THREE.Group();
@@ -4861,20 +5841,70 @@
         arcade.add(arcadeScreenLight);
 
         /* ---------------------------------------------------------
-           BEANBAG + SLEEPING CAT & INTERACTIVE 3D ROAMING MASCOT
+           CORNER LUXURY DARK CAT BED & INTERACTIVE 3D ROAMING MASCOT
         --------------------------------------------------------- */
         const lounge = new THREE.Group();
-        lounge.position.set(-4.3, 0, 2.4);
+        lounge.position.set(-4.85, 0, 2.25);
         scene.add(lounge);
-        const beanbag = addMesh(new THREE.SphereGeometry(0.9, 28, 20), std(0xf9a8d4, 0.92), [0, 0.44, 0], lounge, { station: 'cat' });
-        beanbag.scale.set(1, 0.55, 1);
-        beanbag.userData.isCat = true;
+
+        // Circular dark velvet accent rug under bed with cyber-accent rim
+        addMesh(new THREE.CylinderGeometry(1.05, 1.05, 0.015, 36), std(0x06070a, 0.60, 0.08), [0, 0.008, 0], lounge, { cast: false });
+        addMesh(new THREE.TorusGeometry(1.04, 0.016, 10, 36), std(0x38bdf8, 0.35, 0.5), [0, 0.018, 0], lounge, { rot: [Math.PI / 2, 0, 0], cast: false });
+
+        // Raised donut bolster ring in deep obsidian noir velvet
+        const bedOuterMat = std(0x0c0e14, 0.52, 0.14);
+        const bedOuterRim = addMesh(new THREE.TorusGeometry(0.72, 0.22, 16, 36), bedOuterMat, [0, 0.22, 0], lounge, {
+            rot: [Math.PI / 2, 0, 0],
+            station: 'cat'
+        });
+        bedOuterRim.userData.isCat = true;
+        bedOuterRim.userData.isCatBed = true;
+
+        // Beveled deep charcoal bottom casing
+        addMesh(new THREE.CylinderGeometry(0.88, 0.92, 0.22, 32), std(0x080a0e, 0.52, 0.14), [0, 0.11, 0], lounge, { station: 'cat' });
+
+        // Cognac saddle leather badge with gold embossed paw
+        const bedTagMat = std(0x854d0e, 0.45, 0.4);
+        addMesh(new THREE.BoxGeometry(0.24, 0.08, 0.016), bedTagMat, [0, 0.22, 0.88], lounge, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.014, 8, 8), basic({ color: 0xfbbf24 }), [0, 0.22, 0.89], lounge, { cast: false });
+
+        // Inner memory-foam sunken cushion with squish & bounce elastic deformation
+        const catBedCushion = new THREE.Group();
+        catBedCushion.position.set(0, 0.18, 0);
+        lounge.add(catBedCushion);
+
+        const bedCushionMat = std(0x11131a, 0.58, 0.10);
+        const bedCushionMesh = addMesh(new THREE.CylinderGeometry(0.68, 0.65, 0.24, 28), bedCushionMat, [0, 0.12, 0], catBedCushion, { station: 'cat' });
+        bedCushionMesh.userData.isCat = true;
+        bedCushionMesh.userData.isCatBed = true;
+
+        const beanbag = bedCushionMesh; // Alias for raycaster compatibility
+
+        // Bed Squish Physics State
+        let bedSquishCompression = 0.22;
+        let bedSquishTarget = 0.22;
+        let bedSquishSpring = 0.0;
+        let bedSquishVel = 0.0;
+
+        function triggerBedSquish(isJumpOn) {
+            playBedSquishSound(isJumpOn);
+            if (isJumpOn) {
+                bedSquishTarget = 0.26;
+                bedSquishVel = -2.6;
+            } else {
+                bedSquishTarget = 0.0;
+                bedSquishVel = 3.0;
+            }
+            if (typeof spawnCatHearts === 'function') {
+                spawnCatHearts(catRoot.position);
+            }
+        }
 
         /* ---------------------------------------------------------
            KOTETSU CAT MASCOT (ARTICULATED 3D CHARACTER)
         --------------------------------------------------------- */
         const catRoot = new THREE.Group();
-        catRoot.position.set(-4.25, 0.86, 2.45);
+        catRoot.position.set(-4.85, 0.80, 2.25);
         catRoot.rotation.y = 0.25;
         scene.add(catRoot);
         const cat = catRoot; // Alias for compatibility with all existing references
@@ -5046,6 +6076,116 @@
         toyLight.position.set(0, 0.06, 0);
         catToy.add(toyLight);
 
+        /* ---------------------------------------------------------
+           KOTETSU'S PLAY AREA: PLUSH CYBER-MOUSE & COZY YARN BALL
+        --------------------------------------------------------- */
+        const catPlayArea = new THREE.Group();
+        catPlayArea.position.set(-4.15, 0.04, 1.65);
+        scene.add(catPlayArea);
+
+        // 1. Plush Toy Mouse (Ratón de felpa con orejas, bigotes y colita con cascabel)
+        const toyMouseGroup = new THREE.Group();
+        toyMouseGroup.position.set(0, 0, 0);
+        catPlayArea.add(toyMouseGroup);
+
+        const mousePlushMat = std(0x6366f1, 0.85, 0.08); // Plush indigo/lavender fur
+        const mouseBody = addMesh(new THREE.SphereGeometry(0.065, 14, 12), mousePlushMat, [0, 0.05, 0], toyMouseGroup, { station: 'cat' });
+        mouseBody.scale.set(1.45, 0.85, 0.95);
+        mouseBody.userData.isCat = true;
+        mouseBody.userData.isToyMouse = true;
+
+        // Pink Felt Ears
+        const mouseEarMat = basic({ color: 0xf472b6 });
+        addMesh(new THREE.CircleGeometry(0.024, 10), mouseEarMat, [0.04, 0.09, -0.04], toyMouseGroup, { rot: [0, -0.4, 0.3], cast: false });
+        addMesh(new THREE.CircleGeometry(0.024, 10), mouseEarMat, [0.04, 0.09, 0.04], toyMouseGroup, { rot: [0, 0.4, -0.3], cast: false });
+
+        // Pink Nose & Glowing cyan LED eyes
+        addMesh(new THREE.SphereGeometry(0.009, 8, 8), basic({ color: 0xf43f5e }), [0.095, 0.045, 0], toyMouseGroup, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.007, 8, 8), basic({ color: 0x38bdf8 }), [0.07, 0.065, -0.035], toyMouseGroup, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.007, 8, 8), basic({ color: 0x38bdf8 }), [0.07, 0.065, 0.035], toyMouseGroup, { cast: false });
+
+        // Long braided rope tail with gold bell
+        const mouseTailCurve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.08, 0.04, 0),
+            new THREE.Vector3(-0.16, 0.06, -0.05),
+            new THREE.Vector3(-0.24, 0.03, -0.02),
+            new THREE.Vector3(-0.30, 0.05, -0.07)
+        ]);
+        const mouseTailMesh = new THREE.Mesh(new THREE.TubeGeometry(mouseTailCurve, 16, 0.006, 6, false), std(0xf472b6, 0.8, 0.1));
+        toyMouseGroup.add(mouseTailMesh);
+        addMesh(new THREE.SphereGeometry(0.015, 8, 8), basic({ color: 0xfbbf24 }), [-0.30, 0.05, -0.07], toyMouseGroup, { cast: false });
+
+        // 2. Cozy Wool Yarn Ball (Pelota de Lana de Estambre Texturada)
+        const yarnBallGroup = new THREE.Group();
+        yarnBallGroup.position.set(0.35, 0.06, -0.15);
+        catPlayArea.add(yarnBallGroup);
+
+        const yarnMat = std(0x06b6d4, 0.90, 0.05); // Cyan wool yarn
+        const yarnBallMesh = addMesh(new THREE.SphereGeometry(0.065, 16, 14), yarnMat, [0, 0, 0], yarnBallGroup, { station: 'cat' });
+        yarnBallMesh.userData.isCat = true;
+        yarnBallMesh.userData.isYarnBall = true;
+        addMesh(new THREE.TorusGeometry(0.066, 0.008, 8, 20), std(0x0891b2, 0.85, 0.05), [0, 0, 0], yarnBallGroup, { rot: [0.6, 0.4, 0], cast: false });
+        addMesh(new THREE.TorusGeometry(0.066, 0.008, 8, 20), std(0x22d3ee, 0.85, 0.05), [0, 0, 0], yarnBallGroup, { rot: [-0.8, 0.9, 0.5], cast: false });
+
+        /* ---------------------------------------------------------
+           KOTETSU'S GOURMET BISTRO: WATER FOUNTAIN & FOOD STATION
+        --------------------------------------------------------- */
+        const catFoodStation = new THREE.Group();
+        catFoodStation.position.set(-3.70, 0, 3.25);
+        catFoodStation.rotation.y = -0.35;
+        scene.add(catFoodStation);
+
+        // 1. Walnut wood elevated feeder tray with beveled stand
+        const trayMat = std(0x2c1b12, 0.65, 0.12);
+        addMesh(new THREE.BoxGeometry(0.78, 0.09, 0.42), trayMat, [0, 0.045, 0], catFoodStation, { station: 'cat' });
+        const trayBrassMat = std(0xd4a24c, 0.3, 0.85);
+        [[-0.34, -0.16], [0.34, -0.16], [-0.34, 0.16], [0.34, 0.16]].forEach(([fx, fz]) => {
+            addMesh(new THREE.CylinderGeometry(0.016, 0.020, 0.024, 12), trayBrassMat, [fx, -0.01, fz], catFoodStation);
+        });
+        // Brass nameplate "🍽️ KOTETSU BISTRO"
+        addMesh(new THREE.BoxGeometry(0.28, 0.038, 0.008), trayBrassMat, [0, 0.055, 0.215], catFoodStation, { cast: false });
+
+        // 2. Bowl 1: WATER FOUNTAIN (Bebedero de Agua Filtrada con ondas animadas)
+        const bowlMat = std(0xf8fafc, 0.25, 0.4);
+        const waterBowlGroup = new THREE.Group();
+        waterBowlGroup.position.set(-0.20, 0.09, 0);
+        catFoodStation.add(waterBowlGroup);
+
+        addMesh(new THREE.CylinderGeometry(0.14, 0.11, 0.08, 24), bowlMat, [0, 0.04, 0], waterBowlGroup, { station: 'cat' });
+        addMesh(new THREE.TorusGeometry(0.138, 0.014, 10, 24), bowlMat, [0, 0.08, 0], waterBowlGroup, { rot: [Math.PI / 2, 0, 0], cast: false });
+
+        const waterMat = std(0x38bdf8, 0.15, 0.90, { transparent: true, opacity: 0.85 });
+        const waterSurface = addMesh(new THREE.CircleGeometry(0.13, 24), waterMat, [0, 0.072, 0], waterBowlGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
+        const waterRipples = addMesh(new THREE.RingGeometry(0.015, 0.035, 20), basic({ color: 0xbae6fd, transparent: true, opacity: 0.75 }), [0, 0.074, 0], waterBowlGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
+
+        addMesh(new THREE.CylinderGeometry(0.012, 0.016, 0.032, 12), trayBrassMat, [0, 0.078, 0], waterBowlGroup, { cast: false });
+        const waterLed = new THREE.PointLight(0x38bdf8, 0.65, 1.4);
+        waterLed.position.set(0, 0.10, 0);
+        waterBowlGroup.add(waterLed);
+
+        // 3. Bowl 2: FOOD BOWL (Comedero con Croquetas Gourmet)
+        const foodBowlGroup = new THREE.Group();
+        foodBowlGroup.position.set(0.20, 0.09, 0);
+        catFoodStation.add(foodBowlGroup);
+
+        addMesh(new THREE.CylinderGeometry(0.14, 0.11, 0.08, 24), bowlMat, [0, 0.04, 0], foodBowlGroup, { station: 'cat' });
+        addMesh(new THREE.TorusGeometry(0.138, 0.014, 10, 24), bowlMat, [0, 0.08, 0], foodBowlGroup, { rot: [Math.PI / 2, 0, 0], cast: false });
+
+        const kibbleSalmonMat = std(0xf472b6, 0.8, 0.1);
+        const kibbleTunaMat = std(0x854d0e, 0.85, 0.08);
+        addMesh(new THREE.CylinderGeometry(0.125, 0.08, 0.045, 18), kibbleTunaMat, [0, 0.065, 0], foodBowlGroup);
+        for (let k = 0; k < 14; k++) {
+            const ka = (k / 14) * Math.PI * 2 + (k % 3) * 0.4;
+            const kr = 0.03 + (k % 4) * 0.02;
+            const kx = Math.cos(ka) * kr;
+            const kz = Math.sin(ka) * kr;
+            const kMat = (k % 2 === 0) ? kibbleSalmonMat : kibbleTunaMat;
+            addMesh(new THREE.BoxGeometry(0.024, 0.020, 0.028), kMat, [kx, 0.085 + (k % 3) * 0.008, kz], foodBowlGroup, {
+                rot: [0.2, ka, 0.1]
+            });
+        }
+        addMesh(new THREE.ConeGeometry(0.018, 0.045, 8), std(0xf59e0b, 0.5, 0.5), [0, 0.105, 0], foodBowlGroup, { rot: [0, 0, Math.PI / 2], cast: false });
+
         // Hearts & sparkles particle system
         const CAT_PART_COUNT = 24;
         const catPartPos = new Float32Array(CAT_PART_COUNT * 3);
@@ -5086,30 +6226,42 @@
         }
 
         /* ---------------------------------------------------------
-           KOTETSU WAYPOINT MAP, GRAPH & PATHFINDING
+           KOTETSU WAYPOINT MAP, GRAPH & PATHFINDING (ROAMING & FURNITURE)
         --------------------------------------------------------- */
         const KOTETSU_WAYPOINTS = {
-            'beanbag': { id: 'beanbag', x: -4.25, y: 0.86, z: 2.45, isBed: true, name: 'Puf de descanso', action: 'sleep' },
-            'lounge_rug': { id: 'lounge_rug', x: -3.5, y: 0.16, z: 2.2, name: 'Zona Lounge', action: 'stretch' },
-            'whiteboard': { id: 'whiteboard', x: -4.3, y: 0.16, z: 0.9, name: 'Pizarra de Certificaciones', action: 'sniff' },
-            'arcade': { id: 'arcade', x: -4.3, y: 0.16, z: -3.0, name: 'Edu Tetris Arcade', action: 'watch_arcade' },
-            'window': { id: 'window', x: 0.4, y: 0.16, z: -3.2, name: 'Ventanal Panorámico', action: 'sunbathe' },
-            'dj': { id: 'dj', x: 2.8, y: 0.16, z: -3.2, name: 'Estación de Música IA', action: 'listen_music' },
-            'desk_front': { id: 'desk_front', x: -0.3, y: 0.16, z: 0.95, name: 'Frente al Escritorio', action: 'groom' },
+            'beanbag': { id: 'beanbag', x: -4.85, y: 0.44, z: 2.25, isBed: true, name: 'Cama Nido Escandinava', action: 'sleep' },
+            'lounge_rug': { id: 'lounge_rug', x: -3.85, y: 0.16, z: 2.15, name: 'Zona Lounge', action: 'stretch' },
+            'food_station': { id: 'food_station', x: -3.45, y: 0.16, z: 3.05, name: 'Gourmet Bistro (Agua & Comida)', action: 'nourish' },
+            'toy_mouse': { id: 'toy_mouse', x: -4.10, y: 0.16, z: 1.55, name: 'Rincón de Juguetes', action: 'play_mouse' },
+            'whiteboard': { id: 'whiteboard', x: -4.30, y: 0.16, z: 0.90, name: 'Pizarra de Certificaciones', action: 'sniff' },
+            'arcade': { id: 'arcade', x: -4.30, y: 0.16, z: -3.00, name: 'Edu Tetris Arcade', action: 'watch_arcade' },
+            'window': { id: 'window', x: 0.40, y: 0.16, z: -3.20, name: 'Ventanal Panorámico', action: 'sunbathe' },
+            'window_ledge': { id: 'window_ledge', x: 0.40, y: 0.91, z: -4.25, isFurniture: true, name: 'Alféizar del Ventanal', action: 'watch_birds' },
+            'dj': { id: 'dj', x: 2.80, y: 0.16, z: -3.20, name: 'Estación de Música IA', action: 'listen_music' },
+            'credenza_front': { id: 'credenza_front', x: 1.75, y: 0.16, z: -3.65, name: 'Frente al Mapamundi', action: 'ponder_globe' },
+            'credenza_surface': { id: 'credenza_surface', x: 2.25, y: 0.88, z: -4.40, isFurniture: true, name: 'Sobre la Credenza del Mapamundi', action: 'perch_credenza' },
+            'desk_front': { id: 'desk_front', x: -0.30, y: 0.16, z: 0.95, name: 'Frente al Escritorio', action: 'groom' },
+            'desk_surface': { id: 'desk_surface', x: -0.05, y: 1.24, z: 0.28, isFurniture: true, name: 'Sobre el Escritorio de Eduardo', action: 'loaf_desk' },
             'desk_robot': { id: 'desk_robot', x: 0.65, y: 0.16, z: 0.75, name: 'Junto a EduBot', action: 'greet_robot' },
-            'center': { id: 'center', x: -1.2, y: 0.16, z: 0.2, name: 'Alfombra Central', action: 'play_ball' }
+            'center': { id: 'center', x: -1.20, y: 0.16, z: 0.20, name: 'Alfombra Central', action: 'play_ball' }
         };
 
         const WAYPOINT_GRAPH = {
             'beanbag': ['lounge_rug'],
-            'lounge_rug': ['beanbag', 'whiteboard', 'center'],
-            'whiteboard': ['lounge_rug', 'arcade', 'center'],
-            'arcade': ['whiteboard', 'window'],
-            'window': ['arcade', 'dj', 'center'],
-            'dj': ['window', 'desk_robot', 'center'],
-            'desk_robot': ['dj', 'desk_front', 'center'],
-            'desk_front': ['desk_robot', 'center', 'lounge_rug'],
-            'center': ['lounge_rug', 'whiteboard', 'window', 'dj', 'desk_robot', 'desk_front']
+            'lounge_rug': ['beanbag', 'food_station', 'toy_mouse', 'whiteboard', 'center'],
+            'food_station': ['lounge_rug', 'toy_mouse', 'center'],
+            'toy_mouse': ['lounge_rug', 'food_station', 'whiteboard', 'center'],
+            'whiteboard': ['lounge_rug', 'toy_mouse', 'arcade', 'center'],
+            'arcade': ['whiteboard', 'window', 'window_ledge'],
+            'window': ['arcade', 'window_ledge', 'credenza_front', 'dj', 'center'],
+            'window_ledge': ['window'],
+            'dj': ['window', 'credenza_front', 'desk_robot', 'center'],
+            'credenza_front': ['window', 'dj', 'credenza_surface', 'center'],
+            'credenza_surface': ['credenza_front'],
+            'desk_robot': ['dj', 'credenza_front', 'desk_front', 'center'],
+            'desk_front': ['desk_robot', 'desk_surface', 'center', 'lounge_rug'],
+            'desk_surface': ['desk_front'],
+            'center': ['lounge_rug', 'food_station', 'toy_mouse', 'whiteboard', 'window', 'dj', 'credenza_front', 'desk_robot', 'desk_front']
         };
 
         function findCatPath(startId, goalId) {
@@ -5137,7 +6289,7 @@
             let bestId = 'center';
             let bestDist = 999999;
             for (const [id, wp] of Object.entries(KOTETSU_WAYPOINTS)) {
-                if (id === 'beanbag') continue;
+                if (id === 'beanbag' || wp.isFurniture) continue;
                 const dist = Math.hypot(wp.x - px, wp.z - pz);
                 if (dist < bestDist) {
                     bestDist = dist;
@@ -5157,7 +6309,7 @@
         /* ---------------------------------------------------------
            KOTETSU STATE MACHINE & AUTONOMOUS ROAMING
         --------------------------------------------------------- */
-        let catState = 'sleeping'; // 'sleeping', 'waking', 'jumping_down', 'walking', 'running_zoomies', 'hunting_wiggle', 'pouncing', 'investigating', 'grooming', 'jumping_up', 'petted'
+        let catState = 'sleeping'; // 'sleeping', 'waking', 'jumping_down', 'walking', 'running_zoomies', 'hunting_wiggle', 'pouncing', 'investigating', 'grooming', 'jumping_up', 'drinking', 'eating', 'dancing', 'perch_furniture'
         let currentWaypointId = 'beanbag';
         let pathQueue = [];
         let stateStartTime = performance.now();
@@ -5170,6 +6322,8 @@
         let isCatVisitingDesk = false;
         let lastAutoActionTime = performance.now();
         let nextActivityAfterLanding = null;
+        let lastLickSoundTime = 0;
+        let lastCrunchSoundTime = 0;
 
         const toyPos = new THREE.Vector3(-1.8, 0.08, 0.8);
         const toyVel = new THREE.Vector2(0, 0);
@@ -5179,7 +6333,7 @@
             stateStartTime = performance.now();
             stateDuration = 2.2;
             catEyeMat.color.setHex(0x10b981);
-            playCatMeow();
+            playCatMeow('chirp');
         }
 
         function startJumpDown(afterLanding = null) {
@@ -5188,17 +6342,27 @@
             stateStartTime = performance.now();
             stateDuration = 0.75;
             jumpStartPos.copy(catRoot.position);
-            jumpEndPos.set(-3.5, 0.16, 2.2);
+            jumpEndPos.set(-3.85, 0.16, 2.15); // lounge_rug
             catRoot.rotation.y = -Math.atan2(jumpEndPos.z - jumpStartPos.z, jumpEndPos.x - jumpStartPos.x);
+            triggerBedSquish(false); // Elastic rebound of bed cushion
         }
 
-        function startJumpUp() {
+        function startJumpUp(goalWpId = 'beanbag') {
             catState = 'jumping_up';
             stateStartTime = performance.now();
             stateDuration = 0.85;
             jumpStartPos.copy(catRoot.position);
-            jumpEndPos.set(-4.25, 0.86, 2.45);
+            const targetWp = KOTETSU_WAYPOINTS[goalWpId] || KOTETSU_WAYPOINTS['beanbag'];
+            jumpEndPos.set(targetWp.x, targetWp.y, targetWp.z);
+            currentWaypointId = goalWpId;
             catRoot.rotation.y = -Math.atan2(jumpEndPos.z - jumpStartPos.z, jumpEndPos.x - jumpStartPos.x);
+            if (goalWpId === 'beanbag') {
+                triggerBedSquish(true);
+            }
+            if (goalWpId === 'desk_surface') {
+                isCatVisitingDesk = true;
+                playCatMeow('happy');
+            }
         }
 
         function startWalkTo(goalId, mode = 'walking') {
@@ -5206,6 +6370,35 @@
                 startJumpDown(goalId);
                 return;
             }
+            // If already on furniture, jump down to floor base first
+            if (currentWaypointId === 'desk_surface' && goalId !== 'desk_surface') {
+                jumpStartPos.copy(catRoot.position);
+                jumpEndPos.set(-0.30, 0.16, 0.95);
+                catState = 'jumping_down';
+                nextActivityAfterLanding = goalId;
+                stateStartTime = performance.now();
+                stateDuration = 0.70;
+                return;
+            }
+            if (currentWaypointId === 'credenza_surface' && goalId !== 'credenza_surface') {
+                jumpStartPos.copy(catRoot.position);
+                jumpEndPos.set(3.10, 0.16, -1.35);
+                catState = 'jumping_down';
+                nextActivityAfterLanding = goalId;
+                stateStartTime = performance.now();
+                stateDuration = 0.70;
+                return;
+            }
+            if (currentWaypointId === 'window_ledge' && goalId !== 'window_ledge') {
+                jumpStartPos.copy(catRoot.position);
+                jumpEndPos.set(0.40, 0.16, -3.20);
+                catState = 'jumping_down';
+                nextActivityAfterLanding = goalId;
+                stateStartTime = performance.now();
+                stateDuration = 0.70;
+                return;
+            }
+
             const startId = currentWaypointId === 'beanbag' ? 'lounge_rug' : currentWaypointId;
             pathQueue = findCatPath(startId, goalId);
             catState = mode;
@@ -5214,9 +6407,10 @@
 
         function startCatPlayActivity() {
             pounceCount = 0;
-            // Kick ball slightly into room
-            toyVel.x = (Math.random() - 0.5) * 3.0;
-            toyVel.y = (Math.random() - 0.5) * 3.0;
+            // Kick toy into room
+            toyVel.x = (Math.random() - 0.5) * 3.2;
+            toyVel.y = (Math.random() - 0.5) * 3.2;
+            playToyMouseSqueak();
             playCatPlayChirp();
 
             if (currentWaypointId === 'beanbag') {
@@ -5228,7 +6422,12 @@
 
         function sendCatToDesk() {
             isCatVisitingDesk = false;
-            startWalkTo('desk_robot', 'walking');
+            startWalkTo('desk_surface', 'walking');
+        }
+
+        function sendCatToFood() {
+            isCatVisitingDesk = false;
+            startWalkTo('food_station', 'walking');
         }
 
         function sendCatToSleep() {
@@ -5238,6 +6437,15 @@
                 return;
             }
             startWalkTo('lounge_rug', 'walking');
+        }
+
+        function startCatDance() {
+            catState = 'dancing';
+            stateStartTime = performance.now();
+            playCatMeow('chirp');
+            if (window.eduSpotifyPlayer) {
+                window.eduSpotifyPlayer.play();
+            }
         }
 
         function startHuntingWiggle() {
@@ -5643,20 +6851,1034 @@
         scene.add(sparklesGroup);
 
         /* ---------------------------------------------------------
+           MUEBLE DE LUJO JUNTO AL VENTANAL: CREDENZA NÓRDICA EN NOGAL SMOKED,
+           MÁRMOL CALACATTA & LATÓN CEPILLADO CON MAPAMUNDI GIRATORIO HD
+        --------------------------------------------------------- */
+        const globeCredenzaGroup = new THREE.Group();
+        globeCredenzaGroup.position.set(1.75, 0, -4.42);
+        scene.add(globeCredenzaGroup);
+
+        // Textura procedural de Madera de Nogal Smoked de Alta Definición
+        const walnutTex = canvasTexture(1024, 512, (ctx, w, h) => {
+            const grad = ctx.createLinearGradient(0, 0, w, 0);
+            grad.addColorStop(0, '#26160e');
+            grad.addColorStop(0.3, '#351f15');
+            grad.addColorStop(0.65, '#2c1910');
+            grad.addColorStop(1, '#23140c');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+            const rand = seededRandom(108);
+            for (let y = 0; y < h; y += 2) {
+                const alpha = 0.03 + rand() * 0.05;
+                ctx.fillStyle = rand() > 0.5 ? `rgba(255,255,255,${alpha})` : `rgba(0,0,0,${alpha * 1.6})`;
+                const wave = Math.sin(y * 0.04) * 3 + Math.sin(y * 0.12) * 1.5;
+                ctx.fillRect(0, y + wave, w, 1.8);
+            }
+        });
+
+        // Textura procedural de Mármol Calacatta Oro para la cubierta superior
+        const marbleTex = canvasTexture(1024, 512, (ctx, w, h) => {
+            ctx.fillStyle = '#f7f4ee';
+            ctx.fillRect(0, 0, w, h);
+            // Sutiles vetas minerales ahumadas y doradas
+            const rand = seededRandom(240);
+            const drawVein = (color, width, alpha) => {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = width;
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                let x = rand() * w * 0.4;
+                let y = 0;
+                ctx.moveTo(x, y);
+                while (y < h) {
+                    x += (rand() - 0.35) * 45;
+                    y += 20 + rand() * 30;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            };
+            for (let i = 0; i < 6; i++) {
+                drawVein('#574b42', 2.5 + rand() * 2, 0.15 + rand() * 0.15);
+                drawVein('#b58d5a', 1.5 + rand() * 1.5, 0.18 + rand() * 0.15);
+            }
+            ctx.globalAlpha = 1.0;
+        });
+
+        const walnutMat = std(0x2d1a11, 0.55, 0.15, { map: walnutTex });
+        const marbleMat = std(0xfaf7f2, 0.28, 0.08, { map: marbleTex });
+        const credenzaBrassMat = std(0xd4a24c, 0.25, 0.90);
+        const credenzaDarkMat = std(0x1a120c, 0.65, 0.10);
+
+        // 1. Cuerpo principal del mueble (Nogal oscuro con bisel)
+        const credW = 1.72;
+        const credH = 0.60;
+        const credD = 0.50;
+        addMesh(new THREE.BoxGeometry(credW, credH, credD), walnutMat, [0, 0.42, 0], globeCredenzaGroup, { station: 'globe' });
+
+        // 2. Cubierta superior de Mármol Calacatta con bisel y marco perimetral de latón
+        addMesh(new THREE.BoxGeometry(credW + 0.03, 0.024, credD + 0.03), marbleMat, [0, 0.732, 0], globeCredenzaGroup, { station: 'globe' });
+        // Moldura perimetral de latón cepillado bajo el mármol
+        addMesh(new THREE.BoxGeometry(credW + 0.036, 0.008, credD + 0.036), credenzaBrassMat, [0, 0.716, 0], globeCredenzaGroup, { cast: false });
+
+        // 3. Fachada frontal detallada en 3 secciones arquitectónicas (+Z hacia la habitación)
+        // Sección Izquierda: 3 Cajones horizontales ejecutivos con tiradores de barra de latón
+        const drawerX = -0.56;
+        for (let d = 0; d < 3; d++) {
+            const dy = 0.21 + d * 0.185;
+            // Ranura / junta de sombra perimetral del cajón
+            addMesh(new THREE.BoxGeometry(0.50, 0.165, 0.012), walnutMat, [drawerX, dy, credD / 2 + 0.006], globeCredenzaGroup);
+            // Tirador horizontal en barra de latón cepillado
+            addMesh(new THREE.BoxGeometry(0.18, 0.012, 0.018), credenzaBrassMat, [drawerX, dy, credD / 2 + 0.020], globeCredenzaGroup, { cast: false });
+        }
+
+        // Sección Central: Puertas correderas con palillaje de listones verticales (fluted tambour)
+        for (let s = -0.25; s <= 0.25; s += 0.032) {
+            addMesh(new THREE.BoxGeometry(0.018, 0.54, 0.014), credenzaDarkMat, [s, 0.42, credD / 2 + 0.007], globeCredenzaGroup);
+        }
+        // Tiradores verticales gemelos de latón en el centro
+        addMesh(new THREE.CylinderGeometry(0.006, 0.006, 0.16, 12), credenzaBrassMat, [-0.035, 0.42, credD / 2 + 0.022], globeCredenzaGroup);
+        addMesh(new THREE.CylinderGeometry(0.006, 0.006, 0.16, 12), credenzaBrassMat, [0.035, 0.42, credD / 2 + 0.022], globeCredenzaGroup);
+
+        // Sección Derecha: Puerta lisa de nogal con tirador vertical y moldura
+        const doorX = 0.56;
+        addMesh(new THREE.BoxGeometry(0.50, 0.54, 0.012), walnutMat, [doorX, 0.42, credD / 2 + 0.006], globeCredenzaGroup);
+        addMesh(new THREE.CylinderGeometry(0.007, 0.007, 0.18, 12), credenzaBrassMat, [doorX - 0.20, 0.42, credD / 2 + 0.022], globeCredenzaGroup);
+
+        // 4. Chasis arquitectónico inferior con largueros de latón y 4 patas cónicas mid-century
+        // Largueros de conexión en latón (underframe stretcher chassis)
+        addMesh(new THREE.BoxGeometry(credW - 0.20, 0.022, 0.022), credenzaBrassMat, [0, 0.11, 0.16], globeCredenzaGroup, { cast: false });
+        addMesh(new THREE.BoxGeometry(credW - 0.20, 0.022, 0.022), credenzaBrassMat, [0, 0.11, -0.16], globeCredenzaGroup, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.022, 0.022, 0.32), credenzaBrassMat, [-0.70, 0.11, 0], globeCredenzaGroup, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.022, 0.022, 0.32), credenzaBrassMat, [0.70, 0.11, 0], globeCredenzaGroup, { cast: false });
+
+        // 4 Patas cónicas anguladas mid-century con regatones antideslizantes
+        [[-0.72, -0.17], [0.72, -0.17], [-0.72, 0.17], [0.72, 0.17]].forEach(([lx, lz]) => {
+            const leg = addMesh(new THREE.CylinderGeometry(0.012, 0.024, 0.14, 14), credenzaBrassMat, [lx, 0.065, lz], globeCredenzaGroup);
+            leg.rotation.z = lx > 0 ? 0.10 : -0.10;
+            leg.rotation.x = lz > 0 ? -0.10 : 0.10;
+            addMesh(new THREE.CylinderGeometry(0.016, 0.016, 0.012, 12), std(0x121214, 0.7, 0.2), [lx + (lx > 0 ? 0.01 : -0.01), 0.006, lz + (lz > 0 ? -0.01 : 0.01)], globeCredenzaGroup);
+        });
+
+        // 5. Luz cálida arquitectónica bajo el mueble (iluminación suave sobre el suelo de madera)
+        const credenzaUnderglow = new THREE.PointLight(0xffb74d, 0.45, 2.2, 1.8);
+        credenzaUnderglow.position.set(0, 0.08, 0);
+        globeCredenzaGroup.add(credenzaUnderglow);
+
+        // 6. Accesorios de lujo sobre la cubierta de mármol
+        // Lado Izquierdo: Lámpara de mesa nórdica Bauhaus en latón y esfera de vidrio opalino
+        const lampX = -0.58;
+        const lampZ = -0.02;
+        addMesh(new THREE.CylinderGeometry(0.075, 0.085, 0.018, 24), credenzaBrassMat, [lampX, 0.753, lampZ], globeCredenzaGroup, { station: 'globe' });
+        addMesh(new THREE.CylinderGeometry(0.008, 0.008, 0.28, 12), credenzaBrassMat, [lampX, 0.89, lampZ], globeCredenzaGroup, { rot: [0, 0, -0.08], cast: false });
+        const lampGlobe = addMesh(new THREE.SphereGeometry(0.065, 24, 24), std(0xffffff, 0.15, 0.05, { transparent: true, opacity: 0.92 }), [lampX + 0.02, 1.04, lampZ], globeCredenzaGroup, { cast: false });
+        const credenzaLampLight = new THREE.PointLight(0xfff3db, 0.55, 2.4, 2);
+        credenzaLampLight.position.set(lampX + 0.02, 1.04, lampZ);
+        globeCredenzaGroup.add(credenzaLampLight);
+
+        // Pila de libros ejecutivos de tapa dura (Architecture & Cloud Strategy)
+        const bookX = -0.32;
+        const bookZ = 0.05;
+        addMesh(new THREE.BoxGeometry(0.24, 0.030, 0.32), std(0x0f172a, 0.55, 0.15), [bookX, 0.760, bookZ], globeCredenzaGroup, { rot: [0, 0.12, 0] });
+        addMesh(new THREE.BoxGeometry(0.22, 0.026, 0.30), std(0x9a3412, 0.55, 0.15), [bookX + 0.01, 0.788, bookZ - 0.01], globeCredenzaGroup, { rot: [0, -0.05, 0] });
+        // Cinta marcapáginas dorada y lupa de latón vintage
+        addMesh(new THREE.BoxGeometry(0.025, 0.004, 0.14), credenzaBrassMat, [bookX + 0.08, 0.796, bookZ + 0.12], globeCredenzaGroup, { rot: [0, 0.2, 0], cast: false });
+        // Lupa vintage (aro de latón + lente + mango de madera torneada)
+        addMesh(new THREE.TorusGeometry(0.038, 0.005, 12, 24), credenzaBrassMat, [bookX - 0.02, 0.812, bookZ - 0.04], globeCredenzaGroup, { rot: [Math.PI / 2, 0, 0.3], cast: false });
+        addMesh(new THREE.CylinderGeometry(0.004, 0.006, 0.08, 8), std(0x351e0e, 0.6, 0.1), [bookX + 0.035, 0.808, bookZ - 0.085], globeCredenzaGroup, { rot: [0, 0.6, Math.PI / 2], cast: false });
+
+        // Lado Derecho: Maceta acanalada de cerámica con suculenta jade
+        const potX = 0.56;
+        const potZ = 0.06;
+        const ceramicMat = std(0xf1f5f9, 0.40, 0.08);
+        addMesh(new THREE.CylinderGeometry(0.085, 0.065, 0.11, 24), ceramicMat, [potX, 0.798, potZ], globeCredenzaGroup, { station: 'globe' });
+        // Tierra fértil y hojas de suculenta en roseta
+        addMesh(new THREE.CylinderGeometry(0.078, 0.078, 0.01, 16), std(0x271910, 0.85, 0.02), [potX, 0.850, potZ], globeCredenzaGroup, { cast: false });
+        const succulentMat = std(0x1e5a38, 0.60, 0.05);
+        for (let l = 0; l < 10; l++) {
+            const lAng = (l / 10) * Math.PI * 2;
+            const lx = potX + Math.cos(lAng) * 0.045;
+            const lz = potZ + Math.sin(lAng) * 0.045;
+            const leaf = addMesh(new THREE.SphereGeometry(0.035, 10, 8), succulentMat, [lx, 0.875, lz], globeCredenzaGroup, { cast: false });
+            leaf.scale.set(1.2, 0.5, 0.8);
+            leaf.rotation.y = -lAng;
+            leaf.rotation.x = 0.35;
+        }
+        addMesh(new THREE.SphereGeometry(0.035, 12, 10), std(0x2a754b, 0.55, 0.05), [potX, 0.895, potZ], globeCredenzaGroup, { cast: false });
+
+        // 7. MAPAMUNDI / GLOBO TERRÁQUEO GIRATORIO DE ALTA DEFINICIÓN (CENTRO DEL MUEBLE)
+        const globeStandGroup = new THREE.Group();
+        globeStandGroup.position.set(0, 0.745, 0);
+        globeCredenzaGroup.add(globeStandGroup);
+
+        // Base escalonada de latón macizo con molduras clásicas
+        addMesh(new THREE.CylinderGeometry(0.20, 0.23, 0.035, 36), credenzaBrassMat, [0, 0.018, 0], globeStandGroup, { station: 'globe', isGlobe: true });
+        addMesh(new THREE.CylinderGeometry(0.16, 0.19, 0.022, 28), credenzaBrassMat, [0, 0.045, 0], globeStandGroup, { station: 'globe', isGlobe: true });
+        addMesh(new THREE.CylinderGeometry(0.028, 0.042, 0.14, 20), credenzaBrassMat, [0, 0.125, 0], globeStandGroup, { station: 'globe', isGlobe: true });
+        addMesh(new THREE.SphereGeometry(0.042, 20, 20), credenzaBrassMat, [0, 0.195, 0], globeStandGroup, { station: 'globe', isGlobe: true });
+
+        // Semi-Meridiano de Latón Calibrado (Inclinación Axial Terrestre exacta de 23.44°)
+        const meridianGroup = new THREE.Group();
+        meridianGroup.position.set(0, 0.48, 0);
+        meridianGroup.rotation.z = -0.409;
+        globeStandGroup.add(meridianGroup);
+
+        addMesh(new THREE.TorusGeometry(0.34, 0.018, 16, 54, Math.PI + 0.18), credenzaBrassMat, [0, 0, 0], meridianGroup, {
+            rot: [0, 0, -Math.PI / 2 - 0.09],
+            station: 'globe',
+            isGlobe: true
+        });
+        // Cojinetes polares Norte y Sur con tuercas estriadas
+        addMesh(new THREE.CylinderGeometry(0.012, 0.012, 0.075, 14), credenzaBrassMat, [0, 0.35, 0], meridianGroup, { station: 'globe', isGlobe: true });
+        addMesh(new THREE.SphereGeometry(0.022, 14, 14), credenzaBrassMat, [0, 0.39, 0], meridianGroup, { station: 'globe', isGlobe: true });
+        addMesh(new THREE.CylinderGeometry(0.012, 0.012, 0.075, 14), credenzaBrassMat, [0, -0.35, 0], meridianGroup, { station: 'globe', isGlobe: true });
+        addMesh(new THREE.SphereGeometry(0.022, 14, 14), credenzaBrassMat, [0, -0.39, 0], meridianGroup, { station: 'globe', isGlobe: true });
+
+        // Esfera del Globo Terráqueo con rotación libre sobre el eje polar
+        const globeRotatorGroup = new THREE.Group();
+        meridianGroup.add(globeRotatorGroup);
+
+        // Textura Cartográfica Náutica HD (2048 x 1024)
+        const globeCanvasTex = canvasTexture(2048, 1024, (ctx, w, h) => {
+            // Océano Profundo con gradiente batimétrico
+            const oceanGrad = ctx.createLinearGradient(0, 0, 0, h);
+            oceanGrad.addColorStop(0, '#061326');
+            oceanGrad.addColorStop(0.2, '#0a1d3b');
+            oceanGrad.addColorStop(0.5, '#0e2a52');
+            oceanGrad.addColorStop(0.8, '#0a1d3b');
+            oceanGrad.addColorStop(1, '#061326');
+            ctx.fillStyle = oceanGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Rejilla náutica de coordenadas (Meridianos y Paralelos en oro sutil)
+            ctx.strokeStyle = 'rgba(212, 162, 76, 0.22)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < w; x += w / 24) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let y = 0; y < h; y += h / 12) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+
+            // Línea del Ecuador destacada en oro doble
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, h / 2);
+            ctx.lineTo(w, h / 2);
+            ctx.stroke();
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, h / 2 - 4);
+            ctx.lineTo(w, h / 2 - 4);
+            ctx.moveTo(0, h / 2 + 4);
+            ctx.lineTo(w, h / 2 + 4);
+            ctx.stroke();
+
+            // Trópicos de Cáncer y Capricornio punteados
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.55)';
+            ctx.lineWidth = 1.8;
+            ctx.setLineDash([8, 6]);
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.37);
+            ctx.lineTo(w, h * 0.37);
+            ctx.moveTo(0, h * 0.63);
+            ctx.lineTo(w, h * 0.63);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Círculos Polares
+            ctx.strokeStyle = 'rgba(186, 230, 253, 0.4)';
+            ctx.setLineDash([4, 6]);
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.14);
+            ctx.lineTo(w, h * 0.14);
+            ctx.moveTo(0, h * 0.86);
+            ctx.lineTo(w, h * 0.86);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Función para dibujar continentes con halos de plataforma costera turquesa
+            function drawContinent(points, isAntarctica = false) {
+                // Halo de plataforma continental costera
+                ctx.strokeStyle = 'rgba(14, 165, 233, 0.35)';
+                ctx.lineWidth = 12;
+                ctx.beginPath();
+                ctx.moveTo(points[0][0] * 2, points[0][1] * 2);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i][0] * 2, points[i][1] * 2);
+                }
+                ctx.closePath();
+                ctx.stroke();
+
+                // Relleno de tierra firme
+                ctx.fillStyle = isAntarctica ? '#e0f2fe' : '#1f4d38';
+                ctx.beginPath();
+                ctx.moveTo(points[0][0] * 2, points[0][1] * 2);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i][0] * 2, points[i][1] * 2);
+                }
+                ctx.closePath();
+                ctx.fill();
+
+                // Costas doradas
+                ctx.strokeStyle = isAntarctica ? '#7dd3fc' : '#d4a24c';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+
+            // América del Sur (con silueta estilizada y Patagonia bien definida)
+            drawContinent([
+                [285, 260], [330, 250], [375, 285], [370, 345], [350, 400],
+                [325, 450], [300, 480], [285, 475], [275, 430], [270, 360], [270, 290]
+            ]);
+            // América del Norte
+            drawContinent([
+                [160, 70], [250, 60], [315, 105], [330, 140], [285, 165],
+                [250, 235], [220, 240], [185, 210], [145, 145], [140, 95]
+            ]);
+            // Groenlandia
+            drawContinent([
+                [350, 45], [390, 40], [410, 75], [380, 95], [345, 80]
+            ]);
+            // Europa
+            drawContinent([
+                [470, 100], [535, 85], [575, 130], [540, 180], [475, 175], [455, 130]
+            ]);
+            // África
+            drawContinent([
+                [465, 195], [545, 195], [575, 265], [545, 375], [495, 385],
+                [470, 315], [435, 250], [445, 205]
+            ]);
+            // Asia
+            drawContinent([
+                [575, 75], [745, 70], [830, 135], [800, 245], [720, 255],
+                [675, 285], [615, 230], [565, 175]
+            ]);
+            // Oceanía / Australia
+            drawContinent([
+                [780, 340], [865, 330], [875, 395], [815, 425], [775, 380]
+            ]);
+            // Antártica
+            drawContinent([
+                [70, 475], [960, 475], [930, 508], [100, 508]
+            ], true);
+
+            // Rosa de los Vientos Náutica en el Pacífico Sur
+            const roseX = 420;
+            const roseY = 760;
+            ctx.save();
+            ctx.translate(roseX, roseY);
+            for (let r = 0; r < 8; r++) {
+                ctx.rotate(Math.PI / 4);
+                ctx.fillStyle = r % 2 === 0 ? '#f59e0b' : '#b45309';
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(-6, -18);
+                ctx.lineTo(0, -36);
+                ctx.lineTo(6, -18);
+                ctx.closePath();
+                ctx.fill();
+            }
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(0, 0, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#d4a24c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.restore();
+
+            // ---------------------------------------------------------
+            // CENTRO DE OPERACIONES GLOBAL & TELETRABAJO DEL JEFE EDUARDO
+            // ---------------------------------------------------------
+            // Ubicación 1: Chillán (HQ Remoto / Teletrabajo - Sur de Chile)
+            const chillanX = 568;
+            const chillanY = 760;
+            // Ubicación 2: Santiago (Sede Presencial / Clientes Corporativos)
+            const stgoX = 574;
+            const stgoY = 724;
+
+            // Nodos Internacionales de Proyectos
+            const projectNodes = [
+                { name: '🇵🇾 ANDE · CLOUD AWS & CGR', x: 648, y: 650, color: '#38bdf8' },
+                { name: '🇺🇾 MONTEVIDEO · SICA v3', x: 672, y: 726, color: '#a855f7' },
+                { name: '🇦🇷 BS AS · FALABELLA OSB', x: 648, y: 712, color: '#f59e0b' },
+                { name: '🇺🇸 BOSTON / MIT · IA GEN', x: 620, y: 250, color: '#ef4444' },
+                { name: '🇪🇸 ESPAÑA · INCIBE CIBER', x: 1005, y: 265, color: '#10b981' }
+            ];
+
+            // Función para dibujar arcos de telemetría y proyectos
+            function drawFlightArc(fromX, fromY, toX, toY, color = '#f59e0b', dash = [6, 6]) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2.0;
+                ctx.setLineDash(dash);
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                const midX = (fromX + toX) / 2 + (fromX < toX ? -35 : 35);
+                const midY = Math.min(fromY, toY) - 50;
+                ctx.quadraticCurveTo(midX, midY, toX, toY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Arcos de telemetría desde Chillán / Santiago a los proyectos internacionales
+            projectNodes.forEach(pn => {
+                drawFlightArc(stgoX, stgoY, pn.x, pn.y, 'rgba(56, 189, 248, 0.45)', [6, 6]);
+
+                // Halo de nodo internacional
+                ctx.fillStyle = pn.color;
+                ctx.beginPath();
+                ctx.arc(pn.x, pn.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Cartela náutica del proyecto
+                ctx.save();
+                ctx.fillStyle = 'rgba(6, 12, 24, 0.88)';
+                ctx.strokeStyle = pn.color;
+                ctx.lineWidth = 1.5;
+                const pW = 160;
+                const pH = 24;
+                if (ctx.roundRect) ctx.roundRect(pn.x + 8, pn.y - 12, pW, pH, 6);
+                else ctx.rect(pn.x + 8, pn.y - 12, pW, pH);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(pn.name, pn.x + 14, pn.y + 4);
+                ctx.restore();
+            });
+
+            // Arcos hacia Nube Global (Silicon Valley, New York, Frankfurt, Tokyo)
+            drawFlightArc(stgoX, stgoY, 400, 340, 'rgba(245, 158, 11, 0.35)', [8, 8]);
+            drawFlightArc(stgoX, stgoY, 560, 300, 'rgba(245, 158, 11, 0.35)', [8, 8]);
+            drawFlightArc(stgoX, stgoY, 1000, 260, 'rgba(245, 158, 11, 0.35)', [8, 8]);
+            drawFlightArc(stgoX, stgoY, 1560, 320, 'rgba(245, 158, 11, 0.35)', [8, 8]);
+
+            // Ruta de Movilidad y Teletrabajo Activo (Chillán <-> Santiago)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(chillanX, chillanY);
+            ctx.lineTo(stgoX, stgoY);
+            ctx.stroke();
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 1.8;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(chillanX, chillanY);
+            ctx.lineTo(stgoX, stgoY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // BEACON 1: CHILLÁN · HQ TELETRABAJO (SUR DE CHILE)
+            const chillanGrad = ctx.createRadialGradient(chillanX, chillanY, 2, chillanX, chillanY, 28);
+            chillanGrad.addColorStop(0, 'rgba(16, 185, 129, 1.0)');
+            chillanGrad.addColorStop(0.4, 'rgba(52, 211, 153, 0.75)');
+            chillanGrad.addColorStop(0.8, 'rgba(6, 182, 212, 0.35)');
+            chillanGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = chillanGrad;
+            ctx.beginPath();
+            ctx.arc(chillanX, chillanY, 28, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(chillanX, chillanY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // BEACON 2: SANTIAGO · PRESENCIAL & PARTNERS
+            const stgoGrad = ctx.createRadialGradient(stgoX, stgoY, 2, stgoX, stgoY, 26);
+            stgoGrad.addColorStop(0, 'rgba(245, 158, 11, 1.0)');
+            stgoGrad.addColorStop(0.4, 'rgba(56, 189, 248, 0.75)');
+            stgoGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = stgoGrad;
+            ctx.beginPath();
+            ctx.arc(stgoX, stgoY, 26, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(stgoX, stgoY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Cartela Principal de Chile: Eduardo Cayún M.
+            ctx.save();
+            ctx.fillStyle = 'rgba(6, 12, 24, 0.94)';
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2.5;
+            const bW = 310;
+            const bH = 50;
+            const bX = chillanX - bW / 2 - 20;
+            const bY = chillanY + 22;
+            if (ctx.roundRect) ctx.roundRect(bX, bY, bW, bH, 10);
+            else ctx.rect(bX, bY, bW, bH);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#fde047';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🇨🇱 CHILE · Eduardo Cayún M.', bX + bW / 2, bY + 22);
+
+            ctx.fillStyle = '#34d399';
+            ctx.font = 'bold 12px "JetBrains Mono", monospace';
+            ctx.fillText('🟢 Chillán (Teletrabajo) · Santiago (Presencial)', bX + bW / 2, bY + 40);
+            ctx.restore();
+        });
+
+        const globeMat = std(0xffffff, 0.32, 0.08, {
+            map: globeCanvasTex,
+            emissive: 0x38bdf8,
+            emissiveMap: globeCanvasTex,
+            emissiveIntensity: 0.45
+        });
+        const globeMesh = addMesh(new THREE.SphereGeometry(0.26, 64, 48), globeMat, [0, 0, 0], globeRotatorGroup, {
+            station: 'globe',
+            isGlobe: true
+        });
+        globeMesh.rotation.y = 2.45;
+
+        // Foco de iluminación rasante y exposición de galería para la credenza y mapamundi
+        const credenzaShowcaseLight = new THREE.PointLight(0xfff6eb, 1.35, 4.5, 1.5);
+        credenzaShowcaseLight.position.set(0, 1.35, 1.25);
+        globeCredenzaGroup.add(credenzaShowcaseLight);
+
+        // ---------------------------------------------------------
+        // 3D HOLOGRAPHIC PINS & BEACONS DIRECTLY ATTACHED TO GLOBEMESH
+        // ---------------------------------------------------------
+        const globePinsGroup = new THREE.Group();
+        globeMesh.add(globePinsGroup);
+
+        function canvasCoordToVec3(cx, cy, r = 0.262) {
+            const u = cx / 2048;
+            const v = cy / 1024;
+            const theta = v * Math.PI;
+            const phi = u * Math.PI * 2;
+            return new THREE.Vector3(
+                -r * Math.cos(phi) * Math.sin(theta),
+                r * Math.cos(theta),
+                r * Math.sin(phi) * Math.sin(theta)
+            );
+        }
+
+        // Materiales para marcadores 3D
+        const pinStemMat = std(0xd4a24c, 0.25, 0.85);
+        const emeraldPinMat = basic({ color: 0x10b981 });
+        const cyanPinMat = basic({ color: 0x38bdf8 });
+        const goldPinMat = basic({ color: 0xf59e0b });
+        const violetPinMat = basic({ color: 0xa855f7 });
+        const redPinMat = basic({ color: 0xef4444 });
+
+        // Función para colocar un pin 3D en la superficie del globo
+        function addGlobe3DPin(cx, cy, headMat, label = '') {
+            const posSurface = canvasCoordToVec3(cx, cy, 0.260);
+            const posHead = canvasCoordToVec3(cx, cy, 0.278);
+
+            const pinGroup = new THREE.Group();
+            pinGroup.position.copy(posSurface);
+            pinGroup.lookAt(posHead.clone().multiplyScalar(2));
+
+            // Vástago de latón hacia afuera
+            const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.003, 0.018, 8), pinStemMat);
+            stem.rotation.x = Math.PI / 2;
+            stem.position.z = 0.009;
+            pinGroup.add(stem);
+
+            // Cabeza esférica brillante
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.0075, 12, 12), headMat);
+            head.position.z = 0.018;
+            pinGroup.add(head);
+
+            globePinsGroup.add(pinGroup);
+            return { group: pinGroup, posSurface, posHead };
+        }
+
+        // Pin 3D Chillán (HQ Teletrabajo)
+        const chillanPin = addGlobe3DPin(568, 760, emeraldPinMat, 'Chillán');
+        // Anillo de pulso radar expansivo para Chillán
+        const chillanPulseTorus = new THREE.Mesh(
+            new THREE.TorusGeometry(0.016, 0.002, 8, 24),
+            basic({ color: 0x10b981, transparent: true, opacity: 0.85 })
+        );
+        chillanPulseTorus.position.copy(chillanPin.posSurface);
+        chillanPulseTorus.lookAt(chillanPin.posHead.clone().multiplyScalar(2));
+        globePinsGroup.add(chillanPulseTorus);
+
+        // Pin 3D Santiago (Presencial)
+        const stgoPin = addGlobe3DPin(574, 724, goldPinMat, 'Santiago');
+
+        // Trayectoria curva 3D de vuelo entre Chillán y Santiago
+        const chillanV = canvasCoordToVec3(568, 760, 0.261);
+        const stgoV = canvasCoordToVec3(574, 724, 0.261);
+        const midMobilityV = chillanV.clone().add(stgoV).multiplyScalar(0.5).normalize().multiplyScalar(0.266);
+        const mobilityCurve = new THREE.CatmullRomCurve3([chillanV, midMobilityV, stgoV]);
+        const mobilityGeo = new THREE.TubeGeometry(mobilityCurve, 12, 0.0018, 6, false);
+        const mobilityMesh = new THREE.Mesh(mobilityGeo, basic({ color: 0x00f0ff }));
+        globePinsGroup.add(mobilityMesh);
+
+        // Pines 3D Internacionales
+        addGlobe3DPin(648, 650, cyanPinMat, 'Asunción');
+        addGlobe3DPin(672, 726, violetPinMat, 'Montevideo');
+        addGlobe3DPin(648, 712, goldPinMat, 'Buenos Aires');
+        addGlobe3DPin(620, 250, redPinMat, 'Boston');
+        addGlobe3DPin(1005, 265, emeraldPinMat, 'Madrid');
+
+        // Arcos de conexión 3D Intercontinentales desde Chile
+        const intlNodesCoords = [
+            { cx: 648, cy: 650, color: 0x38bdf8 },
+            { cx: 672, cy: 726, color: 0xa855f7 },
+            { cx: 648, cy: 712, color: 0xf59e0b },
+            { cx: 620, cy: 250, color: 0xef4444 },
+            { cx: 1005, cy: 265, color: 0x10b981 }
+        ];
+        intlNodesCoords.forEach(dst => {
+            const dstV = canvasCoordToVec3(dst.cx, dst.cy, 0.261);
+            const midV = stgoV.clone().add(dstV).multiplyScalar(0.5).normalize().multiplyScalar(0.278);
+            const arcCurve = new THREE.CatmullRomCurve3([stgoV, midV, dstV]);
+            const arcGeo = new THREE.TubeGeometry(arcCurve, 20, 0.0012, 5, false);
+            const arcMesh = new THREE.Mesh(arcGeo, basic({ color: dst.color, transparent: true, opacity: 0.65 }));
+            globePinsGroup.add(arcMesh);
+        });
+
+        // ---------------------------------------------------------
+        // GLOBE INTERACTIVE SYSTEM & GLOBAL PROJECTS DATA
+        // ---------------------------------------------------------
+        const GLOBE_PROJECTS_DATA = [
+            {
+                id: 'chile',
+                flag: '🇨🇱',
+                flagCode: 'CL',
+                code3: 'CHL',
+                scope: 'HQ TELETRABAJO & ATENCIÓN PRESENCIAL',
+                title: 'Chillán (HQ Remoto) & Santiago (Presencial)',
+                city: 'Chillán (Ñuble) · Santiago (RM) · Valparaíso',
+                desc: 'El Jefe Eduardo opera mediante teletrabajo de alto rendimiento desde Chillán (sur de Chile), liderando arquitectura cloud y dirección tecnológica. Además, atiende presencialmente en Santiago para reuniones ejecutivas, comités de directorio y clientes como Falabella, BCI, BancoEstado, Contraloría y Ministerio de Hacienda.',
+                tags: ['Teletrabajo HQ (Chillán)', 'Presencial (Santiago)', 'Tierra Ayni', 'BCI', 'Falabella', 'BancoEstado', 'CGR', 'Gasvalpo'],
+                rotY: 2.45,
+                bubbleText: '¡El Jefe Eduardo está actualmente conectado desde Chillán (Sur de Chile) en modalidad de teletrabajo de alto rendimiento, y atiende presencialmente en Santiago para reuniones directivas y clientes corporativos! 🇨🇱💼⚡'
+            },
+            {
+                id: 'paraguay',
+                flag: '🇵🇾',
+                flagCode: 'PY',
+                code3: 'PRY',
+                scope: 'ENERGÍA, CLOUD AWS & GIS CORPORATIVO',
+                title: 'Administración Nacional de Electricidad (ANDE)',
+                city: 'Asunción, Paraguay',
+                desc: 'Consultoría y modernización tecnológica: Arquitectura Cloud en Amazon Web Services (AWS), diseño de sistemas corporativos GIS para la red de distribución eléctrica nacional y soporte técnico de auditoría CGR.',
+                tags: ['ANDE Paraguay', 'Cloud AWS', 'GIS Corporativo', 'CGR Paraguay', 'Infraestructura Crítica'],
+                rotY: 2.20,
+                bubbleText: '¡Proyecto internacional en Asunción, Paraguay! Modernización Cloud AWS y plataforma GIS territorial para la Administración Nacional de Electricidad (ANDE). 🇵🇾⚡☁️'
+            },
+            {
+                id: 'uruguay',
+                flag: '🇺🇾',
+                flagCode: 'UY',
+                code3: 'URY',
+                scope: 'AUDITORÍA GUBERNAMENTAL & CONTROL ESTATAL',
+                title: 'Sistema de Control de Auditoría (SICA v3)',
+                city: 'Montevideo, Uruguay',
+                desc: 'Implementación y soporte consultivo de la plataforma SICA v3 para organismos de control estatal, garantizando trazabilidad y fiscalización electrónica de compras y presupuestos públicos.',
+                tags: ['SICA v3', 'Auditoría Pública', 'Oracle SOA', 'Trazabilidad Fiscal', 'Modernización Estatal'],
+                rotY: 2.15,
+                bubbleText: '¡Consultoría técnica gubernamental en Montevideo, Uruguay! Implementación y optimización de la plataforma SICA v3 para auditoría y control estatal. 🇺🇾🏛️📋'
+            },
+            {
+                id: 'argentina',
+                flag: '🇦🇷',
+                flagCode: 'AR',
+                code3: 'ARG',
+                scope: 'RETAIL FINANCIERO & MIDDLEWARE TRANSACCIONAL',
+                title: 'Falabella Financiero & Integración OSB',
+                city: 'Buenos Aires, Argentina',
+                desc: 'Ingeniería de integración y seguridad transaccional mediante Oracle Service Bus (OSB) para plataformas de crédito, seguros y medios de pago regionales de alta concurrencia.',
+                tags: ['Falabella Financiero', 'Oracle Service Bus', 'Seguridad Transaccional', 'Middleware SOA', 'Alta Disponibilidad'],
+                rotY: 2.18,
+                bubbleText: '¡Plataformas transaccionales en Buenos Aires, Argentina! Integración de alta concurrencia y seguridad OSB para Falabella Financiero. 🇦🇷💳🔒'
+            },
+            {
+                id: 'usa',
+                flag: '🇺🇸',
+                flagCode: 'US',
+                code3: 'USA',
+                scope: 'INNOVACIÓN, IA GENERATIVA & QUANTUM COMPUTING',
+                title: 'Massachusetts Institute of Technology (MIT xPRO)',
+                city: 'Cambridge / Boston, MA, EE.UU.',
+                desc: 'Especialización ejecutiva en IA Generativa empresarial, Internet de las Cosas (IoT) industrial, arquitecturas RAG/LLM y computación cuántica orientada a la toma de decisiones estratégicas.',
+                tags: ['MIT xPRO', 'Generative AI', 'Industrial IoT', 'Quantum Computing', 'Digital Strategy'],
+                rotY: 2.30,
+                bubbleText: '¡Formación ejecutiva global en MIT xPRO (Boston / Cambridge, EE.UU.)! Especialización en IA Generativa, IoT industrial y computación cuántica. 🇺🇸🎓🤖'
+            },
+            {
+                id: 'spain',
+                flag: '🇪🇸',
+                flagCode: 'ES',
+                code3: 'ESP',
+                scope: 'CIBERSEGURIDAD EUROPEA & CERTIFICACIÓN GLOBAL',
+                title: 'INCIBE & ISC2 España',
+                city: 'Madrid / León, España',
+                desc: 'Certificación y mejores prácticas internacionales en ciberseguridad, gestión de incidentes, protección de infraestructura crítica y estándares bajo el marco de INCIBE e ISC2.',
+                tags: ['INCIBE', 'ISC2 Certified in Cybersecurity', 'Gestión de Incidentes', 'Ciberdefensa', 'Seguridad de la Información'],
+                rotY: 1.15,
+                bubbleText: '¡Colaboración y certificación en ciberseguridad desde España con INCIBE y el consorcio global ISC2! Máximos estándares en ciberdefensa. 🇪🇸🛡️🌐'
+            }
+        ];
+
+        let activeGlobeIndex = 0;
+        let targetGlobeRotationY = 2.45;
+        let globeSpinVelocity = 0.55;
+        let isGlobeDragging = false;
+
+        const globeModal = document.getElementById('globe-inspector-modal');
+        const globeCloseBtn = document.getElementById('globe-close-btn');
+        const globePrevBtn = document.getElementById('globe-prev-btn');
+        const globeNextBtn = document.getElementById('globe-next-btn');
+        const globeSpinBtn = document.getElementById('globe-spin-btn');
+
+        const globeIndexBadge = document.getElementById('globe-index-badge');
+        const globeTagBadgeText = document.getElementById('globe-tag-badge-text');
+        const globeModalIcon = document.getElementById('globe-modal-icon');
+        const globeModalScope = document.getElementById('globe-modal-scope');
+        const globeModalTitle = document.getElementById('globe-modal-title');
+        const globeModalCity = document.getElementById('globe-modal-city');
+        const globeModalDesc = document.getElementById('globe-modal-desc');
+        const globeModalTags = document.getElementById('globe-modal-tags');
+
+        function updateGlobeModal(idx) {
+            activeGlobeIndex = (idx % GLOBE_PROJECTS_DATA.length + GLOBE_PROJECTS_DATA.length) % GLOBE_PROJECTS_DATA.length;
+            const p = GLOBE_PROJECTS_DATA[activeGlobeIndex];
+
+            if (globeIndexBadge) globeIndexBadge.textContent = `${activeGlobeIndex + 1} / ${GLOBE_PROJECTS_DATA.length}`;
+            if (globeTagBadgeText) globeTagBadgeText.textContent = activeGlobeIndex === 0 ? 'TELETRABAJO ACTIVO · CHILE' : 'PROYECTO INTERNACIONAL';
+            if (globeModalIcon) {
+                globeModalIcon.innerHTML = `<div class="flex flex-col items-center justify-center leading-none"><span class="text-sm font-black font-mono-tech text-white">${p.flagCode}</span><span class="text-[9px] font-bold text-emerald-400 tracking-wider">${p.code3}</span></div>`;
+            }
+            if (globeModalScope) globeModalScope.textContent = p.scope;
+            if (globeModalTitle) globeModalTitle.textContent = p.title;
+            if (globeModalCity) globeModalCity.textContent = p.city;
+            if (globeModalDesc) globeModalDesc.textContent = p.desc;
+
+            if (globeModalTags) {
+                globeModalTags.innerHTML = '';
+                p.tags.forEach(t => {
+                    const pill = document.createElement('span');
+                    pill.className = 'px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/10 text-slate-300 hover:text-white hover:border-emerald-400/40 transition';
+                    pill.textContent = t;
+                    globeModalTags.appendChild(pill);
+                });
+            }
+        }
+
+        function openGlobeInspector(idx = 0) {
+            updateGlobeModal(idx);
+            const p = GLOBE_PROJECTS_DATA[activeGlobeIndex];
+            targetGlobeRotationY = p.rotY;
+
+            if (globeModal) {
+                globeModal.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    globeModal.classList.remove('opacity-0', 'translate-y-4', 'scale-95');
+                    globeModal.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+                });
+            }
+
+            playGlobeSpinSound();
+            showRobotBubble('🌍 ' + p.scope, p.bubbleText, 8500);
+        }
+
+        function closeGlobeInspector() {
+            if (!globeModal || globeModal.classList.contains('hidden')) return;
+            globeModal.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
+            globeModal.classList.add('opacity-0', 'translate-y-4', 'scale-95');
+            setTimeout(() => {
+                if (globeModal.classList.contains('opacity-0')) {
+                    globeModal.classList.add('hidden');
+                }
+            }, 280);
+        }
+
+        function goToGlobeNode(idx) {
+            updateGlobeModal(idx);
+            const p = GLOBE_PROJECTS_DATA[activeGlobeIndex];
+            targetGlobeRotationY = p.rotY;
+            playGlobeSpinSound();
+            showRobotBubble('🌍 ' + p.scope, p.bubbleText, 8000);
+        }
+
+        if (globeCloseBtn) globeCloseBtn.addEventListener('click', closeGlobeInspector);
+        if (globePrevBtn) globePrevBtn.addEventListener('click', () => goToGlobeNode(activeGlobeIndex - 1));
+        if (globeNextBtn) globeNextBtn.addEventListener('click', () => goToGlobeNode(activeGlobeIndex + 1));
+        if (globeSpinBtn) globeSpinBtn.addEventListener('click', () => {
+            targetGlobeRotationY = null;
+            spinGlobeWithImpulse(6.5);
+        });
+
+        window.eduGlobeSystem = {
+            openInspector: openGlobeInspector,
+            closeInspector: closeGlobeInspector,
+            goToNode: goToGlobeNode,
+            nextNode: () => goToGlobeNode(activeGlobeIndex + 1),
+            prevNode: () => goToGlobeNode(activeGlobeIndex - 1),
+            spin: (force = 6.0) => spinGlobeWithImpulse(force),
+            getData: () => GLOBE_PROJECTS_DATA,
+            getState: () => ({ activeIndex: activeGlobeIndex, currentNode: GLOBE_PROJECTS_DATA[activeGlobeIndex] })
+        };
+
+        function spinGlobeWithImpulse(force = 6.0) {
+            targetGlobeRotationY = null;
+            globeSpinVelocity = force;
+            playGlobeSpinSound();
+            showRobotBubble('🌍 MAPAMUNDI INTERACTIVO', '¡Girando el globo terráqueo junto al ventanal! Eduardo lidera consultoría tecnológica y proyectos de alta complejidad conectando desde Chile hacia el mundo 🇨🇱🌐✨', 8000);
+        }
+
+        /* ---------------------------------------------------------
+           ÁRBOL DE NAVIDAD FESTIVO ESTILIZADO 3D (Ref: Tono Verde Bosque Pino,
+           Faldones Ondulados/Festoneados, Guirnalda Dorada, Esferas Brillantes,
+           Estrella 3D de 5 Puntas, Luces Hada Twinkle y Cajas de Regalo)
+        --------------------------------------------------------- */
+        const christmasTreeGroup = new THREE.Group();
+        christmasTreeGroup.position.set(-4.75, 0, 3.85);
+        scene.add(christmasTreeGroup);
+
+        // 1. Plataforma circular base festiva (Bandeja plato crema con borde verde bosque)
+        const skirtBaseMat = std(0xede2d2, 0.80, 0.04);
+        const skirtRimMat = std(0x144530, 0.65, 0.15);
+        addMesh(new THREE.CylinderGeometry(1.48, 1.48, 0.065, 48), skirtBaseMat, [0, 0.032, 0], christmasTreeGroup, { station: 'tree', isChristmasTree: true });
+        addMesh(new THREE.TorusGeometry(1.48, 0.038, 16, 48), skirtRimMat, [0, 0.065, 0], christmasTreeGroup, { rot: [Math.PI / 2, 0, 0], cast: false, station: 'tree', isChristmasTree: true });
+
+        // 2. Tronco de madera estriado (acanalado vertical estilo 3D clay)
+        const trunkWoodMat = std(0x4a2e16, 0.72, 0.08);
+        addMesh(new THREE.CylinderGeometry(0.24, 0.26, 0.45, 24), trunkWoodMat, [0, 0.22, 0], christmasTreeGroup, { station: 'tree', isChristmasTree: true });
+        for (let tr = 0; tr < 12; tr++) {
+            const tAng = (tr / 12) * Math.PI * 2;
+            const tx = Math.cos(tAng) * 0.245;
+            const tz = Math.sin(tAng) * 0.245;
+            addMesh(new THREE.CylinderGeometry(0.018, 0.020, 0.45, 8), std(0x351e0e, 0.78, 0.06), [tx, 0.22, tz], christmasTreeGroup, { cast: false });
+        }
+
+        // 3. Tiers de Follaje Verde Bosque Pino Cálido con Faldones Ondulados Integrados
+        // R > B calibrado para que bajo la iluminación de la sala el render sea idéntico a la referencia (#3a6a3c / #487347)
+        const foliageTiers = [
+            { r: 1.05, h: 0.65, y: 0.68, col: 0x092206, scallops: 20, scallopR: 0.095, dip: 0.12 },
+            { r: 0.88, h: 0.58, y: 1.10, col: 0x0b2807, scallops: 18, scallopR: 0.084, dip: 0.10 },
+            { r: 0.72, h: 0.52, y: 1.48, col: 0x0e2f09, scallops: 16, scallopR: 0.074, dip: 0.09 },
+            { r: 0.54, h: 0.46, y: 1.84, col: 0x11360b, scallops: 14, scallopR: 0.064, dip: 0.08 },
+            { r: 0.36, h: 0.40, y: 2.16, col: 0x143e0e, scallops: 12, scallopR: 0.054, dip: 0.06 }
+        ];
+
+        const goldBeadMat = std(0xf59e0b, 0.15, 0.95);
+        const beadMeshes = [];
+
+        foliageTiers.forEach((tier, tIdx) => {
+            const tierMat = std(tier.col, 0.88, 0.02);
+            // Cono principal del nivel
+            addMesh(new THREE.ConeGeometry(tier.r, tier.h, 32), tierMat, [0, tier.y, 0], christmasTreeGroup, { station: 'tree', isChristmasTree: true });
+
+            // Faldones festoneados integrados en la base del cono (ondulaciones suaves como en la referencia)
+            const baseY = tier.y - tier.h * 0.48;
+            const scallopMat = std(tier.col, 0.88, 0.02);
+            for (let s = 0; s < tier.scallops; s++) {
+                const sAng = (s / tier.scallops) * Math.PI * 2;
+                const sx = Math.cos(sAng) * (tier.r * 0.92);
+                const sz = Math.sin(sAng) * (tier.r * 0.92);
+
+                const scallop = addMesh(
+                    new THREE.SphereGeometry(tier.scallopR, 12, 10),
+                    scallopMat,
+                    [sx, baseY, sz],
+                    christmasTreeGroup,
+                    { station: 'tree', isChristmasTree: true }
+                );
+                // Forma de festón semicircular sutil
+                scallop.scale.set(1.0, 0.60, 0.75);
+                scallop.rotation.y = -sAng + Math.PI / 2;
+                scallop.rotation.x = 0.25;
+            }
+
+            // Guirnalda de cuentas doradas drapeadas en festones colgantes (catenary swags como en la referencia)
+            const numSwags = Math.max(3, Math.floor(tier.scallops / 3.8));
+            const beadsPerSwag = 8;
+            for (let sw = 0; sw < numSwags; sw++) {
+                const startAng = (sw / numSwags) * Math.PI * 2;
+                const endAng = ((sw + 1) / numSwags) * Math.PI * 2;
+                for (let b = 0; b <= beadsPerSwag; b++) {
+                    const u = b / beadsPerSwag;
+                    const ang = startAng + (endAng - startAng) * u;
+                    const sag = Math.sin(u * Math.PI) * tier.dip;
+                    const bRad = (tier.r * 0.90) * (1.0 - (1.0 - u * 0.5) * 0.08);
+                    const bx = Math.cos(ang) * bRad;
+                    const bz = Math.sin(ang) * bRad;
+                    const by = (tier.y - tier.h * 0.12) - sag;
+                    const bMesh = addMesh(new THREE.SphereGeometry(0.016, 8, 8), goldBeadMat, [bx, by, bz], christmasTreeGroup, { cast: false });
+                    beadMeshes.push(bMesh);
+                }
+            }
+        });
+
+        // 4. Esferas / Baubles Navideños Brillantes (Rojo vivo, Amarillo dorado, Azul cyan cielo - Ref exacto)
+        const ornamentPalette = [
+            std(0xdc2626, 0.12, 0.92), // Rojo festivo vibrante
+            std(0xf59e0b, 0.10, 0.95), // Amarillo oro brillante
+            std(0x0284c7, 0.12, 0.92)  // Cyan cielo vibrante
+        ];
+        const ornamentCapMat = std(0xfbbf24, 0.18, 0.90);
+
+        // Distribución armoniosa de esferas por nivel de follaje
+        foliageTiers.forEach((tier, tIdx) => {
+            const count = 3 + tIdx * 2;
+            const baseY = tier.y - tier.h * 0.35;
+            for (let o = 0; o < count; o++) {
+                const oAng = (o / count) * Math.PI * 2 + (tIdx * 0.45);
+                const oRadius = tier.r * 0.92;
+                const ox = Math.cos(oAng) * oRadius;
+                const oz = Math.sin(oAng) * oRadius;
+                const oy = baseY - 0.04 + (o % 2 === 0 ? 0.03 : -0.03);
+                const mat = ornamentPalette[(o + tIdx) % ornamentPalette.length];
+                const bSize = 0.048 + (tIdx % 2) * 0.006;
+                addMesh(new THREE.SphereGeometry(bSize, 16, 16), mat, [ox, oy, oz], christmasTreeGroup, { station: 'tree', isChristmasTree: true });
+                addMesh(new THREE.CylinderGeometry(0.013, 0.015, 0.018, 10), ornamentCapMat, [ox, oy + bSize * 0.92, oz], christmasTreeGroup, { cast: false });
+            }
+        });
+
+        // 5. Luces Hada LED Festivas Twinkle (Multicolor suave en espiral)
+        const lightColors = [0xffd166, 0xef4444, 0x38bdf8, 0x10b981, 0xfffbeb, 0xfbbf24];
+        const treeLightMats = lightColors.map((c) => basic({ color: c, transparent: true }));
+        const treeLightMeshes = [];
+
+        const lightCount = 48;
+        for (let i = 0; i < lightCount; i++) {
+            const prog = i / lightCount;
+            const y = 0.45 + prog * 1.85;
+            const radius = (1 - prog * 0.70) * 0.96;
+            const angle = prog * Math.PI * 11.0;
+            const lx = Math.cos(angle) * radius;
+            const lz = Math.sin(angle) * radius;
+            const matIdx = i % lightColors.length;
+            const lightMesh = addMesh(new THREE.SphereGeometry(0.022, 8, 8), treeLightMats[matIdx], [lx, y, lz], christmasTreeGroup, { cast: false, station: 'tree', isChristmasTree: true });
+            treeLightMeshes.push({ mesh: lightMesh, phase: i * 0.52, baseScale: 1.0 });
+        }
+
+        // Luz cálida interior suave (muy suave para no sobreexponer el follaje verde)
+        const treeWarmLight = new THREE.PointLight(0xffedd5, 0.22, 2.8, 2.0);
+        treeWarmLight.position.set(0, 1.25, 0);
+        christmasTreeGroup.add(treeWarmLight);
+
+        // 6. Estrella 3D Dorada de 5 Puntas en la Cúspide (Biselada, Idéntica a la Referencia)
+        const starGroup = new THREE.Group();
+        starGroup.position.set(0, 2.42, 0);
+        christmasTreeGroup.add(starGroup);
+
+        const starShape = new THREE.Shape();
+        const starPoints = 5;
+        const rOuter = 0.22;
+        const rInner = 0.095;
+        for (let p = 0; p < starPoints * 2; p++) {
+            const r = p % 2 === 0 ? rOuter : rInner;
+            const ang = (p * Math.PI) / starPoints - Math.PI / 2;
+            const sx = Math.cos(ang) * r;
+            const sy = -Math.sin(ang) * r;
+            if (p === 0) starShape.moveTo(sx, sy);
+            else starShape.lineTo(sx, sy);
+        }
+        starShape.closePath();
+
+        const starExtrudeSettings = {
+            depth: 0.052,
+            bevelEnabled: true,
+            bevelThickness: 0.020,
+            bevelSize: 0.014,
+            bevelSegments: 3
+        };
+        const starGeo = new THREE.ExtrudeGeometry(starShape, starExtrudeSettings);
+        starGeo.center();
+        const starGoldMat = std(0xfbbf24, 0.12, 0.95);
+        const starMesh = addMesh(starGeo, starGoldMat, [0, 0, 0], starGroup, { station: 'tree', isChristmasTree: true });
+
+        // Luz tenue de la estrella superior
+        const starPointLight = new THREE.PointLight(0xffea80, 0.45, 2.2, 1.8);
+        starPointLight.position.set(0, 2.44, 0);
+        christmasTreeGroup.add(starPointLight);
+
+        // 7. Cajas de Regalos Decorativas con Moños (Exactas a la Imagen de Referencia)
+        function createGiftBox(w, h, d, boxColor, ribbonColor, [gx, gy, gz], rotY) {
+            const boxGrp = new THREE.Group();
+            boxGrp.position.set(gx, gy, gz);
+            boxGrp.rotation.y = rotY;
+            christmasTreeGroup.add(boxGrp);
+
+            const bMat = std(boxColor, 0.50, 0.12);
+            const rMat = std(ribbonColor, 0.28, 0.60);
+
+            addMesh(new THREE.BoxGeometry(w, h, d), bMat, [0, h / 2, 0], boxGrp, { station: 'tree', isChristmasTree: true });
+
+            const ribW = Math.min(w, d) * 0.18;
+            addMesh(new THREE.BoxGeometry(ribW, h + 0.003, d + 0.003), rMat, [0, h / 2, 0], boxGrp, { cast: false });
+            addMesh(new THREE.BoxGeometry(w + 0.003, h + 0.003, ribW), rMat, [0, h / 2, 0], boxGrp, { cast: false });
+
+            // Lazos y nudo superior
+            addMesh(new THREE.TorusGeometry(ribW * 0.95, ribW * 0.35, 8, 16), rMat, [-ribW * 0.5, h + ribW * 0.5, 0], boxGrp, { rot: [0, Math.PI / 4, Math.PI / 4], cast: false });
+            addMesh(new THREE.TorusGeometry(ribW * 0.95, ribW * 0.35, 8, 16), rMat, [ribW * 0.5, h + ribW * 0.5, 0], boxGrp, { rot: [0, -Math.PI / 4, -Math.PI / 4], cast: false });
+            addMesh(new THREE.SphereGeometry(ribW * 0.55, 8, 8), rMat, [0, h + ribW * 0.35, 0], boxGrp, { cast: false });
+        }
+
+        // 6 Regalos estilizados colocados sobre la bandeja circular
+        createGiftBox(0.38, 0.26, 0.34, 0xd99b00, 0xdc2626, [-0.72, 0.065, 0.22], 0.28);  // Mostaza con lazo rojo
+        createGiftBox(0.40, 0.30, 0.36, 0x0f766e, 0xdc2626, [-0.38, 0.065, 0.68], 0.12);  // Turquesa con lazo rojo
+        createGiftBox(0.42, 0.22, 0.32, 0xb91c1c, 0xfbbf24, [0.18, 0.065, 0.74], -0.22);  // Rojo plano con lazo oro
+        createGiftBox(0.30, 0.24, 0.30, 0xe2e8f0, 0x166534, [0.58, 0.065, 0.54], 0.45);   // Blanco con lazo verde
+        createGiftBox(0.36, 0.34, 0.34, 0xc2410c, 0xf59e0b, [0.74, 0.065, 0.16], -0.35);  // Coral/Salmón con lazo oro
+        createGiftBox(0.34, 0.28, 0.34, 0x0369a1, 0xdc2626, [0.66, 0.065, -0.32], 0.65);  // Cyan azul con lazo rojo
+
+        // Esferas decorativas sueltas sobre la bandeja base
+        addMesh(new THREE.SphereGeometry(0.032, 12, 12), std(0xdc2626, 0.12, 0.92), [-0.18, 0.097, 0.88], christmasTreeGroup, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.032, 12, 12), std(0x0284c7, 0.12, 0.92), [0.05, 0.097, 0.94], christmasTreeGroup, { cast: false });
+        addMesh(new THREE.SphereGeometry(0.026, 12, 12), std(0xf59e0b, 0.10, 0.95), [0.24, 0.091, 0.86], christmasTreeGroup, { cast: false });
+
+        let treeLightSurge = 0;
+
+        function triggerChristmasTreeJoy() {
+            treeLightSurge = 1.0;
+            playChristmasJingleSound();
+            showRobotBubble('🎄 ¡FELICES FIESTAS!', '¡Feliz Navidad y próspero Año Nuevo! Eduardo, EduBot & Kotetsu te desean éxito, alegría y código impecable ✨🎁', 10000);
+        }
+
+        /* ---------------------------------------------------------
            HOTSPOTS (DIAMOND MARKERS) & CAMERA TARGETS
         --------------------------------------------------------- */
         const UP = new THREE.Vector3(0, 1, 0);
         const v3 = (a) => new THREE.Vector3(a[0], a[1], a[2]);
         const HOTSPOTS = [
-            { id: 'projects', code: '01', label: 'Proyectos', anchor: [-0.38, 2.2, 0.13], target: [-0.38, 1.75, 0.13], normal: [Math.sin(0.32), 0, Math.cos(0.32)], dist: 2.2, lift: 0.05 },
-            { id: 'credentials', code: '02', label: 'Credenciales', anchor: [4.15, 3.8, -4.85], target: [4.15, 2.55, -4.95], normal: [0, 0, 1], dist: 2.8, lift: 0.0 },
-            { id: 'home', code: '03', label: 'Perfil', anchor: [0.50, 2.1, -0.74], target: [0.50, 1.45, -0.74], normal: [0.35, 0.15, 0.93], dist: 2.4, lift: 0.1 },
-            { id: 'contact', code: '04', label: 'Contacto', anchor: [1.44, 1.84, 0.15], target: [1.44, 1.50, 0.15], normal: [0, 0.04, 0.999], dist: 1.12, lift: 0.0 },
-            { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.2, -4.05], target: [-5.05, 1.36, -4.05], normal: [0.707, 0, 0.707], dist: 2.45, lift: 0.0 },
-            { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.8, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 },
-            { id: 'cv', code: '2D', label: 'Ver Portafolio 2D', anchor: [-0.05, 1.48, 0.71], target: [-0.05, 1.07, 0.71], normal: [0, 0.85, 0.52], dist: 1.25, lift: 0.25 },
-            { id: 'certifications', code: '07', label: 'Certificaciones', anchor: [-5.2, 3.9, 1.05], target: [-5.96, 2.85, 1.05], normal: [1, 0, 0], dist: 3.2, lift: 0.0 },
-            { id: 'cat', code: '🐾', label: 'Kotetsu', anchor: [-3.0, 1.4, 3.4], target: [-4.25, 0.86, 2.45], normal: [0.6, 0.2, 0.77], dist: 1.8, lift: 0.1, noDiamond: true }
+            { id: 'projects', code: '01', label: 'Proyectos', anchor: [-0.38, 2.32, 0.13], target: [-0.38, 1.75, 0.13], normal: [Math.sin(0.32), 0, Math.cos(0.32)], dist: 2.2, lift: 0.05 },
+            { id: 'credentials', code: '02', label: 'Credenciales', anchor: [4.15, 3.85, -4.85], target: [4.15, 2.65, -4.95], normal: [0, 0, 1], dist: 2.55, lift: 0.0 },
+            { id: 'home', code: '🤖', label: 'EduBot IA', anchor: [0.55, 2.35, -0.74], target: [0.50, 1.45, -0.74], normal: [0.35, 0.15, 0.93], dist: 2.4, lift: 0.1 },
+            { id: 'contact', code: '04', label: 'Contacto', anchor: [1.56, 1.48, 0.18], target: [1.44, 1.50, 0.15], normal: [0, 0.04, 0.999], dist: 1.12, lift: 0.0 },
+            { id: 'arcade', code: '05', label: 'Edu Tetris', anchor: [-5.05, 2.35, -4.05], target: [-5.05, 1.36, -4.05], normal: [0.707, 0, 0.707], dist: 2.45, lift: 0.0 },
+            { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.85, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 },
+            { id: 'cv', code: '📄', label: 'Portafolio 2D', anchor: [-0.10, 1.38, 0.72], target: [-0.05, 1.07, 0.71], normal: [0, 0.85, 0.52], dist: 1.25, lift: 0.25 },
+            { id: 'certifications', code: '07', label: 'Certificaciones', anchor: [-5.2, 4.05, 1.05], target: [-5.96, 2.85, 1.05], normal: [1, 0, 0], dist: 3.2, lift: 0.0 },
+            { id: 'cat', code: '🐾', label: 'Kotetsu', anchor: [-4.2, 0.9, 2.4], target: [-4.25, 0.86, 2.45], normal: [0.6, 0.2, 0.77], dist: 1.8, lift: 0.1 },
+            { id: 'coffee', code: '☕', label: 'Café Turbo', anchor: [0.72, 1.42, 0.00], target: [0.48, 1.48, -0.45], normal: [0.42, 0.18, 0.88], dist: 2.15, lift: 0.15 },
+            { id: 'coffee_macro', code: '☕', label: 'Latte Art Macro', anchor: [0.86, 1.35, 0.09], target: [0.86, 1.12, 0.09], normal: [0.35, 0.68, 0.64], dist: 0.48, lift: 0.02, noDiamond: true },
+            { id: 'globe', code: '🌍', label: 'Mapamundi', anchor: [1.75, 1.70, -4.42], target: [1.75, 1.12, -4.42], normal: [-0.18, 0.22, 0.96], dist: 2.35, lift: 0.08 },
+            { id: 'tree', code: '🎄', label: 'Árbol Navideño', anchor: [-4.75, 2.85, 3.85], target: [-4.75, 1.18, 3.85], normal: [0.80, 0.15, -0.58], dist: 5.15, lift: 0.0 },
+            { id: 'scenic', code: '🏔️', label: 'Ventanal Panorámico', anchor: [-0.20, 4.15, -4.95], target: [0.60, 2.90, -4.99], normal: [0, 0, 1], dist: 3.4, lift: 0.0 }
         ];
         const hotspotMap = new Map();
         let hoveredId = null;
@@ -5678,6 +7900,24 @@
                     `<span class="room-hotspot-label"><span class="room-hotspot-code">${hs.code}</span>${hs.label}</span>`;
                 el.addEventListener('click', (ev) => {
                     ev.stopPropagation();
+                    if (hs.id === 'scenic') {
+                        if (window.eduScenic) window.eduScenic.next();
+                        return;
+                    }
+                    if (hs.id === 'coffee') {
+                        triggerCoffeeTurbo();
+                        return;
+                    }
+                    if (hs.id === 'cat') {
+                        triggerCatInteraction();
+                        return;
+                    }
+                    if (hs.id === 'tree') {
+                        triggerChristmasTreeJoy();
+                    }
+                    if (hs.id === 'globe') {
+                        spinGlobeWithImpulse(6.0);
+                    }
                     api.focusStation(hs.id);
                 });
                 el.addEventListener('pointerdown', (ev) => ev.stopPropagation());
@@ -5817,6 +8057,13 @@
             dragDist = 0;
             lastInteraction = performance.now();
             canvas.classList.add('is-dragging');
+
+            const hitDown = pickHit(e.clientX, e.clientY);
+            if (hitDown && (hitDown.object.userData.isGlobe || hitDown.object.userData.stationId === 'globe')) {
+                isGlobeDragging = true;
+            } else {
+                isGlobeDragging = false;
+            }
         });
 
         window.addEventListener('pointermove', (e) => {
@@ -5828,6 +8075,12 @@
                 lastY = e.clientY;
                 dragDist += Math.hypot(dx, dy);
                 lastInteraction = performance.now();
+
+                if (isGlobeDragging) {
+                    globeSpinVelocity += dx * 0.08;
+                    return;
+                }
+
                 if (!hotspotMap.has(api.getActiveStation())) {
                     orbit.tAz = Math.max(0.12, Math.min(1.42, orbit.tAz - dx * 0.004));
                     orbit.tPol = Math.max(0.2, Math.min(0.95, orbit.tPol + dy * 0.003));
@@ -5864,6 +8117,7 @@
         window.addEventListener('pointerup', (e) => {
             if (!dragging) return;
             dragging = false;
+            isGlobeDragging = false;
             canvas.classList.remove('is-dragging');
             if (api.getViewMode() === 'stage3d' && dragDist < 7 && e.target === canvas) {
                 if (api.getActiveStation() === 'contact' && phoneScreenMesh) {
@@ -5930,9 +8184,35 @@
                         }
                         return;
                     }
+                    if (id === 'globe' || (hit.object && hit.object.userData && hit.object.userData.isGlobe)) {
+                        spinGlobeWithImpulse(6.0);
+                        if (api.getActiveStation() !== 'globe') {
+                            api.focusStation('globe');
+                        }
+                        return;
+                    }
+                    if (id === 'tree' || (hit.object && hit.object.userData && hit.object.userData.isChristmasTree)) {
+                        triggerChristmasTreeJoy();
+                        if (api.getActiveStation() !== 'tree') {
+                            api.focusStation('tree');
+                        }
+                        return;
+                    }
+                    if (id === 'music' || (hit.object && hit.object.userData && hit.object.userData.isTurntable)) {
+                        playTurntableNeedleSound();
+                        if (window.eduSpotifyPlayer) {
+                            window.eduSpotifyPlayer.expand();
+                            window.eduSpotifyPlayer.togglePlay();
+                        }
+                        return;
+                    }
                     if (id === 'robot') {
-                        if (window.eduRobotAssistant) {
-                            window.eduRobotAssistant.triggerGreeting();
+                        if (robotState === 'SEATED') {
+                            if (window.eduRobotAssistant) {
+                                window.eduRobotAssistant.triggerGreeting();
+                            }
+                        } else {
+                            showRobotBubble('🤖 ASISTENTE EN MOVIMIENTO', '¡Disfrutando de mi pausa activa por la oficina virtual! 🧘⚡', 4000);
                         }
                         return;
                     }
@@ -6133,9 +8413,37 @@
 
             if (hs) {
                 if (active === 'cat' && typeof catRoot !== 'undefined') {
-                    hs.targetV.set(catRoot.position.x, catRoot.position.y + 0.16, catRoot.position.z);
-                    hs.dist = 1.95;
-                    hs.lift = 0.28;
+                    if (currentWaypointId === 'beanbag' || (catRoot.position.x < -4.1 && catRoot.position.z > 1.8)) {
+                        // Bed corner view: captures dark bed, squish effect and nearby plush mouse & yarn toys!
+                        hs.targetV.set(-4.50, 0.32, 1.95);
+                        hs.normalV.set(0.68, 0.42, 0.60).normalize();
+                        hs.dist = 2.45;
+                        hs.lift = 0.18;
+                    } else if (currentWaypointId === 'desk_surface' || catRoot.position.y > 0.85) {
+                        // Perched cleanly ON TOP of the desk beside EduBot and RGB keyboard
+                        hs.targetV.set(-0.05, 1.28, 0.28);
+                        hs.normalV.set(0.18, 0.38, 0.91).normalize();
+                        hs.dist = 1.65;
+                        hs.lift = 0.16;
+                    } else if (catState === 'dancing') {
+                        // Bipedal dancing mode: upright feline disco dance
+                        hs.targetV.set(catRoot.position.x, catRoot.position.y + 0.22, catRoot.position.z);
+                        hs.normalV.set(0.35, 0.25, 0.90).normalize();
+                        hs.dist = 1.70;
+                        hs.lift = 0.10;
+                    } else if (currentWaypointId === 'food_station' || catState === 'drinking' || catState === 'eating') {
+                        // Gourmet bistro: water fountain and salmon kibbles
+                        hs.targetV.set(catRoot.position.x, catRoot.position.y + 0.12, catRoot.position.z);
+                        hs.normalV.set(0.38, 0.48, 0.79).normalize();
+                        hs.dist = 1.65;
+                        hs.lift = 0.18;
+                    } else {
+                        // Roaming / investigating
+                        hs.targetV.set(catRoot.position.x, catRoot.position.y + 0.16, catRoot.position.z);
+                        hs.normalV.set(0.50, 0.35, 0.79).normalize();
+                        hs.dist = 1.95;
+                        hs.lift = 0.24;
+                    }
                 }
                 tmpN.copy(hs.normalV).applyAxisAngle(UP, focusYaw);
                 const dist = hs.dist * (isMobile() ? 1.3 : 1);
@@ -6188,12 +8496,22 @@
                 cvHs.targetV.set(0.2 + cvGroup.position.x, cvGroup.position.y + 0.02, 0.25 + cvGroup.position.z);
             }
 
+            // Dynamic anchor tracking for Kotetsu and EduBot
+            const catHs = hotspotMap.get('cat');
+            if (catHs && typeof catRoot !== 'undefined') {
+                catHs.anchorV.set(catRoot.position.x, catRoot.position.y + 0.48, catRoot.position.z);
+            }
+            const homeHs = hotspotMap.get('home');
+            if (homeHs && typeof robot !== 'undefined') {
+                homeHs.anchorV.set(robot.position.x, robot.position.y + 1.25, robot.position.z);
+            }
+
             camera.position.lerp(desiredPos, k);
             currentLook.lerp(desiredLook, k);
             camera.lookAt(currentLook);
 
             if (!reduced) {
-                // Speaker pulse & vinyl spin synchronized with Spotify player
+                // Speaker pulse & audiophile turntable kinematics synchronized with Spotify player
                 const isAudioPlaying = window.eduMusicState && window.eduMusicState.isPlaying;
                 let beat = 0;
                 if (isAudioPlaying) {
@@ -6201,27 +8519,112 @@
                     ringOuter.scale.setScalar(1 + beat * 0.22);
                     ringInner.scale.setScalar(1 + beat * 0.36);
                     if (ringSpotify) ringSpotify.scale.setScalar(1 + beat * 0.26);
-                    vinyl.rotation.y += dt * 4.2;
                     speakerLight.intensity = 0.55 + beat * 0.8;
                     if (speakerGreenLight) speakerGreenLight.intensity = 0.55 + beat * 0.9;
                     if (albumJacket) albumJacket.position.y = 0.94 + Math.sin(t * 3.5) * 0.005;
+
+                    if (turntablePowerLedMat) turntablePowerLedMat.color.setHex(0x1ed760);
+
+                    // Vinyl Placement on Turntable Platter
+                    if (!isTurntablePlayingPrev) {
+                        isTurntablePlayingPrev = true;
+                        vinylPlacementProg = 1.0;
+                    }
+
+                    // Spin platter and vinyl up to ~33 1/3 RPM (~3.8 rad/s)
+                    const targetSpeed = 3.9 + Math.sin(t * 1.5) * 0.05 + beat * 0.15;
+                    vinylSpinSpeed += (targetSpeed - vinylSpinSpeed) * (1 - Math.exp(-dt * 3.2));
+
+                    // Tonearm swings smoothly over vinyl grooves & tracks inward
+                    const songProg = (window.eduMusicState && window.eduMusicState.duration > 0) ? Math.min(1, Math.max(0, window.eduMusicState.currentTime / window.eduMusicState.duration)) : 0.15;
+                    const targetTonearmAngle = THREE.MathUtils.lerp(-0.36, -0.72, songProg);
+                    tonearmAngle += (targetTonearmAngle - tonearmAngle) * (1 - Math.exp(-dt * 2.8));
+                    tonearmCueLift += (0.0 - tonearmCueLift) * (1 - Math.exp(-dt * 4.5)); // Needle down on groove
+
                 } else {
                     ringOuter.scale.setScalar(1.0);
                     ringInner.scale.setScalar(1.0);
                     if (ringSpotify) ringSpotify.scale.setScalar(1.0);
-                    vinyl.rotation.y += dt * 0.35;
                     speakerLight.intensity = 0.25;
                     if (speakerGreenLight) speakerGreenLight.intensity = 0.2;
                     if (albumJacket) albumJacket.position.y = 0.94;
+
+                    if (turntablePowerLedMat) turntablePowerLedMat.color.setHex(0x3f3f46);
+                    isTurntablePlayingPrev = false;
+
+                    // Vinyl & Platter decelerate smoothly with natural friction until COMPLETELY STOPPED
+                    vinylSpinSpeed *= Math.exp(-dt * 2.4);
+                    if (vinylSpinSpeed < 0.0008) vinylSpinSpeed = 0.0;
+
+                    // Tonearm lifts off record and returns to rest cradle
+                    tonearmCueLift += (1.0 - tonearmCueLift) * (1 - Math.exp(-dt * 4.2));
+                    tonearmAngle += (-0.03 - tonearmAngle) * (1 - Math.exp(-dt * 2.5));
                 }
 
-                // ROBOT ANIMATIONS: GREETING WAVE, DANCING WITH MUSIC, OR IDLE TYPING
+                // Apply turntable physical rotations
+                if (vinylGroup) vinylGroup.rotation.y += vinylSpinSpeed * dt;
+                if (platterGroup) platterGroup.rotation.y += vinylSpinSpeed * dt;
+                if (tonearmArmGroup) {
+                    tonearmArmGroup.rotation.y = tonearmAngle;
+                    tonearmArmGroup.rotation.x = tonearmCueLift * 0.07;
+                }
+
+                // Mapamundi Globe continuous inertia & friction
+                if (globeMesh) {
+                    if (!isGlobeDragging) {
+                        globeSpinVelocity *= Math.exp(-dt * 0.92);
+                    }
+                    globeMesh.rotation.y += globeSpinVelocity * dt;
+                }
+
+                // Christmas Tree Lights Twinkle & Surge
+                if (treeLightMeshes && treeLightMeshes.length > 0) {
+                    treeLightSurge *= Math.exp(-dt * 2.5);
+                    const treeSpeed = 4.2 + treeLightSurge * 14.0;
+                    treeLightMeshes.forEach((tl, idx) => {
+                        const pulse = Math.sin(t * treeSpeed + tl.phase);
+                        const s = 0.85 + Math.max(0, pulse) * 0.55 + treeLightSurge * 0.8;
+                        tl.mesh.scale.setScalar(s);
+                        if (treeLightMats[idx % treeLightMats.length]) {
+                            treeLightMats[idx % treeLightMats.length].opacity = 0.65 + Math.max(0, pulse) * 0.35 + treeLightSurge * 0.3;
+                        }
+                    });
+                    if (typeof starPointLight !== 'undefined' && starPointLight) {
+                        starPointLight.intensity = 0.45 + Math.sin(t * 2.5) * 0.12 + treeLightSurge * 0.8;
+                    }
+                    if (typeof treeWarmLight !== 'undefined' && treeWarmLight) {
+                        treeWarmLight.intensity = 0.22 + Math.sin(t * 2.0) * 0.06 + treeLightSurge * 0.5;
+                    }
+                }
+
+                // ROBOT ANIMATIONS: MOBILITY PAUSA ACTIVA, GREETING WAVE, DANCING WITH MUSIC, OR IDLE TYPING
                 const nowMs = performance.now();
                 const isGreetingNow = isInitialWelcomeActive || (isGreetingActive && (nowMs - greetingStartTime) < (isInitialWelcomeActive ? 18000 : 5000));
+                const isUserInspecting = hotspotMap.has(api.getActiveStation()) && api.getActiveStation() !== 'overview' && api.getActiveStation() !== 'cat' && api.getActiveStation() !== 'globe' && api.getActiveStation() !== 'tree';
+
+                // Check autonomous break timer when seated
+                if (robotState === 'SEATED') {
+                    if (!isAudioPlaying && !isUserInspecting && !isInitialWelcomeActive && !isGreetingNow && !isCoffeeSipping) {
+                        timeSinceLastBreak += dt;
+                        if (timeSinceLastBreak > 75.0) {
+                            triggerStretchWalk();
+                        }
+                    }
+                }
 
                 // Face expression & Blinking logic
                 let expr = 'normal';
-                if (isTurboActive) {
+                if (robotState === 'STRETCHING') {
+                    expr = 'stretch';
+                } else if (robotState === 'PET_CAT') {
+                    expr = 'love';
+                } else if (robotState === 'GAZE_WINDOW' || robotState === 'WALK_TO_WINDOW') {
+                    expr = 'gaze';
+                } else if (robotState === 'WALK_TO_CAT' || robotState === 'WALK_TO_DESK') {
+                    expr = 'welcome';
+                } else if (isCoffeeSipping && (nowMs - coffeeSipStartTime) < 2200) {
+                    expr = 'happy';
+                } else if (isTurboActive) {
                     expr = 'turbo';
                 } else if (isAudioPlaying) {
                     expr = 'dancing';
@@ -6240,149 +8643,511 @@
                     robotFaceTex.needsUpdate = true;
                 }
 
-                // Smooth standing & sitting kinematics transition
-                targetStand = (isInitialWelcomeActive || isGreetingNow) ? 1.0 : 0.0;
-                standProg += (targetStand - standProg) * (1 - Math.exp(-dt * 4.2));
+                // ROBOT STATE MACHINE EXECUTION
+                if (robotState !== 'SEATED') {
+                    targetStand = (robotState === 'SIT_DOWN') ? 0.0 : 1.0;
+                    standProg += (targetStand - standProg) * (1 - Math.exp(-dt * 4.2));
+                    const standY = standProg * 0.38;
+                    chair.position.z = -0.86 - standProg * 0.26;
 
-                const standY = standProg * 0.38;
-                robot.position.y = (isAudioPlaying ? (Math.abs(Math.sin(t * 7.2)) * 0.038 * (0.6 + beat * 0.6)) : 0) + standY;
-                chair.position.z = -0.86 - standProg * 0.22;
+                    robotStateTime += dt;
 
-                // Leg articulation
-                const hipAngle = THREE.MathUtils.lerp(-1.45, 0.0, standProg);
-                const kneeAngle = THREE.MathUtils.lerp(1.45, 0.0, standProg);
-                legL.hip.rotation.x = hipAngle;
-                legL.knee.rotation.x = kneeAngle;
-                legR.hip.rotation.x = hipAngle;
-                legR.knee.rotation.x = kneeAngle;
+                    if (robotState === 'STAND_PREP') {
+                        robot.position.set(robotDeskSeatPos.x, standY, robotDeskSeatPos.z);
+                        robot.rotation.set(0, 0, 0);
+                        legL.hip.rotation.x = THREE.MathUtils.lerp(-1.45, 0.0, standProg);
+                        legL.knee.rotation.x = THREE.MathUtils.lerp(1.45, 0.0, standProg);
+                        legR.hip.rotation.x = THREE.MathUtils.lerp(-1.45, 0.0, standProg);
+                        legR.knee.rotation.x = THREE.MathUtils.lerp(1.45, 0.0, standProg);
+                        armL.rotation.set(-0.35, 0.1, -0.15);
+                        armR.rotation.set(-0.35, -0.1, 0.15);
+                        head.rotation.set(0, 0, 0);
 
-                // Dynamic speech bubble anchor following the standing elevation
-                robotAnchor.set(0.50, 1.85 + standY, -0.74);
+                        if (standProg > 0.94 && robotStateTime > 0.8) {
+                            robotState = 'STRETCHING';
+                            robotStateTime = 0;
+                            showRobotBubble('🧘 PAUSA ACTIVA', '¡Uff, tantas horas programando! Momento de estirar la columna y los servomotores... 🧘‍♂️⚡', 6000);
+                        }
+                    } else if (robotState === 'STRETCHING') {
+                        robot.position.set(robotDeskSeatPos.x, standY, robotDeskSeatPos.z);
+                        legL.hip.rotation.set(0, 0, 0);
+                        legL.knee.rotation.set(0, 0, 0);
+                        legR.hip.rotation.set(0, 0, 0);
+                        legR.knee.rotation.set(0, 0, 0);
 
-                if (isGreetingNow) {
-                    const waveT = (nowMs - greetingStartTime) / 1000;
-                    const armBlend = THREE.MathUtils.clamp(waveT * 3.5, 0, 1);
+                        if (robotStateTime < 2.2) {
+                            const p = Math.min(1, robotStateTime / 2.2);
+                            const ease = p * p * (3 - 2 * p);
+                            armL.rotation.x = THREE.MathUtils.lerp(-0.35, 2.35, ease);
+                            armR.rotation.x = THREE.MathUtils.lerp(-0.35, 2.35, ease);
+                            armL.rotation.z = -0.25;
+                            armR.rotation.z = 0.25;
+                            robot.rotation.x = THREE.MathUtils.lerp(0, -0.12, ease);
+                            head.rotation.x = THREE.MathUtils.lerp(0, -0.28, ease);
+                            head.rotation.y = 0;
+                            head.rotation.z = 0;
+                        } else if (robotStateTime < 4.4) {
+                            const sideT = (robotStateTime - 2.2) * 3.2;
+                            robot.rotation.x = 0;
+                            robot.rotation.z = Math.sin(sideT) * 0.14;
+                            robot.rotation.y = Math.sin(sideT * 0.5) * 0.18;
+                            armL.rotation.x = 0.2;
+                            armL.rotation.z = -0.75 - Math.sin(sideT) * 0.2;
+                            armR.rotation.x = 0.2;
+                            armR.rotation.z = 0.75 - Math.sin(sideT) * 0.2;
+                            head.rotation.z = -robot.rotation.z * 0.8;
+                            head.rotation.x = 0.05;
+                        } else if (robotStateTime < 5.8) {
+                            robot.rotation.set(0, 0, 0);
+                            head.rotation.set(0, 0, 0);
+                            armL.rotation.x = -0.25 + Math.sin(robotStateTime * 16) * 0.06;
+                            armR.rotation.x = -0.25 + Math.sin(robotStateTime * 16 + 1.2) * 0.06;
+                            armL.rotation.z = -0.15;
+                            armR.rotation.z = 0.15;
+                        } else {
+                            // Target location for visiting Kotetsu
+                            const isCatOnDesk = (typeof catRoot !== 'undefined' && (currentWaypointId === 'desk_surface' || catRoot.position.y > 0.85));
+                            let targetCatX = -3.35;
+                            let targetCatZ = 2.05;
+                            if (typeof catRoot !== 'undefined') {
+                                if (isCatOnDesk) {
+                                    // Gato sobre el escritorio: pararse frente al escritorio limpiamente
+                                    targetCatX = -0.30;
+                                    targetCatZ = 1.15;
+                                } else {
+                                    // Gato en el lounge / rincón: acercarse a Kotetsu
+                                    targetCatX = Math.max(-4.2, Math.min(-1.6, catRoot.position.x + 0.65));
+                                    targetCatZ = Math.max(0.6, Math.min(2.5, catRoot.position.z - 0.15));
+                                }
+                            }
 
-                    // Wave right arm high and enthusiastically
-                    armR.rotation.x = THREE.MathUtils.lerp(-1.18, 0.55, armBlend);
-                    armR.rotation.z = THREE.MathUtils.lerp(0.16, 0.88 + Math.sin(waveT * 11) * 0.36, armBlend);
-                    armR.rotation.y = THREE.MathUtils.lerp(-0.12, Math.sin(waveT * 5) * 0.18, armBlend);
+                            // Ruta 100% libre de colisiones: sale por el flanco despejado lateral
+                            // evitando la silla y el escritorio, caminando siempre hacia adelante por los pasillos
+                            if (isCatOnDesk) {
+                                currentNavPath = [
+                                    [0.10, -0.85],
+                                    [0.10, -1.45],
+                                    [-2.15, -1.45],
+                                    [-2.15, 1.15],
+                                    [targetCatX, targetCatZ]
+                                ];
+                            } else {
+                                currentNavPath = [
+                                    [0.10, -0.85],
+                                    [0.10, -1.45],
+                                    [-2.15, -1.45],
+                                    [-2.15, 0.40],
+                                    [-2.20, 1.40],
+                                    [targetCatX, targetCatZ]
+                                ];
+                            }
+                            currentNavTargetIdx = 0;
+                            robotState = 'WALK_TO_CAT';
+                            robotStateTime = 0;
+                            showRobotBubble('🐾 VISITA A KOTETSU', 'Voy a saludar y hacerle cariño a nuestro gato Kotetsu... 🐱', 5000);
+                        }
+                    } else if (robotState === 'WALK_TO_CAT') {
+                        const targetWP = currentNavPath[currentNavTargetIdx];
+                        const dx = targetWP[0] - robotPos.x;
+                        const dz = targetWP[1] - robotPos.z;
+                        const distWP = Math.hypot(dx, dz);
 
-                    // Left arm in friendly welcoming pose at side/hip
-                    armL.rotation.x = THREE.MathUtils.lerp(-1.18, -0.42 + Math.sin(waveT * 3) * 0.06, armBlend);
-                    armL.rotation.z = THREE.MathUtils.lerp(-0.16, -0.38, armBlend);
-                    armL.rotation.y = THREE.MathUtils.lerp(0.12, 0.22, armBlend);
+                        // ORIENTACIÓN FRONTAL ESTRICTA: Math.atan2(dx, dz) orienta siempre hacia adelante
+                        const targetAngle = Math.atan2(dx, dz);
+                        let diff = targetAngle - robotHeading;
+                        while (diff < -Math.PI) diff += Math.PI * 2;
+                        while (diff > Math.PI) diff -= Math.PI * 2;
+                        robotHeading += diff * (1 - Math.exp(-dt * 9.5));
 
-                    // Head turns toward user/camera and tilts cutely
-                    head.rotation.y = THREE.MathUtils.lerp(Math.sin(t * 0.6) * 0.18, -0.24 + Math.sin(waveT * 2.5) * 0.08, armBlend);
-                    head.rotation.z = THREE.MathUtils.lerp(0, 0.06 + Math.sin(waveT * 3.5) * 0.04, armBlend);
-                    head.rotation.x = THREE.MathUtils.lerp(0, 0.04 + Math.sin(waveT * 4) * 0.04, armBlend);
-                    head.position.y = 1.62 + Math.sin(waveT * 3) * 0.015;
+                        // Gira hacia el destino antes de avanzar (evita caminar de espaldas o derrapar)
+                        const turnAlign = Math.max(0, Math.cos(diff));
+                        const walkSpeed = 1.35 * (0.2 + 0.8 * turnAlign);
+                        robotWalkPhase += dt * 7.5 * (0.2 + 0.8 * turnAlign);
 
-                    antennaTipL.scale.setScalar(1.2 + Math.sin(waveT * 8) * 0.25);
-                    antennaTipR.scale.setScalar(1.2 + Math.sin(waveT * 8 + 1.5) * 0.25);
-                    chestLed.visible = Math.sin(t * 7) > -0.2;
+                        if (distWP > 0.08) {
+                            const step = Math.min(distWP, walkSpeed * dt);
+                            robotPos.x += (dx / distWP) * step;
+                            robotPos.z += (dz / distWP) * step;
+                        } else {
+                            currentNavTargetIdx++;
+                            if (currentNavTargetIdx >= currentNavPath.length) {
+                                robotState = 'PET_CAT';
+                                robotStateTime = 0;
+                                const catPos = (typeof catRoot !== 'undefined') ? catRoot.position : { x: -4.25, y: 0.86, z: 2.45 };
+                                const toCatX = catPos.x - robotPos.x;
+                                const toCatZ = catPos.z - robotPos.z;
+                                robotHeading = Math.atan2(toCatX, toCatZ); // Mira de frente al gato
+                                playCatPurr();
+                                playCatMeow();
+                                if (typeof spawnCatHearts === 'function') {
+                                    spawnCatHearts(catPos);
+                                }
+                                showCatThought('🐱 ¡RONRONEO MÁXIMO!', '¡Miau! ¡Prrrr! (EduBot da los mejores cariños felinos) 🐾❤️');
+                                showRobotBubble('🐱 CARIÑO FELINO', '¡Hola Kotetsu! Qué suave eres... La mejor pausa para recargar serotonina y energía 🐱❤️✨', 6000);
+                            }
+                        }
 
-                } else if (isAudioPlaying) {
-                    // DANCING ROUTINE TO THE BEAT
-                    robot.position.y = Math.abs(Math.sin(t * 7.2)) * 0.038 * (0.6 + beat * 0.6);
+                        robot.position.set(robotPos.x, standY + Math.abs(Math.sin(robotWalkPhase)) * 0.038, robotPos.z);
+                        robot.rotation.set(0, robotHeading, Math.sin(robotWalkPhase) * 0.032);
+                        legL.hip.rotation.set(Math.sin(robotWalkPhase) * 0.55, 0, 0);
+                        legR.hip.rotation.set(-Math.sin(robotWalkPhase) * 0.55, 0, 0);
+                        legL.knee.rotation.set(Math.max(0, -Math.sin(robotWalkPhase) * 0.72), 0, 0);
+                        legR.knee.rotation.set(Math.max(0, Math.sin(robotWalkPhase) * 0.72), 0, 0);
+                        armL.rotation.set(-Math.sin(robotWalkPhase) * 0.45, 0, -0.15);
+                        armR.rotation.set(Math.sin(robotWalkPhase) * 0.45, 0, 0.15);
+                        head.rotation.set(0.04, 0, 0);
 
-                    // Head bobbing & grooving with rhythm
-                    head.position.y = 1.62 + Math.abs(Math.sin(t * 7.2)) * 0.045;
-                    head.rotation.x = Math.sin(t * 7.2) * 0.14;
-                    head.rotation.z = Math.sin(t * 3.6) * 0.14;
-                    head.rotation.y = Math.sin(t * 1.8) * 0.22;
+                    } else if (robotState === 'PET_CAT') {
+                        crouchProg += (1.0 - crouchProg) * (1 - Math.exp(-dt * 5.0));
+                        const crouchY = standY * (1.0 - crouchProg * 0.65);
+                        robot.position.set(robotPos.x, crouchY, robotPos.z);
+                        robot.rotation.set(0, robotHeading, 0);
 
-                    // DJ arms pumping
-                    if (beat > 0.65) {
-                        // Hands in the air on heavy drops!
-                        armL.rotation.x = 0.35 + beat * 0.35;
-                        armL.rotation.z = -0.65;
-                        armR.rotation.x = 0.35 + beat * 0.35;
-                        armR.rotation.z = 0.65;
-                        armR.rotation.y = 0;
-                    } else {
-                        // Alternating DJ groove
-                        armL.rotation.x = -0.9 + Math.sin(t * 7.2) * 0.45;
-                        armL.rotation.z = -0.35 + Math.sin(t * 3.6) * 0.18;
-                        armR.rotation.x = -0.9 + Math.sin(t * 7.2 + Math.PI) * 0.45;
-                        armR.rotation.z = 0.35 + Math.sin(t * 3.6 + Math.PI) * 0.18;
-                        armR.rotation.y = 0;
+                        legL.hip.rotation.set(-0.85 * crouchProg, 0, 0);
+                        legR.hip.rotation.set(-0.85 * crouchProg, 0, 0);
+                        legL.knee.rotation.set(1.25 * crouchProg, 0, 0);
+                        legR.knee.rotation.set(1.25 * crouchProg, 0, 0);
+
+                        const strokeT = Math.sin(robotStateTime * 4.2);
+                        armR.rotation.x = -0.52 + strokeT * 0.16;
+                        armR.rotation.z = 0.28;
+                        armR.rotation.y = -0.18;
+                        armL.rotation.set(-0.65, 0.1, -0.22);
+                        head.rotation.set(0.32, 0.12, 0.05);
+
+                        if (robotStateTime > 5.5) {
+                            currentNavPath = [
+                                [-2.15, 0.80],
+                                [-2.15, -1.45],
+                                [-1.30, -2.50],
+                                [-0.20, -3.60]
+                            ];
+                            currentNavTargetIdx = 0;
+                            robotState = 'WALK_TO_WINDOW';
+                            robotStateTime = 0;
+                            showRobotBubble('🏔️ RUTA AL VENTANAL', 'Ahora voy al ventanal panorámico a admirar la Patagonia... 🏔️', 5000);
+                        }
+
+                    } else if (robotState === 'WALK_TO_WINDOW') {
+                        crouchProg += (0.0 - crouchProg) * (1 - Math.exp(-dt * 6.0));
+                        const targetWP = currentNavPath[currentNavTargetIdx];
+                        const dx = targetWP[0] - robotPos.x;
+                        const dz = targetWP[1] - robotPos.z;
+                        const distWP = Math.hypot(dx, dz);
+
+                        // ORIENTACIÓN FRONTAL AL CAMINAR
+                        const targetAngle = Math.atan2(dx, dz);
+                        let diff = targetAngle - robotHeading;
+                        while (diff < -Math.PI) diff += Math.PI * 2;
+                        while (diff > Math.PI) diff -= Math.PI * 2;
+                        robotHeading += diff * (1 - Math.exp(-dt * 9.5));
+
+                        const turnAlign = Math.max(0, Math.cos(diff));
+                        const walkSpeed = 1.35 * (0.2 + 0.8 * turnAlign);
+                        robotWalkPhase += dt * 7.5 * (0.2 + 0.8 * turnAlign);
+
+                        if (distWP > 0.08) {
+                            const step = Math.min(distWP, walkSpeed * dt);
+                            robotPos.x += (dx / distWP) * step;
+                            robotPos.z += (dz / distWP) * step;
+                        } else {
+                            currentNavTargetIdx++;
+                            if (currentNavTargetIdx >= currentNavPath.length) {
+                                robotState = 'GAZE_WINDOW';
+                                robotStateTime = 0;
+                                showRobotBubble('🏔️ INSPIRACIÓN PATAGÓNICA', 'Qué majestuosa la vista de las Torres del Paine... Momento de contemplación para diseñar arquitecturas de software limpias y escalables 🏔️❄️✨', 7000);
+                            }
+                        }
+
+                        robot.position.set(robotPos.x, standY + Math.abs(Math.sin(robotWalkPhase)) * 0.038, robotPos.z);
+                        robot.rotation.set(0, robotHeading, Math.sin(robotWalkPhase) * 0.032);
+                        legL.hip.rotation.set(Math.sin(robotWalkPhase) * 0.55, 0, 0);
+                        legR.hip.rotation.set(-Math.sin(robotWalkPhase) * 0.55, 0, 0);
+                        legL.knee.rotation.set(Math.max(0, -Math.sin(robotWalkPhase) * 0.72), 0, 0);
+                        legR.knee.rotation.set(Math.max(0, Math.sin(robotWalkPhase) * 0.72), 0, 0);
+                        armL.rotation.set(-Math.sin(robotWalkPhase) * 0.45, 0, -0.15);
+                        armR.rotation.set(Math.sin(robotWalkPhase) * 0.45, 0, 0.15);
+                        head.rotation.set(-0.06, 0, 0);
+
+                    } else if (robotState === 'GAZE_WINDOW') {
+                        let diff = Math.PI - robotHeading; // Mira hacia el ventanal (-Z)
+                        while (diff < -Math.PI) diff += Math.PI * 2;
+                        while (diff > Math.PI) diff -= Math.PI * 2;
+                        robotHeading += diff * (1 - Math.exp(-dt * 6.0));
+
+                        robot.position.set(robotPos.x, standY, robotPos.z);
+                        robot.rotation.set(0, robotHeading, 0);
+                        legL.hip.rotation.set(0, 0, 0);
+                        legL.knee.rotation.set(0, 0, 0);
+                        legR.hip.rotation.set(0, 0, 0);
+                        legR.knee.rotation.set(0, 0, 0);
+
+                        armL.rotation.set(0.32, -0.48, -0.12);
+                        armR.rotation.set(0.32, 0.48, 0.12);
+
+                        head.rotation.y = Math.sin(robotStateTime * 0.65) * 0.22;
+                        head.rotation.x = -0.08 + Math.sin(robotStateTime * 0.3) * 0.04;
+                        head.rotation.z = 0;
+
+                        if (robotStateTime > 6.2) {
+                            currentNavPath = [
+                                [-1.30, -2.50],
+                                [-2.15, -1.45],
+                                [0.10, -1.45],
+                                [0.10, -0.85],
+                                [robotDeskSeatPos.x, robotDeskSeatPos.z]
+                            ];
+                            currentNavTargetIdx = 0;
+                            robotState = 'WALK_TO_DESK';
+                            robotStateTime = 0;
+                            showRobotBubble('💻 DE VUELTA AL ESCRITORIO', '¡Mente y articulaciones al 100%! De vuelta al teclado mecánico a seguir construyendo software de alto nivel 🚀', 5000);
+                        }
+
+                    } else if (robotState === 'WALK_TO_DESK') {
+                        const targetWP = currentNavPath[currentNavTargetIdx];
+                        const dx = targetWP[0] - robotPos.x;
+                        const dz = targetWP[1] - robotPos.z;
+                        const distWP = Math.hypot(dx, dz);
+
+                        // ORIENTACIÓN FRONTAL AL CAMINAR
+                        const targetAngle = Math.atan2(dx, dz);
+                        let diff = targetAngle - robotHeading;
+                        while (diff < -Math.PI) diff += Math.PI * 2;
+                        while (diff > Math.PI) diff -= Math.PI * 2;
+                        robotHeading += diff * (1 - Math.exp(-dt * 9.5));
+
+                        const turnAlign = Math.max(0, Math.cos(diff));
+                        const walkSpeed = 1.35 * (0.2 + 0.8 * turnAlign);
+                        robotWalkPhase += dt * 7.5 * (0.2 + 0.8 * turnAlign);
+
+                        if (distWP > 0.08) {
+                            const step = Math.min(distWP, walkSpeed * dt);
+                            robotPos.x += (dx / distWP) * step;
+                            robotPos.z += (dz / distWP) * step;
+                        } else {
+                            currentNavTargetIdx++;
+                            if (currentNavTargetIdx >= currentNavPath.length) {
+                                robotState = 'SIT_DOWN';
+                                robotStateTime = 0;
+                            }
+                        }
+
+                        robot.position.set(robotPos.x, standY + Math.abs(Math.sin(robotWalkPhase)) * 0.038, robotPos.z);
+                        robot.rotation.set(0, robotHeading, Math.sin(robotWalkPhase) * 0.032);
+                        legL.hip.rotation.set(Math.sin(robotWalkPhase) * 0.55, 0, 0);
+                        legR.hip.rotation.set(-Math.sin(robotWalkPhase) * 0.55, 0, 0);
+                        legL.knee.rotation.set(Math.max(0, -Math.sin(robotWalkPhase) * 0.72), 0, 0);
+                        legR.knee.rotation.set(Math.max(0, Math.sin(robotWalkPhase) * 0.72), 0, 0);
+                        armL.rotation.set(-Math.sin(robotWalkPhase) * 0.45, 0, -0.15);
+                        armR.rotation.set(Math.sin(robotWalkPhase) * 0.45, 0, 0.15);
+                        head.rotation.set(0.04, 0, 0);
+
+                    } else if (robotState === 'SIT_DOWN') {
+                        let diff = 0 - robotHeading; // Vuelve a mirar al frente hacia el escritorio (+Z)
+                        while (diff < -Math.PI) diff += Math.PI * 2;
+                        while (diff > Math.PI) diff -= Math.PI * 2;
+                        robotHeading += diff * (1 - Math.exp(-dt * 6.0));
+
+                        robot.position.set(robotDeskSeatPos.x, standY, robotDeskSeatPos.z);
+                        robot.rotation.set(0, robotHeading, 0);
+
+                        legL.hip.rotation.x = THREE.MathUtils.lerp(-1.45, 0.0, standProg);
+                        legL.knee.rotation.x = THREE.MathUtils.lerp(1.45, 0.0, standProg);
+                        legR.hip.rotation.x = THREE.MathUtils.lerp(-1.45, 0.0, standProg);
+                        legR.knee.rotation.x = THREE.MathUtils.lerp(1.45, 0.0, standProg);
+                        armL.rotation.set(-1.18, 0.10, -0.15);
+                        armR.rotation.set(-1.18, -0.10, 0.15);
+                        head.rotation.set(0.14, -0.18, 0);
+
+                        if (standProg < 0.05 && robotStateTime > 1.2) {
+                            robotState = 'SEATED';
+                            timeSinceLastBreak = 0;
+                        }
                     }
 
-                    antennaTipL.scale.setScalar(1 + beat * 0.55);
-                    antennaTipR.scale.setScalar(1 + beat * 0.55);
-                    chestLed.visible = Math.sin(t * 10) > -0.2;
+                    const baseAnchorY = 1.72;
+                    robotAnchor.set(robot.position.x, baseAnchorY + standY * 0.32, robot.position.z);
 
                 } else {
-                    // DYNAMIC WORK & TYPING AT KEYBOARD (With Turbo Mode support)
-                    robot.position.y = 0;
-                    const turboMult = isTurboActive ? 3.6 : 1.0;
-                    const workCycle = ((t * turboMult) % 5.8);
-                    const isTyping = isTurboActive || workCycle < 3.8;
+                    // SEATED ROUTINE (Typing, sipping coffee, greeting, dancing)
+                    robotPos.set(robotDeskSeatPos.x, 0, robotDeskSeatPos.z);
+                    robotHeading = 0;
+                    robot.rotation.set(0, 0, 0);
 
-                    if (isTyping) {
-                        const freqL1 = isTurboActive ? 75 : 22;
-                        const freqL2 = isTurboActive ? 120 : 37;
-                        const freqR1 = isTurboActive ? 80 : 24;
-                        const freqR2 = isTurboActive ? 115 : 33;
-                        const strokeL = Math.sin(t * freqL1) * 0.045 + Math.sin(t * freqL2) * 0.022;
-                        const strokeR = Math.sin(t * freqR1 + 1.8) * 0.045 + Math.sin(t * freqR2 + 0.9) * 0.022;
-                        const keyDriftX = Math.sin(t * 3.2) * 0.035;
+                    // Smooth standing & sitting kinematics transition
+                    targetStand = (isInitialWelcomeActive || isGreetingNow) ? 1.0 : 0.0;
+                    standProg += (targetStand - standProg) * (1 - Math.exp(-dt * 4.2));
 
-                        armL.rotation.x = -1.18 + strokeL;
-                        armL.rotation.z = -0.16 + keyDriftX;
-                        armL.rotation.y = 0.12 + Math.sin(t * 2.8) * 0.03;
+                    const standY = standProg * 0.38;
+                    robot.position.set(robotDeskSeatPos.x, (isAudioPlaying ? (Math.abs(Math.sin(t * 7.2)) * 0.038 * (0.6 + beat * 0.6)) : 0) + standY, robotDeskSeatPos.z);
+                    chair.position.z = -0.86 - standProg * 0.22;
 
-                        armR.rotation.x = -1.18 + strokeR;
-                        armR.rotation.z = 0.16 + keyDriftX;
-                        armR.rotation.y = -0.12 - Math.sin(t * 2.8) * 0.03;
+                    // Leg articulation
+                    const hipAngle = THREE.MathUtils.lerp(-1.45, 0.0, standProg);
+                    const kneeAngle = THREE.MathUtils.lerp(1.45, 0.0, standProg);
+                    legL.hip.rotation.x = hipAngle;
+                    legL.knee.rotation.x = kneeAngle;
+                    legR.hip.rotation.x = hipAngle;
+                    legR.knee.rotation.x = kneeAngle;
 
-                        // Head focused down towards keyboard keys
-                        head.rotation.x = 0.14 + Math.sin(t * (isTurboActive ? 32 : 11)) * (isTurboActive ? 0.02 : 0.012);
-                        head.rotation.y = -0.18 + Math.sin(t * 2.5) * 0.04;
-                        head.rotation.z = Math.sin(t * 4) * 0.018;
-                        head.position.y = 1.62 + Math.sin(t * (isTurboActive ? 18 : 5.5)) * (isTurboActive ? 0.009 : 0.005);
+                    // Dynamic speech bubble anchor following the standing elevation
+                    const baseAnchorY = (api.getActiveStation() === 'coffee') ? 1.58 : 1.72;
+                    robotAnchor.set(robot.position.x, baseAnchorY + standY * 0.32, robot.position.z);
+
+                    if (isGreetingNow) {
+                        const waveT = (nowMs - greetingStartTime) / 1000;
+                        const armBlend = THREE.MathUtils.clamp(waveT * 3.5, 0, 1);
+
+                        // Wave right arm high and enthusiastically
+                        armR.rotation.x = THREE.MathUtils.lerp(-1.18, 0.55, armBlend);
+                        armR.rotation.z = THREE.MathUtils.lerp(0.16, 0.88 + Math.sin(waveT * 11) * 0.36, armBlend);
+                        armR.rotation.y = THREE.MathUtils.lerp(-0.12, Math.sin(waveT * 5) * 0.18, armBlend);
+
+                        // Left arm in friendly welcoming pose at side/hip
+                        armL.rotation.x = THREE.MathUtils.lerp(-1.18, -0.42 + Math.sin(waveT * 3) * 0.06, armBlend);
+                        armL.rotation.z = THREE.MathUtils.lerp(-0.16, -0.38, armBlend);
+                        armL.rotation.y = THREE.MathUtils.lerp(0.12, 0.22, armBlend);
+
+                        // Head turns toward user/camera and tilts cutely
+                        head.rotation.y = THREE.MathUtils.lerp(Math.sin(t * 0.6) * 0.18, -0.24 + Math.sin(waveT * 2.5) * 0.08, armBlend);
+                        head.rotation.z = THREE.MathUtils.lerp(0, 0.06 + Math.sin(waveT * 3.5) * 0.04, armBlend);
+                        head.rotation.x = THREE.MathUtils.lerp(0, 0.04 + Math.sin(waveT * 4) * 0.04, armBlend);
+                        head.position.y = 1.62 + Math.sin(waveT * 3) * 0.015;
+
+                        antennaTipL.scale.setScalar(1.2 + Math.sin(waveT * 8) * 0.25);
+                        antennaTipR.scale.setScalar(1.2 + Math.sin(waveT * 8 + 1.5) * 0.25);
+                        chestLed.visible = Math.sin(t * 7) > -0.2;
+
+                    } else if (isAudioPlaying) {
+                        // DANCING ROUTINE TO THE BEAT
+                        head.position.y = 1.62 + Math.abs(Math.sin(t * 7.2)) * 0.045;
+                        head.rotation.x = Math.sin(t * 7.2) * 0.14;
+                        head.rotation.z = Math.sin(t * 3.6) * 0.14;
+                        head.rotation.y = Math.sin(t * 1.8) * 0.22;
+
+                        if (beat > 0.65) {
+                            armL.rotation.x = 0.35 + beat * 0.35;
+                            armL.rotation.z = -0.65;
+                            armR.rotation.x = 0.35 + beat * 0.35;
+                            armR.rotation.z = 0.65;
+                            armR.rotation.y = 0;
+                        } else {
+                            armL.rotation.x = -0.9 + Math.sin(t * 7.2) * 0.45;
+                            armL.rotation.z = -0.35 + Math.sin(t * 3.6) * 0.18;
+                            armR.rotation.x = -0.9 + Math.sin(t * 7.2 + Math.PI) * 0.45;
+                            armR.rotation.z = 0.35 + Math.sin(t * 3.6 + Math.PI) * 0.18;
+                            armR.rotation.y = 0;
+                        }
+
+                        antennaTipL.scale.setScalar(1 + beat * 0.55);
+                        antennaTipR.scale.setScalar(1 + beat * 0.55);
+                        chestLed.visible = Math.sin(t * 10) > -0.2;
+
                     } else {
-                        // Pause typing to inspect monitor screen / use mouse
-                        const inspectT = workCycle - 3.8;
-                        const useMouse = inspectT > 0.6 && inspectT < 1.6;
+                        // DYNAMIC WORK, SIPPING COFFEE & TYPING AT KEYBOARD (With Turbo Mode support)
+                        const turboMult = isTurboActive ? 3.6 : 1.0;
+                        const workCycle = ((t * turboMult) % 5.8);
+                        const isTyping = isTurboActive || workCycle < 3.8;
 
-                        // Left hand rests lightly over home-row keys
-                        armL.rotation.x = -1.14 + Math.sin(t * 2) * 0.008;
-                        armL.rotation.z = -0.15;
-                        armL.rotation.y = 0.10;
+                        if (isCoffeeSipping) {
+                            const sipT = (nowMs - coffeeSipStartTime) / 1000;
+                            if (sipT < 0.9) {
+                                const prog = Math.min(1, sipT / 0.9);
+                                const ease = prog * prog * (3 - 2 * prog);
+                                armR.rotation.x = THREE.MathUtils.lerp(-1.18, -0.68, ease);
+                                armR.rotation.z = THREE.MathUtils.lerp(0.16, 0.44, ease);
+                                armR.rotation.y = THREE.MathUtils.lerp(-0.12, 0.28, ease);
 
-                        if (useMouse) {
-                            // Right hand shifts over to the mouse beside the keyboard
-                            armR.rotation.x = -1.14 + Math.sin(t * 14) * 0.018; // mouse clicks
-                            armR.rotation.z = 0.28 + Math.sin(t * 3) * 0.025; // over mousepad
-                            armR.rotation.y = -0.05;
+                                armL.rotation.x = THREE.MathUtils.lerp(-1.18, -1.05, ease);
+                                armL.rotation.z = -0.15;
+                                armL.rotation.y = 0.10;
+
+                                head.rotation.x = THREE.MathUtils.lerp(0.14, 0.18, ease);
+                                head.rotation.y = THREE.MathUtils.lerp(-0.18, 0.38, ease);
+                                head.rotation.z = THREE.MathUtils.lerp(0.0, 0.06, ease);
+                            } else if (sipT < 2.2) {
+                                const sipPhase = (sipT - 0.9) / 1.3;
+                                const bob = Math.sin(sipPhase * Math.PI);
+                                armR.rotation.x = -0.68 + bob * 0.16;
+                                armR.rotation.z = 0.44 - bob * 0.08;
+                                armR.rotation.y = 0.28;
+
+                                armL.rotation.x = -1.05;
+                                armL.rotation.z = -0.15;
+                                armL.rotation.y = 0.10;
+
+                                head.rotation.x = 0.18 + bob * 0.10;
+                                head.rotation.y = 0.38 - bob * 0.08;
+                                head.rotation.z = 0.06 + bob * 0.06;
+                            } else if (sipT < 3.0) {
+                                const retProg = (sipT - 2.2) / 0.8;
+                                const ease = retProg * retProg * (3 - 2 * retProg);
+                                armR.rotation.x = THREE.MathUtils.lerp(-0.68, -1.18, ease);
+                                armR.rotation.z = THREE.MathUtils.lerp(0.44, 0.16, ease);
+                                armR.rotation.y = THREE.MathUtils.lerp(0.28, -0.12, ease);
+
+                                head.rotation.x = THREE.MathUtils.lerp(0.18, 0.14, ease);
+                                head.rotation.y = THREE.MathUtils.lerp(0.38, -0.18, ease);
+                                head.rotation.z = THREE.MathUtils.lerp(0.06, 0.0, ease);
+                            } else {
+                                isCoffeeSipping = false;
+                            }
+                        } else if (isTyping) {
+                            const freqL1 = isTurboActive ? 75 : 22;
+                            const freqL2 = isTurboActive ? 120 : 37;
+                            const freqR1 = isTurboActive ? 80 : 24;
+                            const freqR2 = isTurboActive ? 115 : 33;
+                            const strokeL = Math.sin(t * freqL1) * 0.045 + Math.sin(t * freqL2) * 0.022;
+                            const strokeR = Math.sin(t * freqR1 + 1.8) * 0.045 + Math.sin(t * freqR2 + 0.9) * 0.022;
+                            const keyDriftX = Math.sin(t * 3.2) * 0.035;
+
+                            armL.rotation.x = -1.18 + strokeL;
+                            armL.rotation.z = -0.16 + keyDriftX;
+                            armL.rotation.y = 0.12 + Math.sin(t * 2.8) * 0.03;
+
+                            armR.rotation.x = -1.18 + strokeR;
+                            armR.rotation.z = 0.16 + keyDriftX;
+                            armR.rotation.y = -0.12 - Math.sin(t * 2.8) * 0.03;
+
+                            head.rotation.x = 0.14 + Math.sin(t * (isTurboActive ? 32 : 11)) * (isTurboActive ? 0.02 : 0.012);
+                            head.rotation.y = -0.18 + Math.sin(t * 2.5) * 0.04;
+                            head.rotation.z = Math.sin(t * 4) * 0.018;
+                            head.position.y = 1.62 + Math.sin(t * (isTurboActive ? 18 : 5.5)) * (isTurboActive ? 0.009 : 0.005);
                         } else {
-                            // Right hand rests above keys
-                            armR.rotation.x = -1.14 + Math.sin(t * 2) * 0.008;
-                            armR.rotation.z = 0.15;
-                            armR.rotation.y = -0.10;
+                            const inspectT = workCycle - 3.8;
+                            const useMouse = inspectT > 0.6 && inspectT < 1.6;
+
+                            armL.rotation.x = -1.14 + Math.sin(t * 2) * 0.008;
+                            armL.rotation.z = -0.15;
+                            armL.rotation.y = 0.10;
+
+                            if (useMouse) {
+                                armR.rotation.x = -1.14 + Math.sin(t * 14) * 0.018;
+                                armR.rotation.z = 0.28 + Math.sin(t * 3) * 0.025;
+                                armR.rotation.y = -0.05;
+                            } else {
+                                armR.rotation.x = -1.14 + Math.sin(t * 2) * 0.008;
+                                armR.rotation.z = 0.15;
+                                armR.rotation.y = -0.10;
+                            }
+
+                            if (isCatVisitingDesk) {
+                                head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0.22, 0.08);
+                                head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, 0.44, 0.08);
+                                head.rotation.z = 0.02;
+                                head.position.y = 1.622;
+                            } else {
+                                head.rotation.x = -0.06 + Math.sin(t * 1.5) * 0.015;
+                                head.rotation.y = -0.32 + Math.sin(t * 1.8) * 0.025;
+                                head.rotation.z = 0.02;
+                                head.position.y = 1.622 + Math.sin(t * 2) * 0.004;
+                            }
                         }
 
-                        if (isCatVisitingDesk) {
-                            // EduBot turns head down to look warmly at Kotetsu visiting the desk!
-                            head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, 0.22, 0.08);
-                            head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, 0.44, 0.08);
-                            head.rotation.z = 0.02;
-                            head.position.y = 1.622;
-                        } else {
-                            // Head turns slightly toward monitor screen to review code
-                            head.rotation.x = -0.06 + Math.sin(t * 1.5) * 0.015;
-                            head.rotation.y = -0.32 + Math.sin(t * 1.8) * 0.025;
-                            head.rotation.z = 0.02;
-                            head.position.y = 1.622 + Math.sin(t * 2) * 0.004;
-                        }
+                        antennaTipL.scale.setScalar(1 + Math.sin(t * (isTurboActive ? 8 : 3.5)) * (isTurboActive ? 0.4 : 0.18));
+                        antennaTipR.scale.setScalar(1 + Math.sin(t * (isTurboActive ? 8 : 3.5) + 1.5) * (isTurboActive ? 0.4 : 0.18));
+                        chestLed.visible = isTurboActive ? (Math.sin(t * 18) > -0.2) : (Math.sin(t * 4.5) > -0.35);
                     }
-
-                    antennaTipL.scale.setScalar(1 + Math.sin(t * (isTurboActive ? 8 : 3.5)) * (isTurboActive ? 0.4 : 0.18));
-                    antennaTipR.scale.setScalar(1 + Math.sin(t * (isTurboActive ? 8 : 3.5) + 1.5) * (isTurboActive ? 0.4 : 0.18));
-                    chestLed.visible = isTurboActive ? (Math.sin(t * 18) > -0.2) : (Math.sin(t * 4.5) > -0.35);
                 }
 
                 updateRobotBubble();
@@ -6536,23 +9301,68 @@
                 // =========================================================
                 const stateElapsed = (now - stateStartTime) / 1000;
 
-                // Autonomous state progression timers
-                if (now - lastAutoActionTime > 16000) {
+                // Autonomous state progression timers (variedad de acciones aleatorias)
+                if (now - lastAutoActionTime > 14000) {
                     lastAutoActionTime = now;
                     if (catState === 'sleeping' && Math.random() < 0.65) {
                         startWaking();
-                    } else if (catState === 'investigating' || catState === 'grooming') {
+                    } else if (catState === 'investigating' || catState === 'grooming' || catState === 'perch_furniture') {
                         const rand = Math.random();
-                        if (rand < 0.35) {
+                        if (rand < 0.28) {
                             startCatPlayActivity();
-                        } else if (rand < 0.72) {
-                            const choices = ['desk_robot', 'window', 'arcade', 'whiteboard', 'center'];
-                            const nextChoice = choices[Math.floor(Math.random() * choices.length)];
+                        } else if (rand < 0.50) {
+                            sendCatToFood();
+                        } else if (rand < 0.78) {
+                            // Subirse a muebles o explorar la oficina
+                            const furnitureDestinations = ['desk_surface', 'credenza_surface', 'window_ledge', 'center', 'whiteboard', 'arcade'];
+                            const nextChoice = furnitureDestinations[Math.floor(Math.random() * furnitureDestinations.length)];
                             startWalkTo(nextChoice, 'walking');
                         } else {
                             sendCatToSleep();
                         }
                     }
+                }
+
+                // Bed Squish Spring Damper Physics (Deformación de la cama al subir y bajar)
+                if (typeof catBedCushion !== 'undefined' && catBedCushion) {
+                    const squishForce = (bedSquishTarget - bedSquishCompression) * 90.0 - bedSquishVel * 12.0;
+                    bedSquishVel += squishForce * dt;
+                    bedSquishCompression += bedSquishVel * dt;
+                    catBedCushion.scale.set(
+                        1.0 + bedSquishCompression * 0.12,
+                        1.0 - bedSquishCompression * 0.36,
+                        1.0 + bedSquishCompression * 0.12
+                    );
+                    catBedCushion.position.y = 0.18 - bedSquishCompression * 0.04;
+                }
+
+                // Water Fountain Ripples Animation at Food Station
+                if (typeof waterRipples !== 'undefined' && waterRipples) {
+                    const wavePhase = (t * 2.8) % 1.0;
+                    waterRipples.scale.setScalar(1.0 + wavePhase * 1.6);
+                    waterRipples.material.opacity = Math.max(0, 0.75 * (1.0 - wavePhase));
+                }
+
+                // MUSIC DETECTED -> Bipedal Cat Dancing on 2 Legs!
+                const isMusicPlaying = !!(window.eduMusicState && window.eduMusicState.isPlaying);
+                if (isMusicPlaying && catState !== 'jumping_up' && catState !== 'jumping_down') {
+                    if (catState !== 'dancing') {
+                        catState = 'dancing';
+                        stateStartTime = performance.now();
+                        playCatMeow('chirp');
+                        showCatThought('🕺 ¡KOTETSU MODO FIESTA!', '¡Miau! ¡Sonó la música! ¡A bailar en 2 patas al ritmo de los sintetizadores! 🐾🎶✨');
+                    }
+                } else if (!isMusicPlaying && catState === 'dancing') {
+                    catState = 'grooming';
+                    stateStartTime = performance.now();
+                    stateDuration = 3.5;
+                    const baseFloorY = (currentWaypointId === 'desk_surface') ? 1.24 :
+                        (currentWaypointId === 'credenza_surface') ? 0.92 :
+                            (currentWaypointId === 'window_ledge') ? 0.91 :
+                                (currentWaypointId === 'beanbag') ? 0.44 : 0.16;
+                    catRoot.position.y = baseFloorY;
+                    catSpine.rotation.set(0, 0, 0);
+                    playCatMeow('happy');
                 }
 
                 // Cyber-Yarn Toy Ball physics
@@ -6608,7 +9418,8 @@
                     const petT = (now - catPetStartTime) / 1000;
                     const stretch = Math.sin(Math.min(Math.PI, petT * 2.2));
                     catSpine.scale.y = 1 + stretch * 0.28;
-                    catSpine.position.y = stretch * 0.05;
+                    // LOUD PURR VIBRATION (vibración física en el lomo al ronronear fuerte)
+                    catSpine.position.y = stretch * 0.05 + Math.sin(t * 36.0) * 0.009;
                     tailRoot.rotation.z = 0.35 + Math.sin(t * 8) * 0.35;
                     tailMid.rotation.z = 0.3 + Math.sin(t * 8 + 0.4) * 0.25;
                     catEyeMat.color.setHex(0x10b981);
@@ -6618,7 +9429,9 @@
                 }
                 // STATE MACHINE IMPLEMENTATION
                 else if (catState === 'sleeping') {
-                    // Resting breathing on beanbag
+                    // Resting breathing on dark corner bed
+                    catRoot.position.set(-4.85, 0.44, 2.25);
+                    catRoot.rotation.y = -2.15;
                     catSpine.scale.set(1.0, 1 + Math.sin(t * 1.5) * 0.035, 1.0);
                     catSpine.position.set(0, -0.02, 0);
                     catSpine.rotation.set(0, 0, 0);
@@ -6645,7 +9458,6 @@
                     catEyeMat.color.setHex(0x10b981);
 
                     if (prog < 0.5) {
-                        // Front stretch: paws forward, chest down
                         const p = prog * 2;
                         catSpine.position.y = -0.06 * Math.sin(p * Math.PI);
                         catSpine.rotation.z = 0.22 * Math.sin(p * Math.PI);
@@ -6653,7 +9465,6 @@
                         legFR.rotation.z = 0.55 * Math.sin(p * Math.PI);
                         catHeadGroup.rotation.x = -0.35 * Math.sin(p * Math.PI);
                     } else {
-                        // Rear stretch: back leg back, spine arch
                         const p = (prog - 0.5) * 2;
                         catSpine.position.y = 0.04 * Math.sin(p * Math.PI);
                         catSpine.rotation.z = -0.2 * Math.sin(p * Math.PI);
@@ -6683,19 +9494,23 @@
                     tailRoot.rotation.z = 0.8;
 
                     if (prog >= 1.0) {
-                        currentWaypointId = 'lounge_rug';
+                        const floorWpId = (currentWaypointId === 'desk_surface') ? 'desk_front' :
+                            (currentWaypointId === 'credenza_surface') ? 'credenza_front' :
+                                (currentWaypointId === 'window_ledge') ? 'window' : 'lounge_rug';
+                        currentWaypointId = floorWpId;
                         catRoot.position.copy(jumpEndPos);
                         catSpine.position.y = -0.04;
-                        playCatMeow();
-                        if (nextActivityAfterLanding === 'running_zoomies') {
+                        playCatMeow('chirp');
+                        const target = nextActivityAfterLanding;
+                        nextActivityAfterLanding = null;
+                        if (target === 'running_zoomies') {
                             catState = 'running_zoomies';
-                            nextActivityAfterLanding = null;
-                        } else if (nextActivityAfterLanding) {
-                            const target = nextActivityAfterLanding;
-                            nextActivityAfterLanding = null;
+                        } else if (target) {
                             startWalkTo(target, 'walking');
                         } else {
-                            startWalkTo('center', 'walking');
+                            catState = 'investigating';
+                            stateStartTime = performance.now();
+                            stateDuration = 4.0;
                         }
                     }
                 }
@@ -6703,7 +9518,7 @@
                     const prog = Math.min(1.0, stateElapsed / stateDuration);
                     catRoot.position.x = THREE.MathUtils.lerp(jumpStartPos.x, jumpEndPos.x, prog);
                     catRoot.position.z = THREE.MathUtils.lerp(jumpStartPos.z, jumpEndPos.z, prog);
-                    catRoot.position.y = THREE.MathUtils.lerp(jumpStartPos.y, jumpEndPos.y, prog) + Math.sin(prog * Math.PI) * 0.42;
+                    catRoot.position.y = THREE.MathUtils.lerp(jumpStartPos.y, jumpEndPos.y, prog) + Math.sin(prog * Math.PI) * 0.44;
 
                     legFL.rotation.z = 0.3;
                     legFR.rotation.z = 0.3;
@@ -6711,10 +9526,15 @@
                     legBR.rotation.z = -0.4;
 
                     if (prog >= 1.0) {
-                        currentWaypointId = 'beanbag';
                         catRoot.position.copy(jumpEndPos);
-                        catState = 'sleeping';
                         stateStartTime = performance.now();
+                        if (currentWaypointId === 'beanbag') {
+                            catState = 'sleeping';
+                        } else {
+                            catState = 'perch_furniture';
+                            stateDuration = 8.5;
+                            playCatPurr();
+                        }
                     }
                 }
                 else if (catState === 'walking') {
@@ -6771,16 +9591,33 @@
                         if (pathQueue.length > 0) {
                             currentWaypointId = pathQueue.shift();
                         }
-                        if (pathQueue.length === 0) {
+                        // If the very next target is a piece of furniture, jump directly up from here!
+                        if (pathQueue.length > 0 && KOTETSU_WAYPOINTS[pathQueue[0]] && KOTETSU_WAYPOINTS[pathQueue[0]].isFurniture) {
+                            const furnitureTarget = pathQueue.shift();
+                            startJumpUp(furnitureTarget);
+                        } else if (pathQueue.length === 0) {
                             // Arrived at destination waypoint!
-                            if (currentWaypointId === 'desk_robot') {
+                            const destWp = KOTETSU_WAYPOINTS[currentWaypointId];
+                            if (destWp && destWp.isFurniture && currentWaypointId !== 'beanbag') {
+                                startJumpUp(currentWaypointId);
+                            } else if (currentWaypointId === 'desk_robot') {
                                 isCatVisitingDesk = true;
                                 catState = 'investigating';
                                 stateStartTime = performance.now();
                                 stateDuration = 9.0;
-                                playCatMeow();
+                                playCatMeow('happy');
+                            } else if (currentWaypointId === 'food_station') {
+                                catState = (Math.random() < 0.5) ? 'drinking' : 'eating';
+                                stateStartTime = performance.now();
+                                stateDuration = 5.2;
+                                playCatMeow('hungry');
+                            } else if (currentWaypointId === 'toy_mouse') {
+                                catState = 'hunting_wiggle';
+                                stateStartTime = performance.now();
+                                stateDuration = 1.2;
+                                playToyMouseSqueak();
                             } else if (currentWaypointId === 'lounge_rug' && catState !== 'waking') {
-                                startJumpUp();
+                                startJumpUp('beanbag');
                             } else {
                                 catState = 'investigating';
                                 stateStartTime = performance.now();
@@ -6788,6 +9625,144 @@
                             }
                         }
                     }
+                }
+                else if (catState === 'drinking') {
+                    // Head bobbing down into water fountain
+                    catRoot.position.y = 0.16;
+                    catSpine.position.set(0, -0.04, 0);
+                    catSpine.rotation.set(0.12, 0, 0);
+                    catHeadGroup.position.set(0.30, -0.04, -0.06);
+                    catHeadGroup.rotation.set(0.48 + Math.sin(t * 14.0) * 0.04, -0.15, 0);
+
+                    legFL.rotation.set(0.1, 0, 0);
+                    legFR.rotation.set(0.1, 0, 0);
+                    legBL.rotation.set(-0.15, 0, 0);
+                    legBR.rotation.set(-0.15, 0, 0);
+                    tailRoot.rotation.set(0.2, 0, 0.5 + Math.sin(t * 2.5) * 0.15);
+
+                    if (now - lastLickSoundTime > 360) {
+                        lastLickSoundTime = now;
+                        playWaterLickSound();
+                    }
+
+                    if (stateElapsed > stateDuration) {
+                        catState = 'grooming';
+                        stateStartTime = performance.now();
+                        stateDuration = 4.0;
+                    }
+                }
+                else if (catState === 'eating') {
+                    // Head bobbing down into kibble bowl
+                    catRoot.position.y = 0.16;
+                    catSpine.position.set(0, -0.04, 0);
+                    catSpine.rotation.set(0.14, 0, 0);
+                    catHeadGroup.position.set(0.30, -0.04, 0.06);
+                    catHeadGroup.rotation.set(0.50 + Math.sin(t * 10.0) * 0.05, 0.15, 0);
+
+                    legFL.rotation.set(0.1, 0, 0);
+                    legFR.rotation.set(0.1, 0, 0);
+                    legBL.rotation.set(-0.15, 0, 0);
+                    legBR.rotation.set(-0.15, 0, 0);
+                    tailRoot.rotation.set(0.2, 0, 0.4 + Math.sin(t * 2.0) * 0.12);
+
+                    if (now - lastCrunchSoundTime > 450) {
+                        lastCrunchSoundTime = now;
+                        playFoodCrunchSound();
+                    }
+
+                    if (stateElapsed > stateDuration) {
+                        catState = 'grooming';
+                        stateStartTime = performance.now();
+                        stateDuration = 4.2;
+                    }
+                }
+                else if (catState === 'perch_furniture') {
+                    // Resting or loafing on furniture (Desk, Credenza, Window Ledge)
+                    const isDesk = currentWaypointId === 'desk_surface';
+                    const isCredenza = currentWaypointId === 'credenza_surface';
+                    const isWindow = currentWaypointId === 'window_ledge';
+
+                    catSpine.scale.set(1.0, 1 + Math.sin(t * 1.8) * 0.025, 1.0);
+                    catSpine.position.y = -0.035;
+                    legFL.rotation.set(-1.0, 0, 0); legFL.position.y = 0.01;
+                    legFR.rotation.set(-1.0, 0, 0); legFR.position.y = 0.01;
+                    legBL.rotation.set(0.9, 0, 0); legBL.position.y = 0.02;
+                    legBR.rotation.set(0.9, 0, 0); legBR.position.y = 0.02;
+
+                    if (isDesk) {
+                        catRoot.position.set(-0.05, 1.24, 0.28);
+                        catRoot.rotation.y = lerpAngle(catRoot.rotation.y, -0.45, Math.min(1.0, dt * 4.0));
+                        catHeadGroup.rotation.set(0.12, Math.sin(t * 1.5) * 0.25, 0.05);
+                        tailRoot.rotation.set(0.2, 0.4, Math.sin(t * 2.2) * 0.35);
+                    } else if (isCredenza) {
+                        catRoot.position.set(2.25, 0.88, -4.40);
+                        catHeadGroup.rotation.set(0.08, -0.3 + Math.sin(t * 1.2) * 0.2, 0);
+                        tailRoot.rotation.set(0.1, 0.8, -0.2);
+                        if (Math.random() < 0.015 && typeof spinGlobeWithImpulse === 'function') {
+                            spinGlobeWithImpulse(1.6);
+                        }
+                    } else {
+                        catRoot.position.set(0.40, 0.91, -4.25);
+                        catHeadGroup.rotation.set(0.15, 0.4 + Math.sin(t * 1.0) * 0.15, 0);
+                        tailRoot.rotation.set(0.1, 0, 0.4 + Math.sin(t * 1.5) * 0.2);
+                    }
+
+                    if (stateElapsed > stateDuration) {
+                        startJumpDown('center');
+                    }
+                }
+                else if (catState === 'dancing') {
+                    // BIPEDAL DANCING FELINE (Baila en 2 piernas, mueve la cola)
+                    const beat = (window.eduMusicState && window.eduMusicState.getBeat) ? window.eduMusicState.getBeat() : Math.pow(Math.max(0, Math.sin(t * 7.2)), 4);
+                    const danceTempo = t * 7.8;
+                    const stepSide = Math.sin(danceTempo);
+
+                    // 1. Stands upright on hind legs facing the audience / camera
+                    const baseFloorY = (currentWaypointId === 'desk_surface') ? 1.24 :
+                        (currentWaypointId === 'credenza_surface') ? 0.92 :
+                            (currentWaypointId === 'window_ledge') ? 0.91 :
+                                (currentWaypointId === 'beanbag') ? 0.44 : 0.16;
+                    catRoot.position.y = baseFloorY + 0.16 + Math.abs(Math.sin(danceTempo)) * 0.04 + beat * 0.03;
+                    catRoot.rotation.y = -Math.PI * 0.5 + Math.sin(danceTempo * 0.5) * 0.20;
+                    catSpine.rotation.z = 1.32 + Math.sin(danceTempo * 0.5) * 0.08;
+                    catSpine.rotation.y = Math.sin(danceTempo * 0.5) * 0.22;
+                    catSpine.rotation.x = Math.cos(danceTempo) * 0.08;
+
+                    // 2. Hind legs supporting & stepping rhythmically
+                    legBL.position.set(-0.16, -0.03, -0.115);
+                    legBR.position.set(-0.16, -0.03, 0.115);
+                    legBL.rotation.z = -1.28 + stepSide * 0.24;
+                    legBR.rotation.z = -1.28 - stepSide * 0.24;
+                    legBL.rotation.x = stepSide * 0.16;
+                    legBR.rotation.x = -stepSide * 0.16;
+
+                    // 3. Front paws dancing up in the air (Disco Paw Wave!)
+                    legFL.rotation.z = -0.35 + Math.sin(danceTempo) * 0.55;
+                    legFR.rotation.z = -0.35 - Math.sin(danceTempo) * 0.55;
+                    legFL.rotation.x = 0.45 + Math.cos(danceTempo * 0.5) * 0.35;
+                    legFR.rotation.x = -0.45 - Math.cos(danceTempo * 0.5) * 0.35;
+                    legFL.rotation.y = Math.sin(danceTempo) * 0.30;
+                    legFR.rotation.y = -Math.sin(danceTempo) * 0.30;
+
+                    // 4. Head bobbing enthusiastically
+                    catHeadGroup.rotation.z = -1.25 + 0.10 + Math.sin(danceTempo) * 0.18;
+                    catHeadGroup.rotation.y = Math.cos(danceTempo * 0.5) * 0.25;
+                    catHeadGroup.rotation.x = Math.sin(danceTempo) * 0.12;
+
+                    // 5. Ears bouncing happily
+                    earL.rotation.x = -0.15 + Math.sin(danceTempo * 1.5) * 0.25;
+                    earR.rotation.x = 0.15 - Math.sin(danceTempo * 1.5) * 0.25;
+
+                    // 6. ENERGETIC SERPENTINE DANCE TAIL (Mueve la cola rítmicamente)
+                    tailRoot.rotation.z = Math.sin(danceTempo) * 0.65;
+                    tailRoot.rotation.y = Math.cos(danceTempo * 0.5) * 0.55;
+                    tailSeg1.rotation.set(0, 0, Math.sin(danceTempo) * 0.45);
+                    tailMid.rotation.set(Math.cos(danceTempo) * 0.35, 0, Math.sin(danceTempo + 1.2) * 0.65);
+                    tailTipGroup.rotation.set(0, Math.sin(danceTempo) * 0.4, Math.sin(danceTempo + 2.4) * 0.85);
+
+                    // 7. Glowing cyber-collar pulsating to beat
+                    catBellLight.intensity = 0.5 + beat * 0.8;
+                    catBellMat.color.setHSL((t * 0.8) % 1.0, 1.0, 0.55);
                 }
                 else if (catState === 'running_zoomies') {
                     catEyeL.scale.y = 1.0;
@@ -6945,6 +9920,45 @@
                     }
                 }
 
+                // Coffee Mug Elastic Spring Press Physical Animation
+                if (coffeePressProg > 0) {
+                    coffeePressProg = Math.max(0, coffeePressProg - dt * 4.5);
+                    const pressOffset = Math.sin(coffeePressProg * Math.PI) * 0.024;
+                    coffeeGroup.position.y = 1.052 - pressOffset;
+                } else {
+                    coffeeGroup.position.y = 1.052;
+                }
+
+                // DYNAMIC RGB CHROMA LIGHTING (Mechanical Keyboard, Ergonomic Mouse & XL Desk Mat)
+                const rgbSpeed = isTurboActive ? 2.6 : 0.85;
+                const baseHue = (t * rgbSpeed) % 1.0;
+
+                // 1. XL Desk Mat RGB Fiber Optic Edge
+                if (typeof deskMatRgbMat !== 'undefined' && deskMatRgbMat) {
+                    deskMatRgbMat.color.setHSL(baseHue, 1.0, 0.52);
+                }
+
+                // 2. Keyboard Frosted Acrylic Underglow Diffuser
+                if (typeof keyboardUnderglowRgbMat !== 'undefined' && keyboardUnderglowRgbMat) {
+                    keyboardUnderglowRgbMat.color.setHSL((baseHue + 0.12) % 1.0, 1.0, 0.55);
+                }
+
+                // 3. Keyboard Sculpted Keycap Rows Wave
+                if (typeof keyRowRgbMats !== 'undefined' && keyRowRgbMats.length) {
+                    for (let r = 0; r < keyRowRgbMats.length; r++) {
+                        const rowHue = (baseHue + r * 0.09) % 1.0;
+                        keyRowRgbMats[r].color.setHSL(rowHue, 0.95, isTurboActive ? 0.65 : 0.50);
+                    }
+                }
+
+                // 4. Mouse Base Halo Underglow, Illuminated Scroll Wheel & Palm Logo
+                if (typeof mouseBaseRgbMat !== 'undefined' && mouseBaseRgbMat) {
+                    const mouseHue = (baseHue + 0.45) % 1.0;
+                    mouseBaseRgbMat.color.setHSL(mouseHue, 1.0, 0.55);
+                    if (typeof mouseWheelRgbMat !== 'undefined' && mouseWheelRgbMat) mouseWheelRgbMat.color.setHSL((mouseHue + 0.15) % 1.0, 1.0, 0.60);
+                    if (typeof mouseLogoRgbMat !== 'undefined' && mouseLogoRgbMat) mouseLogoRgbMat.color.setHSL((mouseHue + 0.25) % 1.0, 1.0, 0.55);
+                }
+
                 // Steam animation over espresso coffee mug
                 const steamPos = steamGeo.attributes.position.array;
                 const steamSpeed = isTurboActive ? 0.38 : 0.14;
@@ -7041,7 +10055,7 @@
             renderer.render(scene, camera);
             updateMarkers(t);
 
-            if (!reduced && !document.hidden) {
+            if (!reduced) {
                 animId = requestAnimationFrame(frame);
             } else {
                 animId = null;

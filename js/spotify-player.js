@@ -487,7 +487,13 @@
         setTab: setTab,
         onStateChange: (fn) => { listeners.push(fn); },
         getCurrentTrack: () => TRACKS[currentIndex],
-        isPlaying: () => isPlaying
+        isPlaying: () => isPlaying,
+        setSimulatedPlayback: (state) => {
+            isPlaying = !!state;
+            window.eduMusicState.isPlaying = isPlaying;
+            syncUIState();
+            notifyChange();
+        }
     };
 
     if (document.readyState === 'loading') {

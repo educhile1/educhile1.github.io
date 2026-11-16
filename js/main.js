@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const FULL_SECTIONS_ORDER = ['home', 'credentials', 'projects', 'contact'];
-    const STATIONS_ORDER = ['overview', 'projects', 'credentials', 'home', 'contact', 'arcade', 'music', 'certifications'];
+    const STATIONS_ORDER = ['overview', 'projects', 'credentials', 'home', 'contact', 'arcade', 'music', 'certifications', 'clock'];
 
     const STATION_META = {
         overview: {
@@ -40,6 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
             navSection: 'credentials',
             path: '~/certificaciones/stack-tecnologico',
             hudLabel: 'CAM // 07-CERTIFICACIONES'
+        },
+        clock: {
+            code: '08',
+            section: 'home',
+            group: null,
+            navSection: 'home',
+            path: '~/estacion-clima/reloj-meteorologico',
+            hudLabel: 'CAM // 08-RELOJ-CLIMA'
         },
         home: {
             code: '03',
@@ -120,6 +128,38 @@ document.addEventListener('DOMContentLoaded', () => {
             navSection: 'home',
             path: '~/escritorio/cafe-turbo',
             hudLabel: 'CAM // ☕-CAFE-TURBO'
+        },
+        coffee_macro: {
+            code: '☕',
+            section: null,
+            group: null,
+            navSection: 'home',
+            path: '~/escritorio/cafe-turbo/latte-art',
+            hudLabel: 'CAM // ☕-LATTE-ART-MACRO'
+        },
+        globe: {
+            code: '🌍',
+            section: null,
+            group: null,
+            navSection: 'home',
+            path: '~/mueble/mapamundi-global',
+            hudLabel: 'CAM // 🌍-MAPAMUNDI'
+        },
+        tree: {
+            code: '🎄',
+            section: null,
+            group: null,
+            navSection: 'home',
+            path: '~/oficina/arbol-navidad',
+            hudLabel: 'CAM // 🎄-NAVIDAD'
+        },
+        scenic: {
+            code: '🏔️',
+            section: null,
+            group: null,
+            navSection: 'home',
+            path: '~/ventanal/paisajes-mundo',
+            hudLabel: 'CAM // 🏔️-VENTANAL'
         }
     };
 
@@ -943,6 +983,7 @@ document.addEventListener('DOMContentLoaded', () => {
             getActiveStation: () => activeStationId,
             setViewMode: (mode, opts) => setViewMode(mode, opts)
         };
+        window.eduOfficeApi = api;
 
         if (window.EduRoomScene && typeof window.EduRoomScene.init === 'function') {
             const ok = window.EduRoomScene.init({

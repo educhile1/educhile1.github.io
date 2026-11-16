@@ -114,13 +114,15 @@
                     <div>
                         <div class="flex items-center gap-1.5">
                             <span class="font-mono-tech text-[11px] font-bold tracking-wider text-sky-300">EDUBOT</span>
-                            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">IA</span>
+                            <span
+                                class="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">IA</span>
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         </div>
                         <div class="text-[9px] font-mono text-slate-400">Asistente Virtual 3D</div>
                     </div>
                 </div>
-                <button id="edubot-close-btn" type="button" class="edubot-close-btn" title="Cerrar mensaje" aria-label="Cerrar">×</button>
+                <button id="edubot-close-btn" type="button" class="edubot-close-btn" title="Cerrar mensaje"
+                    aria-label="Cerrar">×</button>
             </div>
             <div class="edubot-bubble-body">
                 <div id="edubot-bubble-badge" class="edubot-tip-badge">💡 TIP PROFESIONAL</div>
@@ -130,7 +132,11 @@
                 <button id="edubot-next-tip-btn" type="button" class="edubot-btn-next" title="Ver siguiente dato">
                     <span>💡 Siguiente tip</span>
                 </button>
-                <button id="edubot-profile-btn" type="button" class="edubot-btn-secondary" title="Ver perfil profesional">
+                <button id="edubot-walk-btn" type="button" class="edubot-btn-walk" title="Pausa activa por la oficina">
+                    <span>🚶 Pausa Activa</span>
+                </button>
+                <button id="edubot-profile-btn" type="button" class="edubot-btn-secondary"
+                    title="Ver perfil profesional">
                     <span>👤 Ver Perfil</span>
                 </button>
                 <button id="edubot-meet-btn" type="button" class="edubot-btn-accent" title="Agendar videollamada">
@@ -148,31 +154,47 @@
                     <span class="text-base select-none">🐱</span>
                     <div>
                         <div class="flex items-center gap-1.5">
-                            <span class="font-mono-tech text-[11px] font-bold tracking-wider text-pink-300">KOTETSU</span>
-                            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-pink-500/20 text-pink-300 border border-pink-400/30">MASCOTA OFICIAL</span>
+                            <span
+                                class="font-mono-tech text-[11px] font-bold tracking-wider text-pink-300">KOTETSU</span>
+                            <span
+                                class="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-pink-500/20 text-pink-300 border border-pink-400/30">MASCOTA
+                                OFICIAL</span>
                         </div>
                         <div class="text-[9px] font-mono text-slate-400">Asesor de Bienestar TI</div>
                     </div>
                 </div>
-                <button id="cat-close-btn" type="button" class="edubot-close-btn" title="Cerrar mensaje" aria-label="Cerrar">×</button>
+                <button id="cat-close-btn" type="button" class="edubot-close-btn" title="Cerrar mensaje"
+                    aria-label="Cerrar">×</button>
             </div>
             <div class="edubot-bubble-body">
                 <div id="cat-bubble-badge" class="cat-tip-badge">🐾 SABIDURÍA FELINA</div>
                 <p id="cat-bubble-text" class="edubot-bubble-text">
-                    ¡Miau! Eduardo es un líder que <strong>mantiene la templanza, el foco y la empatía</strong> incluso en momentos de incidentes críticos y alta exigencia. Además, ¡siempre recuerda darme mis premios favoritos! 🐾✨
+                    ¡Miau! Eduardo es un líder que <strong>mantiene la templanza, el foco y la empatía</strong> incluso
+                    en momentos de incidentes críticos y alta exigencia. Además, ¡siempre recuerda darme mis premios
+                    favoritos! 🐾✨
                 </p>
             </div>
             <div class="edubot-bubble-actions">
                 <button id="cat-pet-btn" type="button" class="cat-btn-pet" title="Acariciar y escuchar ronroneo">
                     <span>🐾 Acariciar</span>
                 </button>
-                <button id="cat-play-btn" type="button" class="cat-btn-play" title="¡Zoomies y jugar con su pelotita!">
+                <button id="cat-play-btn" type="button" class="cat-btn-play" title="¡Zoomies y jugar con su ratoncito!">
                     <span>🎾 ¡A jugar!</span>
                 </button>
-                <button id="cat-desk-btn" type="button" class="cat-btn-desk" title="Llamar al escritorio junto a EduBot">
+                <button id="cat-food-btn" type="button" class="cat-btn-food"
+                    title="Ir al bebedero y comer croquetas de salmón">
+                    <span>🍽️ Comer / Beber</span>
+                </button>
+                <button id="cat-dance-btn" type="button" class="cat-btn-dance"
+                    title="¡Bailar en 2 patas al ritmo de la música!">
+                    <span>🕺 ¡A bailar!</span>
+                </button>
+                <button id="cat-desk-btn" type="button" class="cat-btn-desk"
+                    title="Llamar al escritorio junto a EduBot">
                     <span>📍 Ven al escritorio</span>
                 </button>
-                <button id="cat-sleep-btn" type="button" class="edubot-btn-secondary" title="Dejarlo descansar en su puf">
+                <button id="cat-sleep-btn" type="button" class="edubot-btn-secondary"
+                    title="Dejarlo descansar en su cama nido">
                     <span>💤 A dormir</span>
                 </button>
             </div>
@@ -257,39 +279,50 @@
                 <!-- Panel Header -->
                 <div class="cred-panel-header">
                     <div class="flex items-center gap-2">
-                        <span id="cert-tag-badge" class="cred-tag-badge bg-sky-500/20 text-sky-300 border-sky-400/30">CERTIFICACIÓN OFICIAL</span>
+                        <span id="cert-tag-badge"
+                            class="cred-tag-badge bg-sky-500/20 text-sky-300 border-sky-400/30">CERTIFICACIÓN
+                            OFICIAL</span>
                         <span id="cert-index-badge" class="cred-counter-badge">1 / 6</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button id="cert-close-btn" type="button" class="cred-close-btn" title="Cerrar ventana" aria-label="Cerrar">×</button>
+                        <button id="cert-close-btn" type="button" class="cred-close-btn" title="Cerrar ventana"
+                            aria-label="Cerrar">×</button>
                     </div>
                 </div>
 
                 <!-- Modal Body with Certificate Info -->
                 <div class="p-5 sm:p-6 space-y-4 text-left">
                     <div class="flex items-start gap-3.5">
-                        <div id="cert-modal-icon" class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-white/20 bg-white/5 text-xl font-bold font-mono-tech shadow-md">
+                        <div id="cert-modal-icon"
+                            class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-white/20 bg-white/5 text-xl font-bold font-mono-tech shadow-md">
                             MIT
                         </div>
                         <div class="min-w-0 flex-1">
-                            <div id="cert-modal-year" class="font-mono-tech text-[11px] text-sky-400 font-bold mb-0.5">2025 – 2026</div>
-                            <h3 id="cert-modal-title" class="font-display text-base font-bold text-white leading-snug">IA Generativa, Transformación Digital &amp; IoT</h3>
-                            <div id="cert-modal-inst" class="text-xs text-slate-300 mt-0.5">Massachusetts Institute of Technology (MIT xPRO)</div>
+                            <div id="cert-modal-year" class="font-mono-tech text-[11px] text-sky-400 font-bold mb-0.5">
+                                2025 – 2026</div>
+                            <h3 id="cert-modal-title" class="font-display text-base font-bold text-white leading-snug">
+                                IA Generativa, Transformación Digital &amp; IoT</h3>
+                            <div id="cert-modal-inst" class="text-xs text-slate-300 mt-0.5">Massachusetts Institute of
+                                Technology (MIT xPRO)</div>
                         </div>
                     </div>
 
-                    <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-slate-200 leading-relaxed" id="cert-modal-desc">
-                        Especialización ejecutiva en adopción de IA generativa empresarial, IoT industrial, arquitecturas de datos e innovación tecnológica disruptiva.
+                    <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-slate-200 leading-relaxed"
+                        id="cert-modal-desc">
+                        Especialización ejecutiva en adopción de IA generativa empresarial, IoT industrial,
+                        arquitecturas de datos e innovación tecnológica disruptiva.
                     </div>
 
                     <div>
-                        <div class="font-mono-tech text-[10px] uppercase tracking-wider text-slate-400 mb-2">⚡ COMPETENCIAS CLAVE &amp; STACK:</div>
+                        <div class="font-mono-tech text-[10px] uppercase tracking-wider text-slate-400 mb-2">⚡
+                            COMPETENCIAS CLAVE &amp; STACK:</div>
                         <div id="cert-modal-tags" class="flex flex-wrap gap-1.5 font-mono-tech text-[11px]">
                             <!-- Dynamically populated -->
                         </div>
                     </div>
 
-                    <div class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono-tech text-slate-400">
+                    <div
+                        class="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono-tech text-slate-400">
                         <span>IDENTIFICADOR:</span>
                         <span id="cert-modal-code" class="text-slate-200">MIT-xPRO-GENAI-2025</span>
                     </div>
@@ -301,7 +334,8 @@
                         <button id="cert-prev-btn" type="button" class="cred-nav-btn" title="Anterior">‹ Ant</button>
                         <button id="cert-next-btn" type="button" class="cred-nav-btn" title="Siguiente">Sig ›</button>
                     </div>
-                    <a href="#credentials" id="cert-view-cv-btn" class="cred-action-cv-btn" title="Ver sección completa en 2D">
+                    <a href="#credentials" id="cert-view-cv-btn" class="cred-action-cv-btn"
+                        title="Ver sección completa en 2D">
                         <span>Ver en CV 2D ↗</span>
                     </a>
                 </div>
@@ -320,10 +354,12 @@
                         <span id="cred-index-badge" class="cred-counter-badge">1 / 6</span>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button id="cred-flip-btn-header" type="button" class="cred-flip-quick-btn" title="Girar credencial">
+                        <button id="cred-flip-btn-header" type="button" class="cred-flip-quick-btn"
+                            title="Girar credencial">
                             <span>↻ Girar</span>
                         </button>
-                        <button id="cred-close-btn" type="button" class="cred-close-btn" title="Cerrar ventana" aria-label="Cerrar">×</button>
+                        <button id="cred-close-btn" type="button" class="cred-close-btn" title="Cerrar ventana"
+                            aria-label="Cerrar">×</button>
                     </div>
                 </div>
 
@@ -340,7 +376,8 @@
                                 <div class="cred-front-body">
                                     <div class="cred-avatar-wrapper">
                                         <div id="cred-avatar-ring" class="cred-avatar-ring">
-                                            <img src="images/perfil_pro_eduf.jpg" alt="Eduardo Cayún" class="cred-avatar-img">
+                                            <img src="images/perfil_pro_eduf.jpg" alt="Eduardo Cayún"
+                                                class="cred-avatar-img">
                                             <span class="cred-avatar-status" title="Disponible"></span>
                                         </div>
                                     </div>
@@ -366,7 +403,8 @@
                             <div class="cred-card-inner">
                                 <div id="cred-back-accent-bar" class="cred-back-accent-bar">
                                     <div class="cred-clip-slit"></div>
-                                    <div id="cred-back-header" class="cred-back-header">TIERRA AYNI · PROYECTOS & CV</div>
+                                    <div id="cred-back-header" class="cred-back-header">TIERRA AYNI · PROYECTOS & CV
+                                    </div>
                                 </div>
                                 <div class="cred-back-body">
                                     <div class="cred-role-box">
@@ -374,8 +412,10 @@
                                             <span class="text-xs text-amber-400">★</span>
                                             <span class="cred-box-label">ROL PRINCIPAL SEGÚN CV</span>
                                         </div>
-                                        <div id="cred-back-cv-role" class="cred-cv-role-title">Jefe de Proyectos & Delegado Ciberseguridad</div>
-                                        <div id="cred-back-period-cat" class="cred-cv-period">Ago 2018 – Presente · Misión Crítica</div>
+                                        <div id="cred-back-cv-role" class="cred-cv-role-title">Jefe de Proyectos &
+                                            Delegado Ciberseguridad</div>
+                                        <div id="cred-back-period-cat" class="cred-cv-period">Ago 2018 – Presente ·
+                                            Misión Crítica</div>
                                     </div>
 
                                     <div class="cred-projects-section">
@@ -404,14 +444,116 @@
                 <!-- Footer Navigation -->
                 <div class="cred-panel-footer">
                     <div class="flex items-center gap-1.5">
-                        <button id="cred-prev-btn" type="button" class="cred-nav-btn" title="Credencial anterior">‹ Ant</button>
-                        <button id="cred-next-btn" type="button" class="cred-nav-btn" title="Siguiente credencial">Sig ›</button>
+                        <button id="cred-prev-btn" type="button" class="cred-nav-btn" title="Credencial anterior">‹
+                            Ant</button>
+                        <button id="cred-next-btn" type="button" class="cred-nav-btn" title="Siguiente credencial">Sig
+                            ›</button>
                     </div>
                     <button id="cred-main-flip-btn" type="button" class="cred-action-flip-btn">
                         <span>↻ Girar Credencial</span>
                     </button>
-                    <a href="#credentials" id="cred-view-full-cv-link" class="cred-action-cv-btn" title="Ver sección completa en 2D">
+                    <a href="#credentials" id="cred-view-full-cv-link" class="cred-action-cv-btn"
+                        title="Ver sección completa en 2D">
                         <span>CV 2D ↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mapamundi & Global Projects Inspector Modal -->
+        <div id="globe-inspector-modal"
+            class="credential-inspector hidden pointer-events-auto fixed bottom-24 left-4 sm:left-6 md:left-8 z-30 w-[calc(100%-2rem)] max-w-[490px] transition-all duration-300 opacity-0 translate-y-4 scale-95"
+            role="dialog" aria-label="Centro de Operaciones Global & Ubicación de Proyectos">
+            <div class="cred-inspector-panel">
+                <!-- Panel Header -->
+                <div class="cred-panel-header">
+                    <div class="flex items-center gap-2">
+                        <span id="globe-tag-badge"
+                            class="cred-tag-badge bg-emerald-500/20 text-emerald-300 border-emerald-400/30 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="globe-tag-badge-text">TELETRABAJO ACTIVO · CHILE</span>
+                        </span>
+                        <span id="globe-index-badge" class="cred-counter-badge">1 / 6</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button id="globe-close-btn" type="button" class="cred-close-btn" title="Cerrar ventana"
+                            aria-label="Cerrar">×</button>
+                    </div>
+                </div>
+
+                <!-- Boss Telework / Presence Highlight Card -->
+                <div
+                    class="mx-3 mt-3 p-3 rounded-xl bg-gradient-to-r from-emerald-950/50 via-slate-900/60 to-sky-950/40 border border-emerald-500/30 text-left">
+                    <div
+                        class="flex items-center justify-between text-[10px] font-mono-tech font-bold text-emerald-400 mb-1">
+                        <span class="flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>ESTADO DEL JEFE EDUARDO:</span>
+                        </span>
+                        <span class="text-sky-300">GMT-3 (Chile)</span>
+                    </div>
+                    <div class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <span>🇨🇱</span>
+                        <span>Chillán (Sur de Chile) · Teletrabajo de Alto Rendimiento</span>
+                    </div>
+                    <div class="text-[11px] text-slate-300 mt-1 leading-snug">
+                        Base de operaciones remota en <strong>Chillán (Región de Ñuble)</strong> liderando ingeniería
+                        cloud y proyectos TI. Atención presencial en <strong>Santiago de Chile</strong> para comités
+                        ejecutivos y clientes corporativos.
+                    </div>
+                </div>
+
+                <!-- Modal Body with Project Location Info -->
+                <div class="p-4 sm:p-5 space-y-3.5 text-left">
+                    <div class="flex items-start gap-3.5">
+                        <div id="globe-modal-icon"
+                            class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border border-white/20 bg-white/5 text-2xl font-bold font-mono-tech shadow-md">
+                            🇨🇱
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div id="globe-modal-scope"
+                                class="font-mono-tech text-[10px] text-sky-400 font-bold mb-0.5 tracking-wider uppercase">
+                                HQ REMOTO &amp; ATENCIÓN PRESENCIAL</div>
+                            <h3 id="globe-modal-title"
+                                class="font-display text-sm sm:text-base font-bold text-white leading-snug">Chillán (HQ
+                                Remoto) &amp; Santiago (Presencial)</h3>
+                            <div id="globe-modal-city" class="text-xs text-slate-300 mt-0.5">Chillán (Ñuble) · Santiago
+                                (RM) · Valparaíso</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-xs text-slate-200 leading-relaxed"
+                        id="globe-modal-desc">
+                        El Jefe Eduardo opera mediante teletrabajo desde Chillán, liderando arquitectura cloud y
+                        consultoría tecnológica. Además, atiende presencialmente en Santiago para reuniones ejecutivas,
+                        comités de directorio y clientes como Falabella, BCI, BancoEstado, Contraloría y Ministerio de
+                        Hacienda.
+                    </div>
+
+                    <div>
+                        <div class="font-mono-tech text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">⚡
+                            PROYECTOS &amp; IMPACTO OPERATIVO:</div>
+                        <div id="globe-modal-tags" class="flex flex-wrap gap-1.5 font-mono-tech text-[10px]">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="cred-panel-footer">
+                    <div class="flex items-center gap-1.5">
+                        <button id="globe-prev-btn" type="button" class="cred-nav-btn" title="Ubicación anterior">‹
+                            Ant</button>
+                        <button id="globe-next-btn" type="button" class="cred-nav-btn" title="Siguiente ubicación">Sig
+                            ›</button>
+                    </div>
+                    <button id="globe-spin-btn" type="button" class="cred-action-flip-btn"
+                        title="Girar el globo terráqueo hacia esta ubicación">
+                        <span>🌍 Girar Globo</span>
+                    </button>
+                    <a href="#projects" id="globe-view-projects-link" class="cred-action-cv-btn"
+                        title="Ver portafolio de proyectos en 2D">
+                        <span>Proyectos 2D ↗</span>
                     </a>
                 </div>
             </div>
@@ -420,10 +562,22 @@
         <!-- Hint Pill when at credentials station -->
         <div id="stage-credentials-hint"
             class="pointer-events-none fixed top-[4.6rem] left-1/2 -translate-x-1/2 z-20 hidden transition-all duration-300 opacity-0 -translate-y-2">
-            <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0b0a14]/90 backdrop-blur-xl border border-sky-400/30 text-white font-mono-tech text-xs shadow-2xl">
+            <div
+                class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0b0a14]/90 backdrop-blur-xl border border-sky-400/30 text-white font-mono-tech text-xs shadow-2xl">
                 <span class="text-sky-400 animate-pulse text-sm">🪪</span>
                 <span>Haz clic en una credencial para <strong>girarla</strong> y ver los proyectos</span>
                 <span class="text-pink-400 font-bold">↻</span>
+            </div>
+        </div>
+
+        <!-- Hint Pill when at weather clock station -->
+        <div id="stage-clock-hint"
+            class="pointer-events-none fixed top-[4.6rem] left-1/2 -translate-x-1/2 z-20 hidden transition-all duration-300 opacity-0 -translate-y-2">
+            <div
+                class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0b0a14]/90 backdrop-blur-xl border border-sky-400/30 text-white font-mono-tech text-xs shadow-2xl">
+                <span class="text-sky-400 animate-pulse text-sm">🕒</span>
+                <span>Reloj local de tu equipo · Clima y pronóstico en tiempo real</span>
+                <span class="text-emerald-400 font-bold">📍 GPS</span>
             </div>
         </div>
 
@@ -2141,28 +2295,35 @@
     <!-- 3D Party Music HUD (Appears when music is playing in 3D environment) -->
     <div id="party-music-hud"
         class="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-40 hidden items-center gap-3 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl glass-card backdrop-blur-xl border border-pink-500/40 shadow-[0_0_35px_rgba(255,0,127,0.35)] transition-all duration-300 pointer-events-auto select-none max-w-[95vw]">
-        
+
         <!-- Disco Ball / Party Status Icon & Track Info -->
         <div class="flex items-center gap-2.5 cursor-pointer" id="party-hud-expand" title="Ver reproductor completo">
-            <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 p-[2px] shadow-lg animate-spin-slow shrink-0">
+            <div
+                class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 p-[2px] shadow-lg animate-spin-slow shrink-0">
                 <div class="w-full h-full rounded-full bg-black/85 flex items-center justify-center text-sm">
                     🪩
                 </div>
             </div>
             <div class="flex flex-col min-w-0">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="font-mono-tech text-[10px] font-bold text-pink-400 tracking-wider uppercase flex items-center gap-1">
+                    <span
+                        class="font-mono-tech text-[10px] font-bold text-pink-400 tracking-wider uppercase flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
                         Modo Fiesta 3D
                     </span>
-                    <span class="text-[9px] font-mono-tech text-cyan-300 bg-cyan-950/70 border border-cyan-500/30 px-1.5 py-0.2 rounded hidden sm:inline">
+                    <span
+                        class="text-[9px] font-mono-tech text-cyan-300 bg-cyan-950/70 border border-cyan-500/30 px-1.5 py-0.2 rounded hidden sm:inline">
                         Bola Disco &amp; Luces ON
                     </span>
                 </div>
                 <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="spotify-track-title text-xs font-bold text-white max-w-[130px] sm:max-w-[200px] truncate">Cruzando cielos</span>
+                    <span
+                        class="spotify-track-title text-xs font-bold text-white max-w-[130px] sm:max-w-[200px] truncate">Cruzando
+                        cielos</span>
                     <span class="text-[11px] text-slate-400">·</span>
-                    <span class="spotify-track-artist text-[11px] text-slate-300 max-w-[90px] sm:max-w-[120px] truncate">Eduardo Cayún</span>
+                    <span
+                        class="spotify-track-artist text-[11px] text-slate-300 max-w-[90px] sm:max-w-[120px] truncate">Eduardo
+                        Cayún</span>
                 </div>
             </div>
         </div>
@@ -2180,16 +2341,30 @@
 
         <!-- Quick Playback Controls & Minimize -->
         <div class="flex items-center gap-1.5 border-l border-white/15 pl-2 sm:pl-3 shrink-0">
-            <button type="button" class="spotify-prev-btn p-1.5 text-slate-300 hover:text-white transition cursor-pointer" title="Canción anterior">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            <button type="button"
+                class="spotify-prev-btn p-1.5 text-slate-300 hover:text-white transition cursor-pointer"
+                title="Canción anterior">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                </svg>
             </button>
-            <button type="button" class="spotify-play-btn !w-7 !h-7 sm:!w-8 sm:!h-8 rounded-full bg-gradient-to-r from-pink-500 to-[#1ed760] text-slate-950 flex items-center justify-center hover:scale-105 transition cursor-pointer" title="Reproducir / Pausar">
-                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <button type="button"
+                class="spotify-play-btn !w-7 !h-7 sm:!w-8 sm:!h-8 rounded-full bg-gradient-to-r from-pink-500 to-[#1ed760] text-slate-950 flex items-center justify-center hover:scale-105 transition cursor-pointer"
+                title="Reproducir / Pausar">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
             </button>
-            <button type="button" class="spotify-next-btn p-1.5 text-slate-300 hover:text-white transition cursor-pointer" title="Siguiente canción">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            <button type="button"
+                class="spotify-next-btn p-1.5 text-slate-300 hover:text-white transition cursor-pointer"
+                title="Siguiente canción">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+                </svg>
             </button>
-            <button type="button" id="party-hud-close" class="p-1 text-slate-400 hover:text-white text-xs transition cursor-pointer ml-1" title="Minimizar HUD">
+            <button type="button" id="party-hud-close"
+                class="p-1 text-slate-400 hover:text-white text-xs transition cursor-pointer ml-1"
+                title="Minimizar HUD">
                 ✕
             </button>
         </div>
@@ -2246,11 +2421,13 @@
         </div>
 
         <!-- Party Mode Active Ribbon inside Expanded Spotify Card -->
-        <div class="spotify-party-banner hidden px-4 py-1.5 bg-gradient-to-r from-pink-950/80 via-purple-950/80 to-cyan-950/80 border-b border-pink-500/30 items-center justify-between text-[11px] font-mono-tech">
+        <div
+            class="spotify-party-banner hidden px-4 py-1.5 bg-gradient-to-r from-pink-950/80 via-purple-950/80 to-cyan-950/80 border-b border-pink-500/30 items-center justify-between text-[11px] font-mono-tech">
             <span class="text-pink-300 flex items-center gap-1.5">
                 <span class="animate-bounce">🪩</span> MODO FIESTA 3D ACTIVO
             </span>
-            <span class="text-cyan-300 text-[10px] bg-cyan-950/70 border border-cyan-400/30 px-1.5 py-0.5 rounded">Bola Disco &amp; Luces ON</span>
+            <span class="text-cyan-300 text-[10px] bg-cyan-950/70 border border-cyan-400/30 px-1.5 py-0.5 rounded">Bola
+                Disco &amp; Luces ON</span>
         </div>
 
         <!-- Mode Tabs -->
