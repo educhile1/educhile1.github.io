@@ -104,6 +104,41 @@
         <!-- Projected 3D Diamond Hotspots -->
         <div id="stage-3d-markers" class="fixed inset-0 pointer-events-none"></div>
 
+        <!-- EduBot Comic / HUD Speech Bubble -->
+        <div id="edubot-speech-bubble" class="edubot-bubble hidden pointer-events-auto" role="dialog"
+            aria-label="Mensaje de EduBot Asistente">
+            <div class="edubot-bubble-tail"></div>
+            <div class="edubot-bubble-header">
+                <div class="flex items-center gap-2">
+                    <span class="text-base select-none">🤖</span>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-mono-tech text-[11px] font-bold tracking-wider text-sky-300">EDUBOT</span>
+                            <span class="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">IA</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        </div>
+                        <div class="text-[9px] font-mono text-slate-400">Asistente Virtual 3D</div>
+                    </div>
+                </div>
+                <button id="edubot-close-btn" type="button" class="edubot-close-btn" title="Cerrar mensaje" aria-label="Cerrar">×</button>
+            </div>
+            <div class="edubot-bubble-body">
+                <div id="edubot-bubble-badge" class="edubot-tip-badge">💡 TIP PROFESIONAL</div>
+                <p id="edubot-bubble-text" class="edubot-bubble-text"></p>
+            </div>
+            <div class="edubot-bubble-actions">
+                <button id="edubot-next-tip-btn" type="button" class="edubot-btn-next" title="Ver siguiente dato">
+                    <span>💡 Siguiente tip</span>
+                </button>
+                <button id="edubot-profile-btn" type="button" class="edubot-btn-secondary" title="Ver perfil profesional">
+                    <span>👤 Ver Perfil</span>
+                </button>
+                <button id="edubot-meet-btn" type="button" class="edubot-btn-accent" title="Agendar videollamada">
+                    <span>📅 Agendar</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Identity (bottom-left on desktop, top-left on mobile) -->
         <div id="stage-identity"
             class="fixed left-4 top-4 md:top-auto md:left-6 md:bottom-6 pointer-events-none select-none">

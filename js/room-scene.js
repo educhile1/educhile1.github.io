@@ -1548,25 +1548,270 @@
         addMesh(new THREE.BoxGeometry(0.85, 0.12, 0.8), chairMat, [0, 0.68, 0], chair);
         addMesh(new THREE.BoxGeometry(0.85, 1.0, 0.12), chairMat, [0, 1.2, -0.42], chair);
 
+        /* ---------------------------------------------------------
+           3D ROBOT ASSISTANT: EDUBOT WITH DYNAMIC VISOR & HUD BUBBLE
+        --------------------------------------------------------- */
+        const EDUBOT_TIPS = [
+            {
+                badge: '🤖 RESUMEN EJECUTIVO',
+                text: '¡Hola! Soy <strong>EduBot</strong>, copiloto de este espacio. Eduardo cuenta con <strong>+15 años de liderazgo en TI</strong>, dirigiendo proyectos de alta complejidad y arquitecturas de misión crítica en Chile, Paraguay y Uruguay.'
+            },
+            {
+                badge: '💡 MBA & VISIÓN ESTRATÉGICA',
+                text: 'Eduardo combina <strong>visión ejecutiva</strong> con capacidad técnica profunda: <strong>Executive MBA</strong>, certificaciones Cloud AWS, Databricks y especialización en Ciberseguridad por el MIT.'
+            },
+            {
+                badge: '🏛️ SECTORES DE IMPACTO',
+                text: 'Ha dirigido proyectos de alta complejidad para <strong>BancoEstado, BCI, Chilquinta, Gasvalpo, Entel</strong> y la <strong>Contraloría General de la República</strong>.'
+            },
+            {
+                badge: '📅 REUNIÓN DIRECTA',
+                text: '¿Tienes un desafío tecnológico? Puedes <strong>agendar una videollamada de 30 min</strong> haciendo clic en el smartphone del escritorio o en el botón "Agendar".'
+            },
+            {
+                badge: '🕹️ RETRO ARCADE',
+                text: '¿Quieres un break? A mi derecha tienes la <strong>máquina arcade</strong> para jugar <strong>Edu Tetris</strong> con banda sonora chiptune/synthwave exclusiva.'
+            },
+            {
+                badge: '🎵 MODO FIESTA',
+                text: '¡Me encanta la música! Haz clic en la <strong>tornamesa con vinilo</strong> o en el botón verde de Spotify para activar la bola disco, las luces de concierto ¡y me pondré a bailar!'
+            }
+        ];
+
+        let currentTipIdx = 0;
+        let isGreetingActive = false;
+        let greetingStartTime = 0;
+        const GREETING_DURATION = 4000;
+        let dismissTimer = null;
+        let lastFaceExpr = '';
+        let lastFaceBlink = false;
+
+        // Dynamic 2D Canvas for Robot Visor Face Expression
+        const faceCanvas = document.createElement('canvas');
+        faceCanvas.width = 512;
+        faceCanvas.height = 384;
+        const faceCtx = faceCanvas.getContext('2d');
+
+        function drawFace(expr, blinking, beatVal) {
+            const ctx = faceCtx;
+            const w = 512;
+            const h = 384;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Visor dark background
+            ctx.fillStyle = '#070b16';
+            ctx.fillRect(0, 0, w, h);
+
+            // Subtle cyber tech inner border
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.18)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(8, 8, w - 16, h - 16);
+
+            const isHappyOrDancing = expr === 'happy' || expr === 'dancing';
+            const eyeColor = (expr === 'dancing' && (beatVal || 0) > 0.45) ? '#f472b6' : '#00f0ff';
+
+            // Cheeks glow
+            if (isHappyOrDancing) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(244, 114, 182, 0.65)';
+                ctx.shadowColor = '#f472b6';
+                ctx.shadowBlur = 18;
+                ctx.beginPath();
+                ctx.ellipse(130, 260, 32, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(382, 260, 32, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Eyes
+            ctx.save();
+            ctx.fillStyle = eyeColor;
+            ctx.strokeStyle = eyeColor;
+            ctx.shadowColor = eyeColor;
+            ctx.shadowBlur = 20;
+
+            if (blinking) {
+                // Sleek thin cyber slit line
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(110, 172, 85, 8, 4) : ctx.rect(110, 172, 85, 8);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(317, 172, 85, 8, 4) : ctx.rect(317, 172, 85, 8);
+                ctx.fill();
+            } else if (isHappyOrDancing) {
+                // Joyful smiling arcs ^ ^
+                const arcY = 192;
+                const radius = 42;
+                ctx.lineWidth = 15;
+                ctx.lineCap = 'round';
+
+                ctx.beginPath();
+                ctx.arc(152, arcY, radius, Math.PI * 1.15, Math.PI * 1.85, false);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(360, arcY, radius, Math.PI * 1.15, Math.PI * 1.85, false);
+                ctx.stroke();
+            } else {
+                // Cute rounded capsule eyes
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(120, 130, 72, 98, 28) : ctx.rect(120, 130, 72, 98);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(320, 130, 72, 98, 28) : ctx.rect(320, 130, 72, 98);
+                ctx.fill();
+
+                // Specular highlight gleam
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(142, 155, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(342, 155, 8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // Mouth
+            ctx.save();
+            ctx.strokeStyle = '#f472b6';
+            ctx.shadowColor = '#f472b6';
+            ctx.shadowBlur = 12;
+            if (isHappyOrDancing) {
+                ctx.lineWidth = 8;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.arc(256, 268, 26, Math.PI * 0.15, Math.PI * 0.85, false);
+                ctx.stroke();
+            } else {
+                ctx.lineWidth = 6;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(234, 284);
+                ctx.lineTo(278, 284);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        drawFace('normal', false, 0);
+        const robotFaceTex = new THREE.CanvasTexture(faceCanvas);
+
+        function playRobotChirp() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc1.type = 'sine';
+                osc2.type = 'triangle';
+
+                // Playful harmonic rising chirp (520Hz -> 880Hz -> 1175Hz)
+                osc1.frequency.setValueAtTime(520, now);
+                osc1.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+                osc1.frequency.exponentialRampToValueAtTime(1175, now + 0.16);
+
+                osc2.frequency.setValueAtTime(1040, now);
+                osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.12);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.12, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.28);
+                osc2.stop(now + 0.28);
+            } catch (e) {}
+        }
+
+        const robotBubbleEl = document.getElementById('edubot-speech-bubble');
+        const robotBubbleText = document.getElementById('edubot-bubble-text');
+        const robotBubbleBadge = document.getElementById('edubot-bubble-badge');
+        const robotCloseBtn = document.getElementById('edubot-close-btn');
+        const robotNextTipBtn = document.getElementById('edubot-next-tip-btn');
+        const robotProfileBtn = document.getElementById('edubot-profile-btn');
+        const robotMeetBtn = document.getElementById('edubot-meet-btn');
+
+        function showTip(idx) {
+            currentTipIdx = (idx % EDUBOT_TIPS.length + EDUBOT_TIPS.length) % EDUBOT_TIPS.length;
+            const tip = EDUBOT_TIPS[currentTipIdx];
+            if (robotBubbleBadge) robotBubbleBadge.textContent = tip.badge;
+            if (robotBubbleText) robotBubbleText.innerHTML = tip.text;
+            if (robotBubbleEl) robotBubbleEl.classList.remove('hidden');
+
+            if (dismissTimer) clearTimeout(dismissTimer);
+            dismissTimer = setTimeout(() => {
+                hideBubble();
+            }, 12000);
+        }
+
+        function hideBubble() {
+            if (robotBubbleEl) robotBubbleEl.classList.add('hidden');
+            if (dismissTimer) clearTimeout(dismissTimer);
+        }
+
+        function triggerGreeting() {
+            isGreetingActive = true;
+            greetingStartTime = performance.now();
+            playRobotChirp();
+            showTip(currentTipIdx);
+        }
+
+        function nextTip() {
+            triggerGreeting();
+            showTip(currentTipIdx + 1);
+        }
+
+        if (robotCloseBtn) robotCloseBtn.addEventListener('click', hideBubble);
+        if (robotNextTipBtn) robotNextTipBtn.addEventListener('click', nextTip);
+        if (robotProfileBtn) {
+            robotProfileBtn.addEventListener('click', () => {
+                api.focusStation('home');
+            });
+        }
+        if (robotMeetBtn) {
+            robotMeetBtn.addEventListener('click', () => {
+                window.open('https://calendar.app.google/bLJvGyt2hxUdHTNG7', '_blank', 'noopener,noreferrer');
+            });
+        }
+
+        window.eduRobotAssistant = {
+            triggerGreeting,
+            nextTip,
+            hideBubble,
+            showTip
+        };
+
         const robot = new THREE.Group();
         robot.position.set(0.85, 0, -1.15);
         scene.add(robot);
         const robotWhite = std(0xe8eaef, 0.45, 0.1);
         const robotGray = std(0x52525b, 0.5, 0.4);
-        addMesh(new THREE.BoxGeometry(0.64, 0.62, 0.42), robotWhite, [0, 1.06, 0], robot, { station: 'home' });
-        addMesh(new THREE.BoxGeometry(0.4, 0.3, 0.02), std(0x111827, 0.4, 0.4), [0, 1.1, 0.215], robot, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.64, 0.62, 0.42), robotWhite, [0, 1.06, 0], robot, { station: 'robot' });
+        addMesh(new THREE.BoxGeometry(0.4, 0.3, 0.02), std(0x111827, 0.4, 0.4), [0, 1.1, 0.215], robot, { cast: false, station: 'robot' });
         const chestLed = addMesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), basic({ color: 0xf472b6 }), [0.1, 1.18, 0.23], robot, { cast: false });
         addMesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), basic({ color: 0x38bdf8 }), [-0.05, 1.18, 0.23], robot, { cast: false });
 
         const head = new THREE.Group();
         head.position.set(0, 1.62, 0);
         robot.add(head);
-        addMesh(new THREE.BoxGeometry(0.64, 0.54, 0.54), robotWhite, [0, 0, 0], head, { station: 'home' });
-        addMesh(new THREE.PlaneGeometry(0.52, 0.38), basic({ color: 0x0f172a }), [0, -0.01, 0.272], head, { cast: false, station: 'home' });
-        const eyeMat = basic({ color: 0xf9a8d4 });
-        const eyeL = addMesh(new THREE.PlaneGeometry(0.08, 0.12), eyeMat, [-0.12, 0.03, 0.274], head, { cast: false });
-        const eyeR = addMesh(new THREE.PlaneGeometry(0.08, 0.12), eyeMat, [0.12, 0.03, 0.274], head, { cast: false });
-        addMesh(new THREE.PlaneGeometry(0.1, 0.02), eyeMat, [0, -0.11, 0.274], head, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.64, 0.54, 0.54), robotWhite, [0, 0, 0], head, { station: 'robot' });
+        addMesh(new THREE.PlaneGeometry(0.52, 0.38), basic({ map: robotFaceTex }), [0, -0.01, 0.272], head, { cast: false, station: 'robot' });
         addMesh(new THREE.CylinderGeometry(0.07, 0.07, 0.08, 16), robotGray, [-0.36, 0, 0], head, { rot: [0, 0, Math.PI / 2] });
         addMesh(new THREE.CylinderGeometry(0.07, 0.07, 0.08, 16), robotGray, [0.36, 0, 0], head, { rot: [0, 0, Math.PI / 2] });
         addMesh(new THREE.CylinderGeometry(0.015, 0.015, 0.22, 8), robotGray, [-0.14, 0.38, 0], head);
@@ -3315,6 +3560,12 @@
                 }
                 const id = pickStation(e.clientX, e.clientY);
                 if (id) {
+                    if (id === 'robot') {
+                        if (window.eduRobotAssistant) {
+                            window.eduRobotAssistant.triggerGreeting();
+                        }
+                        return;
+                    }
                     if (id === 'scenic') {
                         if (window.eduScenic) window.eduScenic.next();
                         return;
@@ -3358,6 +3609,54 @@
            PROJECT DIAMOND MARKERS TO SCREEN
         --------------------------------------------------------- */
         const projVec = new THREE.Vector3();
+        const robotAnchor = new THREE.Vector3(0.85, 1.85, -1.15);
+
+        function updateRobotBubble() {
+            if (!robotBubbleEl || robotBubbleEl.classList.contains('hidden') || api.getViewMode() !== 'stage3d') {
+                return;
+            }
+            projVec.copy(robotAnchor);
+            projVec.project(camera);
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const px = (projVec.x * 0.5 + 0.5) * vw;
+            const py = (-projVec.y * 0.5 + 0.5) * vh;
+
+            if (projVec.z > 1 || px < -80 || px > vw + 80 || py < -80 || py > vh + 80) {
+                robotBubbleEl.style.opacity = '0';
+                return;
+            }
+
+            robotBubbleEl.style.opacity = '1';
+            const bubbleW = robotBubbleEl.offsetWidth || 320;
+            const bubbleH = robotBubbleEl.offsetHeight || 170;
+
+            const isDesktop = vw >= 768;
+            let targetX, targetY;
+
+            if (isDesktop && (px + bubbleW + 35) <= vw) {
+                // Side bubble (positioned neatly to the right of robot)
+                targetX = px + 28;
+                targetY = Math.max(90, Math.min(vh - bubbleH - 75, py - bubbleH * 0.4));
+                robotBubbleEl.classList.add('tail-left');
+                robotBubbleEl.classList.remove('tail-bottom');
+            } else {
+                // Top bubble (centered above robot)
+                targetX = Math.max(14, Math.min(vw - bubbleW - 14, px - bubbleW * 0.3));
+                targetY = Math.max(90, Math.min(vh - bubbleH - 75, py - bubbleH - 22));
+                robotBubbleEl.classList.add('tail-bottom');
+                robotBubbleEl.classList.remove('tail-left');
+
+                const tailEl = robotBubbleEl.querySelector('.edubot-bubble-tail');
+                if (tailEl) {
+                    const tailX = Math.max(22, Math.min(bubbleW - 26, px - targetX));
+                    tailEl.style.left = `${tailX.toFixed(1)}px`;
+                }
+            }
+
+            robotBubbleEl.style.transform = `translate3d(${targetX.toFixed(1)}px, ${targetY.toFixed(1)}px, 0)`;
+        }
+
         function updateMarkers(timeSec) {
             if (!markersContainer || api.getViewMode() !== 'stage3d') return;
             const vw = window.innerWidth;
@@ -3450,20 +3749,6 @@
             camera.lookAt(currentLook);
 
             if (!reduced) {
-                // Robot idle: typing arms, head bob, blinking eyes
-                armL.rotation.x = -1.2 + Math.sin(t * 13) * 0.05;
-                armR.rotation.x = -1.2 + Math.sin(t * 13 + 1.7) * 0.05;
-                head.rotation.y = Math.sin(t * 0.6) * 0.18;
-                head.rotation.x = Math.sin(t * 0.9) * 0.04;
-                head.position.y = 1.62 + Math.sin(t * 1.8) * 0.012;
-                nextBlink -= dt;
-                const blinking = nextBlink < 0 && nextBlink > -0.14;
-                eyeL.scale.y = eyeR.scale.y = blinking ? 0.12 : 1;
-                if (nextBlink < -0.14) nextBlink = 2 + Math.random() * 3;
-                antennaTipL.scale.setScalar(1 + Math.sin(t * 3) * 0.2);
-                antennaTipR.scale.setScalar(1 + Math.sin(t * 3 + 1.5) * 0.2);
-                chestLed.visible = Math.sin(t * 4) > -0.4;
-
                 // Speaker pulse & vinyl spin synchronized with Spotify player
                 const isAudioPlaying = window.eduMusicState && window.eduMusicState.isPlaying;
                 let beat = 0;
@@ -3485,6 +3770,108 @@
                     if (speakerGreenLight) speakerGreenLight.intensity = 0.2;
                     if (albumJacket) albumJacket.position.y = 0.94;
                 }
+
+                // ROBOT ANIMATIONS: GREETING WAVE, DANCING WITH MUSIC, OR IDLE TYPING
+                const nowMs = performance.now();
+                const isGreetingNow = (nowMs - greetingStartTime) < GREETING_DURATION;
+
+                // Face expression & Blinking logic
+                let expr = 'normal';
+                if (isGreetingNow) {
+                    expr = 'happy';
+                } else if (isAudioPlaying) {
+                    expr = 'dancing';
+                }
+
+                nextBlink -= dt;
+                const blinking = nextBlink < 0 && nextBlink > -0.14;
+                if (nextBlink < -0.14) nextBlink = 2.2 + Math.random() * 3.2;
+
+                if (expr !== lastFaceExpr || blinking !== lastFaceBlink || (expr === 'dancing' && beat > 0.4)) {
+                    lastFaceExpr = expr;
+                    lastFaceBlink = blinking;
+                    drawFace(expr, blinking, beat);
+                    robotFaceTex.needsUpdate = true;
+                }
+
+                if (isGreetingNow) {
+                    const waveT = (nowMs - greetingStartTime) / 1000;
+                    const raiseProg = Math.min(1.0, waveT * 3.5);
+                    const lowerProg = Math.max(0, (waveT - (GREETING_DURATION / 1000 - 0.6)) * 2.5);
+                    const armBlend = Math.max(0, raiseProg - lowerProg);
+
+                    // Wave right arm enthusiastically
+                    armR.rotation.x = THREE.MathUtils.lerp(-1.2, 0.45, armBlend);
+                    armR.rotation.z = THREE.MathUtils.lerp(0.12, 0.85 + Math.sin(waveT * 13) * 0.32, armBlend);
+                    armR.rotation.y = THREE.MathUtils.lerp(0, Math.sin(waveT * 7) * 0.15, armBlend);
+
+                    // Head turns toward user/camera and tilts cutely
+                    head.rotation.y = THREE.MathUtils.lerp(Math.sin(t * 0.6) * 0.18, -0.28 + Math.sin(waveT * 4) * 0.08, armBlend);
+                    head.rotation.z = Math.sin(waveT * 5) * 0.08 * armBlend;
+                    head.rotation.x = Math.sin(waveT * 3) * 0.04 * armBlend;
+                    head.position.y = 1.62 + Math.sin(waveT * 4) * 0.015;
+
+                    // Left arm grooves if music, else types
+                    if (isAudioPlaying) {
+                        armL.rotation.x = -0.9 + Math.sin(t * 7.2) * 0.45;
+                        armL.rotation.z = -0.35 + Math.sin(t * 3.6) * 0.15;
+                    } else {
+                        armL.rotation.x = -1.2 + Math.sin(t * 13) * 0.05;
+                        armL.rotation.z = -0.12;
+                    }
+                    antennaTipL.scale.setScalar(1.2 + Math.sin(waveT * 8) * 0.3);
+                    antennaTipR.scale.setScalar(1.2 + Math.sin(waveT * 8 + 1.5) * 0.3);
+                    chestLed.visible = Math.sin(t * 6) > -0.3;
+
+                } else if (isAudioPlaying) {
+                    // DANCING ROUTINE TO THE BEAT
+                    robot.position.y = Math.abs(Math.sin(t * 7.2)) * 0.038 * (0.6 + beat * 0.6);
+
+                    // Head bobbing & grooving with rhythm
+                    head.position.y = 1.62 + Math.abs(Math.sin(t * 7.2)) * 0.045;
+                    head.rotation.x = Math.sin(t * 7.2) * 0.14;
+                    head.rotation.z = Math.sin(t * 3.6) * 0.14;
+                    head.rotation.y = Math.sin(t * 1.8) * 0.22;
+
+                    // DJ arms pumping
+                    if (beat > 0.65) {
+                        // Hands in the air on heavy drops!
+                        armL.rotation.x = 0.35 + beat * 0.35;
+                        armL.rotation.z = -0.65;
+                        armR.rotation.x = 0.35 + beat * 0.35;
+                        armR.rotation.z = 0.65;
+                        armR.rotation.y = 0;
+                    } else {
+                        // Alternating DJ groove
+                        armL.rotation.x = -0.9 + Math.sin(t * 7.2) * 0.45;
+                        armL.rotation.z = -0.35 + Math.sin(t * 3.6) * 0.18;
+                        armR.rotation.x = -0.9 + Math.sin(t * 7.2 + Math.PI) * 0.45;
+                        armR.rotation.z = 0.35 + Math.sin(t * 3.6 + Math.PI) * 0.18;
+                        armR.rotation.y = 0;
+                    }
+
+                    antennaTipL.scale.setScalar(1 + beat * 0.55);
+                    antennaTipR.scale.setScalar(1 + beat * 0.55);
+                    chestLed.visible = Math.sin(t * 10) > -0.2;
+
+                } else {
+                    // Standard idle typing
+                    robot.position.y = 0;
+                    armL.rotation.x = -1.2 + Math.sin(t * 13) * 0.05;
+                    armL.rotation.z = -0.12;
+                    armR.rotation.x = -1.2 + Math.sin(t * 13 + 1.7) * 0.05;
+                    armR.rotation.z = 0.12;
+                    armR.rotation.y = 0;
+                    head.rotation.y = Math.sin(t * 0.6) * 0.18;
+                    head.rotation.x = Math.sin(t * 0.9) * 0.04;
+                    head.rotation.z = 0;
+                    head.position.y = 1.62 + Math.sin(t * 1.8) * 0.012;
+                    antennaTipL.scale.setScalar(1 + Math.sin(t * 3) * 0.2);
+                    antennaTipR.scale.setScalar(1 + Math.sin(t * 3 + 1.5) * 0.2);
+                    chestLed.visible = Math.sin(t * 4) > -0.4;
+                }
+
+                updateRobotBubble();
 
                 // DISCO BALL & STAGE PARTY ANIMATION LOOP
                 const targetParty = isAudioPlaying ? 1.0 : 0.0;
