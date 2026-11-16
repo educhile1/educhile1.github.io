@@ -4356,9 +4356,11 @@
                 ctx.clip();
 
                 if (portraitImg && portraitImg.complete && portraitImg.naturalWidth > 0) {
-                    const cropSize = 480;
-                    const sx = Math.max(0, (portraitImg.naturalWidth - cropSize) / 2);
-                    const sy = 60;
+                    const nw = portraitImg.naturalWidth;
+                    const nh = portraitImg.naturalHeight;
+                    const cropSize = Math.min(nw, nh);
+                    const sx = Math.max(0, (nw - cropSize) / 2);
+                    const sy = Math.max(0, Math.min(nh - cropSize, (nh - cropSize) * 0.22));
                     ctx.drawImage(portraitImg, sx, sy, cropSize, cropSize, avatarCx - avatarR, avatarCy - avatarR, avatarR * 2, avatarR * 2);
                 } else {
                     ctx.fillStyle = '#f1f5f9';
