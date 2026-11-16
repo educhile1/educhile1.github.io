@@ -608,6 +608,7 @@
         let shelfLightRef = null;
         let pegLightRef = null;
         let ledMatRef = null;
+        let deskFloorGlowRef = null;
 
         /* ---------------------------------------------------------
            SCENIC LOCATION CONTROLLER & CROSS-FADE SYSTEM
@@ -767,7 +768,7 @@
         const ledMat = basic({ color: 0xffb066 });
         ledMatRef = ledMat;
         addMesh(new THREE.BoxGeometry(3.74, 0.025, 1.76), ledMat, [0, 0.945, 0], desk, { cast: false, receive: false });
-        glowPlane(6.4, 4.6, '255,160,80', 0.55, [0, 0.012, 0.05], [-Math.PI / 2, 0, 0], desk);
+        deskFloorGlowRef = glowPlane(6.4, 4.6, '255,160,80', 0.55, [0, 0.012, 0.05], [-Math.PI / 2, 0, 0], desk);
         const deskLight = new THREE.PointLight(0xffa24d, 1.25, 5.5, 2);
         deskLightRef = deskLight;
         deskLight.position.set(0, 0.55, 1.3);
@@ -2826,18 +2827,29 @@
         // Bottom chrome finial cap
         addMesh(new THREE.CylinderGeometry(0.03, 0.08, 0.04, 16), std(0xd4d4d8, 0.2, 0.95), [0, -0.44, 0], discoBallBody, { cast: false });
 
-        // 5. Volumetric Sweeping Party Light Beams
+        // 5. Volumetric Sweeping Party Light Beams (Atmospheric misty beams radiating outwards across room)
         const partyBeamGroup = new THREE.Group();
         discoBallBody.add(partyBeamGroup);
 
-        const beamColors = [0xff007f, 0x00e5ff, 0xf59e0b, 0xa855f7, 0x10b981, 0xec4899];
+        const beamAlphaTex = canvasTexture(64, 256, (ctx, w, h) => {
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+            grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.28)');
+            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.10)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+        });
+
+        const beamColors = [0xff007f, 0x00e5ff, 0xf59e0b, 0xa855f7, 0x10b981, 0xec4899, 0x38bdf8, 0xf43f5e];
         const beamMeshes = [];
-        for (let i = 0; i < 6; i++) {
-            const angle = (i / 6) * Math.PI * 2;
-            const tilt = 0.44 + (i % 2) * 0.16;
-            const beamGeo = new THREE.ConeGeometry(0.48, 4.4, 16, 1, true);
-            beamGeo.translate(0, -2.2, 0);
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const tilt = 0.82 + (i % 3) * 0.14; // Wide angles (47 - 63 deg) so beams sweep walls & perimeter, never converging on desk
+            const beamGeo = new THREE.ConeGeometry(0.55, 8.2, 16, 1, true);
+            beamGeo.translate(0, -4.1, 0);
             const beamMat = new THREE.MeshBasicMaterial({
+                map: beamAlphaTex,
                 color: beamColors[i],
                 transparent: true,
                 opacity: 0.0,
@@ -2853,50 +2865,96 @@
 
         // 6. Saturated Dynamic Orbiting Stage Party PointLights (Magenta, Cyan, Gold, Violet, Emerald)
         const partyPointLights = [
-            { light: new THREE.PointLight(0xff007f, 0, 14.0, 1.4), color: 0xff007f, baseInt: 3.5, beatAmp: 3.0, offset: 0, speed: 2.2, r: 3.0, yAmp: 0.8 },
-            { light: new THREE.PointLight(0x00f0ff, 0, 14.0, 1.4), color: 0x00f0ff, baseInt: 3.5, beatAmp: 3.0, offset: Math.PI * 0.5, speed: 2.5, r: 2.7, yAmp: 0.7 },
-            { light: new THREE.PointLight(0xf59e0b, 0, 13.0, 1.4), color: 0xf59e0b, baseInt: 3.0, beatAmp: 2.5, offset: Math.PI, speed: 1.9, r: 3.2, yAmp: 0.9 },
-            { light: new THREE.PointLight(0xa855f7, 0, 14.0, 1.4), color: 0xa855f7, baseInt: 3.2, beatAmp: 2.8, offset: Math.PI * 1.5, speed: 2.7, r: 2.6, yAmp: 0.75 },
-            { light: new THREE.PointLight(0x10b981, 0, 13.0, 1.4), color: 0x10b981, baseInt: 2.8, beatAmp: 2.4, offset: Math.PI * 0.8, speed: 2.1, r: 2.9, yAmp: 0.6 }
+            { light: new THREE.PointLight(0xff007f, 0, 14.0, 1.3), color: 0xff007f, baseInt: 4.0, beatAmp: 3.5, offset: 0, speed: 2.2, r: 3.2, yAmp: 0.8 },
+            { light: new THREE.PointLight(0x00f0ff, 0, 14.0, 1.3), color: 0x00f0ff, baseInt: 4.0, beatAmp: 3.5, offset: Math.PI * 0.5, speed: 2.5, r: 3.0, yAmp: 0.7 },
+            { light: new THREE.PointLight(0xf59e0b, 0, 13.0, 1.3), color: 0xf59e0b, baseInt: 3.5, beatAmp: 3.0, offset: Math.PI, speed: 1.9, r: 3.5, yAmp: 0.9 },
+            { light: new THREE.PointLight(0xa855f7, 0, 14.0, 1.3), color: 0xa855f7, baseInt: 3.8, beatAmp: 3.2, offset: Math.PI * 1.5, speed: 2.7, r: 2.9, yAmp: 0.75 },
+            { light: new THREE.PointLight(0x10b981, 0, 13.0, 1.3), color: 0x10b981, baseInt: 3.2, beatAmp: 2.8, offset: Math.PI * 0.8, speed: 2.1, r: 3.2, yAmp: 0.6 }
         ];
         partyPointLights.forEach(p => {
             scene.add(p.light);
         });
 
-        // 7. Dynamic Stage Moving-Head Spotlights (Magenta, Cyan, Gold) with Focused Sweeping Pools
+        // 7. Stage Wall Washers (Powerful uplights/par fixtures washing left and back walls in concert neons)
+        const stageWallWashers = [
+            {
+                spot: new THREE.SpotLight(0xa855f7, 0, 16.0, 0.75, 0.9, 1.2),
+                pos: [-5.4, 0.3, -3.8],
+                targetPos: [-6.15, 4.2, -3.8],
+                baseInt: 6.5,
+                beatAmp: 5.0
+            },
+            {
+                spot: new THREE.SpotLight(0x00f0ff, 0, 16.0, 0.75, 0.9, 1.2),
+                pos: [-5.4, 0.3, 1.5],
+                targetPos: [-6.15, 4.2, 1.5],
+                baseInt: 6.5,
+                beatAmp: 5.0
+            },
+            {
+                spot: new THREE.SpotLight(0xff007f, 0, 16.0, 0.78, 0.9, 1.2),
+                pos: [-3.8, 0.3, -4.5],
+                targetPos: [-3.8, 4.5, -5.15],
+                baseInt: 7.0,
+                beatAmp: 5.5
+            },
+            {
+                spot: new THREE.SpotLight(0x00e5ff, 0, 16.0, 0.78, 0.9, 1.2),
+                pos: [3.8, 0.3, -4.5],
+                targetPos: [3.8, 4.5, -5.15],
+                baseInt: 7.0,
+                beatAmp: 5.5
+            }
+        ];
+        stageWallWashers.forEach(ww => {
+            ww.target = new THREE.Object3D();
+            ww.spot.position.set(ww.pos[0], ww.pos[1], ww.pos[2]);
+            ww.target.position.set(ww.targetPos[0], ww.targetPos[1], ww.targetPos[2]);
+            scene.add(ww.spot);
+            scene.add(ww.target);
+            ww.spot.target = ww.target;
+        });
+
+        // 8. Dynamic Stage Moving-Head Spotlights (Magenta, Cyan, Gold) sweeping walls and perimeter
         const stageSpotlights = [
             {
-                spot: new THREE.SpotLight(0xff007f, 0, 14.0, 0.44, 0.85, 1.3),
+                spot: new THREE.SpotLight(0xff007f, 0, 16.0, 0.48, 0.85, 1.2),
                 target: new THREE.Object3D(),
-                baseInt: 6.5,
-                beatAmp: 5.5,
+                baseInt: 7.0,
+                beatAmp: 6.0,
                 origin: [discoCenterX - 1.8, 7.8, discoCenterZ - 1.4],
-                speed: 1.7,
+                speed: 1.6,
                 phase: 0,
-                rX: 3.4,
-                rZ: 2.6
+                rX: 4.2,
+                rZ: 3.2,
+                yBase: 3.2,
+                yAmp: 1.8
             },
             {
-                spot: new THREE.SpotLight(0x00e5ff, 0, 14.0, 0.44, 0.85, 1.3),
+                spot: new THREE.SpotLight(0x00e5ff, 0, 16.0, 0.48, 0.85, 1.2),
                 target: new THREE.Object3D(),
-                baseInt: 6.5,
-                beatAmp: 5.5,
+                baseInt: 7.0,
+                beatAmp: 6.0,
                 origin: [discoCenterX + 1.8, 7.8, discoCenterZ - 1.4],
-                speed: 2.1,
-                phase: Math.PI * 0.65,
-                rX: 3.2,
-                rZ: 2.3
+                speed: 1.9,
+                phase: Math.PI * 0.7,
+                rX: 3.8,
+                rZ: 3.5,
+                yBase: 2.8,
+                yAmp: 2.0
             },
             {
-                spot: new THREE.SpotLight(0xfacc15, 0, 13.0, 0.42, 0.85, 1.3),
+                spot: new THREE.SpotLight(0xfacc15, 0, 15.0, 0.46, 0.85, 1.2),
                 target: new THREE.Object3D(),
-                baseInt: 5.5,
-                beatAmp: 4.5,
+                baseInt: 6.0,
+                beatAmp: 5.0,
                 origin: [discoCenterX, 8.0, discoCenterZ + 1.6],
-                speed: 2.4,
+                speed: 2.2,
                 phase: Math.PI * 1.3,
-                rX: 2.8,
-                rZ: 3.0
+                rX: 3.5,
+                rZ: 3.6,
+                yBase: 0.3,
+                yAmp: 0.4
             }
         ];
         stageSpotlights.forEach(sp => {
@@ -2906,50 +2964,66 @@
             sp.spot.target = sp.target;
         });
 
-        // 8. Overhead Beat Strobe Point Light (flashes on kick/snare impacts)
-        const strobeLight = new THREE.PointLight(0xffffff, 0, 14.0, 1.5);
-        strobeLight.position.set(discoCenterX, 5.8, discoCenterZ);
+        // 9. Overhead Beat Strobe Point Light (flashes on kick/snare impacts)
+        const strobeLight = new THREE.PointLight(0xffffff, 0, 16.0, 1.4);
+        strobeLight.position.set(discoCenterX, 6.2, discoCenterZ);
         scene.add(strobeLight);
 
-        // 9. Saturated Moving Neon Light Pools on the Dance Floor (splashes de color nítidos)
-        const floorPoolsCount = 6;
-        const floorPoolMeshes = [];
-        const floorPoolColors = [0xff007f, 0x00e5ff, 0xa855f7, 0xf59e0b, 0x10b981, 0xec4899];
-        const poolAlphaTex = canvasTexture(256, 256, (ctx, w, h) => {
+        // 10. Saturated Moving Neon Light Pools & Wall Gobos across stage surfaces
+        const stageGobos = [
+            // Floor Pools (cyan lounge, magenta DJ station, amber arcade, violet front, emerald front-left)
+            { type: 'floor', color: 0x00e5ff, radX: 3.8, radZ: 1.8, speed: 1.1, phase: 0, scale: 2.5, y: 0.018 },
+            { type: 'floor', color: 0xff007f, radX: 3.8, radZ: -2.4, speed: 1.4, phase: Math.PI * 0.4, scale: 2.5, y: 0.019 },
+            { type: 'floor', color: 0xf59e0b, radX: -3.8, radZ: -2.4, speed: 1.2, phase: Math.PI * 0.8, scale: 2.5, y: 0.020 },
+            { type: 'floor', color: 0xa855f7, radX: 2.0, radZ: 2.8, speed: 1.3, phase: Math.PI * 1.2, scale: 2.5, y: 0.021 },
+            { type: 'floor', color: 0x10b981, radX: -2.2, radZ: 2.6, speed: 1.5, phase: Math.PI * 1.6, scale: 2.5, y: 0.022 },
+            // Left Wall Gobos (sweeping across the dark wall panels)
+            { type: 'wallLeft', color: 0xff007f, yMin: 2.0, yMax: 5.5, zMin: -3.8, zMax: 2.5, speed: 1.2, phase: 0.5, scale: 3.2, x: -5.99 },
+            { type: 'wallLeft', color: 0x00f0ff, yMin: 1.5, yMax: 5.0, zMin: -2.5, zMax: 3.5, speed: 1.6, phase: 2.4, scale: 3.0, x: -5.98 },
+            // Back Wall Gobos (sweeping across back wall & window surrounds)
+            { type: 'wallBack', color: 0xa855f7, xMin: -4.8, xMax: 4.8, yMin: 2.0, yMax: 6.2, speed: 1.1, phase: 1.8, scale: 3.4, z: -4.99 },
+            { type: 'wallBack', color: 0xfacc15, xMin: -4.2, xMax: 4.2, yMin: 1.8, yMax: 5.8, speed: 1.4, phase: 3.6, scale: 2.8, z: -4.98 }
+        ];
+
+        const goboAlphaTex = canvasTexture(256, 256, (ctx, w, h) => {
             const grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
             grad.addColorStop(0, 'rgba(255, 255, 255, 0.75)');
-            grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.48)');
-            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.12)');
+            grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.45)');
+            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.10)');
             grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
         });
 
-        for (let i = 0; i < floorPoolsCount; i++) {
+        const stageGoboMeshes = [];
+        stageGobos.forEach((gb) => {
             const mat = new THREE.MeshBasicMaterial({
-                map: poolAlphaTex,
-                color: floorPoolColors[i],
+                map: goboAlphaTex,
+                color: gb.color,
                 transparent: true,
                 opacity: 0,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
-            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.5, 2.5), mat);
-            mesh.rotation.x = -Math.PI / 2;
-            mesh.position.set(0, 0.022 + i * 0.001, 0);
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(gb.scale, gb.scale), mat);
+            if (gb.type === 'floor') {
+                mesh.rotation.x = -Math.PI / 2;
+                mesh.position.set(0, gb.y, 0);
+            } else if (gb.type === 'wallLeft') {
+                mesh.rotation.y = Math.PI / 2;
+                mesh.position.set(gb.x, 3.5, 0);
+            } else if (gb.type === 'wallBack') {
+                mesh.position.set(0, 3.5, gb.z);
+            }
             scene.add(mesh);
-            floorPoolMeshes.push({
+            stageGoboMeshes.push({
                 mesh,
                 mat,
-                speed: 1.3 + (i % 3) * 0.4,
-                phase: (i / floorPoolsCount) * Math.PI * 2,
-                radX: 2.4 + (i % 2) * 1.3,
-                radZ: 1.8 + ((i + 1) % 2) * 1.1,
-                baseScale: 1.0 + (i % 3) * 0.25
+                ...gb
             });
-        }
+        });
 
-        // 10. Dynamic Concert Stage Laser Beams (cutting through the air and hitting surfaces)
+        // 11. Dynamic Concert Stage Laser Beams (cutting through the air and hitting surfaces)
         const laserBeams = [];
         const laserColors = [0xff007f, 0x00f0ff, 0x22c55e, 0xa855f7, 0x00f0ff, 0xff007f];
         const laserGroup = new THREE.Group();
@@ -3020,22 +3094,6 @@
         const sparklesPoints = new THREE.Points(sparklesGeo, sparklesMat);
         sparklesGroup.add(sparklesPoints);
         scene.add(sparklesGroup);
-
-        // 12. Dynamic Stage Rug Glow
-        const floorPartyGlowMat = new THREE.MeshBasicMaterial({
-            color: 0xff007f,
-            transparent: true,
-            opacity: 0.0,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        const floorPartyGlow = new THREE.Mesh(
-            new THREE.RingGeometry(1.2, 3.2, 32),
-            floorPartyGlowMat
-        );
-        floorPartyGlow.rotation.x = -Math.PI / 2;
-        floorPartyGlow.position.set(discoCenterX, 0.016, discoCenterZ);
-        scene.add(floorPartyGlow);
 
         /* ---------------------------------------------------------
            HOTSPOTS (DIAMOND MARKERS) & CAMERA TARGETS
@@ -3445,8 +3503,8 @@
 
                     discoBallBody.rotation.y += dt * 1.85;
 
-                    // 1. High-impact volumetric light beams
-                    const beamOp = partyModeLerp * (0.24 + beat * 0.18);
+                    // 1. High-impact volumetric light beams (ethereal haze)
+                    const beamOp = partyModeLerp * (0.09 + beat * 0.08);
                     beamMeshes.forEach((bm) => {
                         bm.material.opacity = beamOp;
                     });
@@ -3462,48 +3520,55 @@
                         p.light.intensity = partyModeLerp * (p.baseInt + beat * p.beatAmp);
                     });
 
-                    // 3. Stage Moving-Head Spotlights sweeping across stage
+                    // 3. Stage Wall Washers (intense concert uplights on walls)
+                    stageWallWashers.forEach(ww => {
+                        ww.spot.intensity = partyModeLerp * (ww.baseInt + beat * ww.beatAmp);
+                    });
+
+                    // 4. Stage Moving-Head Spotlights sweeping walls and stage perimeter
                     stageSpotlights.forEach(sp => {
                         sp.target.position.set(
                             discoCenterX + Math.cos(t * sp.speed + sp.phase) * sp.rX,
-                            0.4 + Math.sin(t * sp.speed * 1.4) * 0.3,
+                            sp.yBase + Math.sin(t * sp.speed * 1.3 + sp.phase) * sp.yAmp,
                             discoCenterZ + Math.sin(t * sp.speed * 0.85 + sp.phase) * sp.rZ
                         );
                         sp.spot.intensity = partyModeLerp * (sp.baseInt + beat * sp.beatAmp);
                     });
 
-                    // 4. Strobe light flashing on heavy beats
+                    // 5. Strobe light flashing on heavy beats
                     if (beat > 0.75) {
-                        strobeLight.intensity = partyModeLerp * 3.5;
+                        strobeLight.intensity = partyModeLerp * 4.5;
                     } else {
                         strobeLight.intensity = 0;
                     }
 
-                    // 5. Dynamic moving neon light pools on the floor (splashes de luz en el piso)
-                    floorPoolMeshes.forEach(fp => {
-                        fp.mesh.position.x = discoCenterX + Math.cos(t * fp.speed + fp.phase) * fp.radX;
-                        fp.mesh.position.z = discoCenterZ + Math.sin(t * fp.speed * 1.15 + fp.phase) * fp.radZ;
-                        fp.mat.opacity = partyModeLerp * (0.35 + beat * 0.2);
-                        fp.mesh.scale.setScalar(fp.baseScale * (1 + beat * 0.25));
+                    // 6. Dynamic moving neon light pools and wall gobos
+                    stageGoboMeshes.forEach(gb => {
+                        if (gb.type === 'floor') {
+                            gb.mesh.position.x = discoCenterX + Math.cos(t * gb.speed + gb.phase) * gb.radX;
+                            gb.mesh.position.z = discoCenterZ + Math.sin(t * gb.speed * 1.15 + gb.phase) * gb.radZ;
+                        } else if (gb.type === 'wallLeft') {
+                            gb.mesh.position.z = (gb.zMin + gb.zMax) * 0.5 + Math.sin(t * gb.speed + gb.phase) * (gb.zMax - gb.zMin) * 0.5;
+                            gb.mesh.position.y = (gb.yMin + gb.yMax) * 0.5 + Math.cos(t * gb.speed * 1.2 + gb.phase) * (gb.yMax - gb.yMin) * 0.5;
+                        } else if (gb.type === 'wallBack') {
+                            gb.mesh.position.x = (gb.xMin + gb.xMax) * 0.5 + Math.sin(t * gb.speed + gb.phase) * (gb.xMax - gb.xMin) * 0.5;
+                            gb.mesh.position.y = (gb.yMin + gb.yMax) * 0.5 + Math.cos(t * gb.speed * 1.2 + gb.phase) * (gb.yMax - gb.yMin) * 0.5;
+                        }
+                        gb.mat.opacity = partyModeLerp * (0.34 + beat * 0.22);
+                        gb.mesh.scale.setScalar(1 + beat * 0.18);
                     });
 
-                    // 6. Laser beams sweeping rhythmically
+                    // 7. Laser beams sweeping rhythmically
                     laserBeams.forEach(lb => {
                         lb.mesh.rotation.x = Math.sin(t * lb.speedX + lb.phase) * lb.baseTilt;
                         lb.mesh.rotation.z = Math.cos(t * lb.speedZ + lb.phase) * lb.baseTilt;
-                        lb.mat.opacity = partyModeLerp * (0.6 + (beat > 0.4 ? 0.3 : 0));
+                        lb.mat.opacity = partyModeLerp * (0.65 + (beat > 0.4 ? 0.35 : 0));
                     });
 
-                    // 7. Specular reflection sparkles on surfaces
+                    // 8. Specular reflection sparkles on surfaces
                     sparklesGroup.visible = true;
                     sparklesGroup.rotation.y += dt * 0.95;
-                    sparklesMat.opacity = partyModeLerp * (0.75 + beat * 0.35);
-
-                    // 8. Dance floor pulsing ring
-                    floorPartyGlow.material.opacity = partyModeLerp * (0.16 + beat * 0.25);
-                    floorPartyGlow.rotation.z += dt * 0.6;
-                    const glowHue = (t * 0.15) % 1;
-                    floorPartyGlowMat.color.setHSL(glowHue, 0.95, 0.55);
+                    sparklesMat.opacity = partyModeLerp * (0.8 + beat * 0.4);
 
                     // 9. DRAMATIC STAGE DARKENING: Dim daytime/office lights to create true nightclub contrast!
                     ambientLight.intensity = THREE.MathUtils.lerp(0.12, 0.015, partyModeLerp);
@@ -3514,9 +3579,10 @@
                         sunLight.intensity = THREE.MathUtils.lerp(currLoc.sunIntensity, 0.04, partyModeLerp);
                         windowFloorGlow.material.opacity = THREE.MathUtils.lerp(currLoc.floorGlowOpacity, 0.02, partyModeLerp);
                     }
+                    if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = THREE.MathUtils.lerp(0.55, 0.04, partyModeLerp);
                     if (deskLightRef) {
                         deskLightRef.color.setHSL((t * 0.25) % 1, 1.0, 0.5);
-                        deskLightRef.intensity = THREE.MathUtils.lerp(1.25, 0.25 + beat * 1.5, partyModeLerp);
+                        deskLightRef.intensity = THREE.MathUtils.lerp(1.25, 0.15 + beat * 0.25, partyModeLerp);
                     }
                     if (lampLightRef) lampLightRef.intensity = THREE.MathUtils.lerp(1.1, 0.08, partyModeLerp);
                     if (shelfLightRef) shelfLightRef.intensity = THREE.MathUtils.lerp(0.6, 0.05, partyModeLerp);
@@ -3526,18 +3592,19 @@
                     discoBallGroup.position.y = discoRetractedY;
                     chainMesh.visible = false;
                     partyPointLights.forEach(p => { p.light.intensity = 0; });
+                    stageWallWashers.forEach(ww => { ww.spot.intensity = 0; });
                     stageSpotlights.forEach(sp => { sp.spot.intensity = 0; });
                     strobeLight.intensity = 0;
-                    floorPoolMeshes.forEach(fp => { fp.mat.opacity = 0; });
+                    stageGoboMeshes.forEach(gb => { gb.mat.opacity = 0; });
                     laserBeams.forEach(lb => { lb.mat.opacity = 0; });
                     beamMeshes.forEach(bm => { bm.material.opacity = 0; });
                     sparklesGroup.visible = false;
-                    floorPartyGlow.material.opacity = 0;
 
                     // Restore daytime office lighting
                     ambientLight.intensity = 0.12;
                     hemiLight.intensity = 0.58;
                     fillLight.intensity = 0.35;
+                    if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.55;
                     if (deskLightRef) {
                         deskLightRef.color.setHex(0xffa24d);
                         deskLightRef.intensity = 1.15 + Math.sin(t * 1.4) * 0.12;
@@ -3558,9 +3625,6 @@
                 // Dust motes drifting
                 dust.rotation.y = Math.sin(t * 0.05) * 0.08;
                 dust.position.y = Math.sin(t * 0.3) * 0.08;
-
-                // LED breathing
-                deskLight.intensity = 1.15 + Math.sin(t * 1.4) * 0.12;
             }
 
             // Scenic window crossfade interpolation
