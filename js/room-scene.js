@@ -3201,7 +3201,7 @@
         });
 
         const portrait = new THREE.Group();
-        portrait.position.set(-5.97, 3.45, -3.25);
+        portrait.position.set(-5.97, 3.68, -3.28);
         portrait.rotation.y = Math.PI / 2;
         scene.add(portrait);
 
@@ -3223,42 +3223,252 @@
             cast: false
         });
 
-        const artTex = canvasTexture(256, 320, (ctx, w, h) => {
-            const g = ctx.createLinearGradient(0, 0, 0, h);
-            g.addColorStop(0, '#312e81');
-            g.addColorStop(0.6, '#db2777');
-            g.addColorStop(1, '#f59e0b');
-            ctx.fillStyle = g;
-            ctx.fillRect(0, 0, w, h);
-            ctx.fillStyle = 'rgba(255,230,180,0.9)';
-            ctx.beginPath();
-            ctx.arc(w * 0.5, h * 0.55, 46, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#1e1b4b';
-            ctx.beginPath();
-            ctx.moveTo(0, h);
-            ctx.lineTo(0, h * 0.72);
-            ctx.lineTo(w * 0.3, h * 0.6);
-            ctx.lineTo(w * 0.55, h * 0.74);
-            ctx.lineTo(w * 0.8, h * 0.58);
-            ctx.lineTo(w, h * 0.7);
-            ctx.lineTo(w, h);
-            ctx.fill();
-        });
-        const art = new THREE.Group();
-        art.position.set(-5.97, 3.6, -1.7);
-        art.rotation.y = Math.PI / 2;
-        scene.add(art);
-        addMesh(new THREE.BoxGeometry(0.82, 1.0, 0.05), std(0xe5e7eb, 0.5), [0, 0, 0], art);
-        addMesh(new THREE.PlaneGeometry(0.7, 0.88), std(0xffffff, 0.6, 0, { map: artTex }), [0, 0, 0.027], art, { cast: false });
+        /* ---------------------------------------------------------
+           VINTAGE DIGITAL TELEMETRY CLOCK (OPEN APIs: GEOJS + OPEN-METEO)
+        --------------------------------------------------------- */
+        const visitorTelemetry = {
+            city: 'Detectando...',
+            country: '',
+            lat: -33.4489,
+            lon: -70.6693,
+            temp: '--.-',
+            humidity: '--',
+            wind: '--',
+            weatherLabel: 'Sincronizando clima...',
+            weatherIcon: '🌤️',
+            browser: /Edg/.test(navigator.userAgent) ? 'Edge' : /Chrome/.test(navigator.userAgent) ? 'Chrome' : /Firefox/.test(navigator.userAgent) ? 'Firefox' : /Safari/.test(navigator.userAgent) ? 'Safari' : 'Browser',
+            lang: (navigator.language || 'es').toUpperCase(),
+            screen: `${window.screen?.width || window.innerWidth}×${window.screen?.height || window.innerHeight}`
+        };
 
-        // Floating bookshelf (matching walnut + marble + brass skin)
+        function mapWmoWeather(code) {
+            if (code === 0) return { icon: '☀️', label: 'Despejado' };
+            if (code <= 3) return { icon: '⛅', label: 'Parc. Nublado' };
+            if (code === 45 || code === 48) return { icon: '🌫️', label: 'Niebla' };
+            if (code >= 51 && code <= 67) return { icon: '🌧️', label: 'Lluvia' };
+            if (code >= 71 && code <= 77) return { icon: '❄️', label: 'Nieve' };
+            if (code >= 80 && code <= 82) return { icon: '🌦️', label: 'Chubascos' };
+            if (code >= 95) return { icon: '⛈️', label: 'Tormenta' };
+            return { icon: '🌤️', label: 'Variable' };
+        }
+
+        const vintageClockTex = canvasTexture(768, 456, (ctx, w, h) => {
+            // Warm dark vintage VFD / Nixie bakelite display background
+            const bg = ctx.createLinearGradient(0, 0, 0, h);
+            bg.addColorStop(0, '#120d08');
+            bg.addColorStop(1, '#090705');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, w, h);
+
+            // Subtle VFD CRT scanlines
+            ctx.fillStyle = 'rgba(255, 180, 70, 0.03)';
+            for (let y = 0; y < h; y += 4) {
+                ctx.fillRect(0, y, w, 1.5);
+            }
+
+            // Inner brass/amber hairline border
+            ctx.strokeStyle = 'rgba(212, 162, 76, 0.45)';
+            ctx.lineWidth = 3;
+            roundRect(ctx, 14, 14, w - 28, h - 28, 14);
+            ctx.stroke();
+
+            // Header bar
+            ctx.fillStyle = '#d4a24c';
+            ctx.font = '700 18px "JetBrains Mono", monospace';
+            ctx.fillText('CHRONO-VFD // TELEMETRÍA EN VIVO', 34, 48);
+
+            const now = new Date();
+            const blinkOn = now.getSeconds() % 2 === 0;
+            ctx.fillStyle = blinkOn ? '#34d399' : '#065f46';
+            ctx.beginPath();
+            ctx.arc(w - 115, 42, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#a7f3d0';
+            ctx.font = '700 16px "JetBrains Mono", monospace';
+            ctx.fillText('OPEN API', w - 102, 48);
+
+            // Divider
+            ctx.strokeStyle = 'rgba(212, 162, 76, 0.22)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(32, 66);
+            ctx.lineTo(w - 32, 66);
+            ctx.stroke();
+
+            // Visitor Local Time (Nixie Amber Glow)
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const colon = blinkOn ? ':' : ' ';
+
+            ctx.save();
+            ctx.font = '800 94px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#ffaa33';
+            ctx.shadowColor = 'rgba(255, 145, 0, 0.65)';
+            ctx.shadowBlur = 18;
+            ctx.fillText(`${hh}${colon}${mm}`, 34, 166);
+            ctx.font = '700 42px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#fcd34d';
+            ctx.fillText(`:${ss}`, 332, 166);
+            ctx.restore();
+
+            // Date & Visitor Timezone
+            let dateStr = '';
+            let tzStr = 'LOCAL';
+            try {
+                dateStr = new Intl.DateTimeFormat('es-ES', {
+                    weekday: 'short',
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                }).format(now).toUpperCase();
+                tzStr = (Intl.DateTimeFormat().resolvedOptions().timeZone || 'LOCAL').toUpperCase();
+            } catch {
+                dateStr = now.toDateString().toUpperCase();
+            }
+            ctx.fillStyle = '#fde68a';
+            ctx.font = '600 17px "JetBrains Mono", monospace';
+            ctx.fillText(`${dateStr} · ${tzStr.slice(0, 22)}`, 36, 202);
+
+            // Right Weather Card (Open-Meteo)
+            ctx.fillStyle = 'rgba(255, 170, 51, 0.08)';
+            roundRect(ctx, 438, 84, w - 472, 152, 12);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 170, 51, 0.28)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '700 14px "JetBrains Mono", monospace';
+            ctx.fillText('METEOROLOGÍA LOCAL', 456, 108);
+
+            ctx.font = '800 46px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#5eead4';
+            ctx.fillText(`${visitorTelemetry.temp}°C`, 456, 162);
+
+            ctx.font = '600 18px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText(`${visitorTelemetry.weatherIcon} ${visitorTelemetry.weatherLabel}`, 456, 194);
+
+            ctx.font = '500 15px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillText(`💧 ${visitorTelemetry.humidity}%  💨 ${visitorTelemetry.wind} km/h`, 456, 220);
+
+            // Visitor Info Panel (Bottom-left)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+            roundRect(ctx, 34, 254, w - 68, 114, 12);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(212, 162, 76, 0.22)';
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+
+            const locLabel = visitorTelemetry.country
+                ? `${visitorTelemetry.city}, ${visitorTelemetry.country}`
+                : visitorTelemetry.city;
+
+            ctx.fillStyle = '#d4a24c';
+            ctx.font = '700 14px "JetBrains Mono", monospace';
+            ctx.fillText('VISITANTE CONECTADO', 52, 280);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+            ctx.fillText(`📍 ${locLabel.slice(0, 34)}`, 52, 314);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '500 16px "JetBrains Mono", monospace';
+            ctx.fillText(`🖥️ ${visitorTelemetry.browser} · Idioma ${visitorTelemetry.lang} · Pantalla ${visitorTelemetry.screen}`, 52, 348);
+
+            // Footer: Eduardo's local time + availability
+            let clTime = '--:--';
+            try {
+                clTime = new Intl.DateTimeFormat('es-CL', {
+                    timeZone: 'America/Santiago',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).format(now);
+            } catch {}
+            ctx.fillStyle = '#34d399';
+            ctx.font = '700 16px "JetBrains Mono", monospace';
+            ctx.fillText(`🇨🇱 SANTIAGO (EDUARDO): ${clTime} CLT`, 36, 412);
+
+            ctx.fillStyle = '#fcd34d';
+            ctx.fillText('● DISPONIBLE PROYECTOS & B2B', w - 332, 412);
+        });
+
+        // Fetch open Visitor Geo + Open-Meteo Weather asynchronously (no API keys required)
+        (async function fetchOpenTelemetry() {
+            try {
+                const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                if (geoRes.ok) {
+                    const geo = await geoRes.json();
+                    if (geo.city) visitorTelemetry.city = geo.city;
+                    if (geo.country) visitorTelemetry.country = geo.country;
+                    if (geo.latitude && geo.longitude) {
+                        visitorTelemetry.lat = parseFloat(geo.latitude);
+                        visitorTelemetry.lon = parseFloat(geo.longitude);
+                    }
+                }
+            } catch {
+                if (visitorTelemetry.city === 'Detectando...') {
+                    visitorTelemetry.city = 'Ubicación Local';
+                }
+            }
+
+            try {
+                const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${visitorTelemetry.lat}&longitude=${visitorTelemetry.lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto`;
+                const wRes = await fetch(wUrl);
+                if (wRes.ok) {
+                    const wData = await wRes.json();
+                    if (wData.current) {
+                        visitorTelemetry.temp = Number(wData.current.temperature_2m).toFixed(1);
+                        visitorTelemetry.humidity = Math.round(wData.current.relative_humidity_2m);
+                        visitorTelemetry.wind = Math.round(wData.current.wind_speed_10m);
+                        const mapped = mapWmoWeather(wData.current.weather_code);
+                        visitorTelemetry.weatherIcon = mapped.icon;
+                        visitorTelemetry.weatherLabel = mapped.label;
+                    }
+                }
+            } catch {
+                visitorTelemetry.weatherLabel = 'Sin conexión clima';
+            }
+
+            if (vintageClockTex.userData && vintageClockTex.userData.redraw) {
+                vintageClockTex.userData.redraw();
+            }
+        })();
+
+        setInterval(() => {
+            if (vintageClockTex.userData && vintageClockTex.userData.redraw) {
+                vintageClockTex.userData.redraw();
+            }
+        }, 1000);
+
+        const vintageClockGroup = new THREE.Group();
+        vintageClockGroup.position.set(-5.96, 3.68, -1.55);
+        vintageClockGroup.rotation.y = Math.PI / 2;
+        scene.add(vintageClockGroup);
+
+        // Warm amber backlight behind the vintage digital clock
+        glowPlane(1.75, 1.12, '255,170,60', 0.35, [0, 0, -0.015], null, vintageClockGroup, true);
+        // Walnut outer frame + brushed brass inner rim (consistent with office furniture skin)
+        addMesh(new THREE.BoxGeometry(1.48, 0.90, 0.06), walnutMat, [0, 0, 0.01], vintageClockGroup, { station: 'clock' });
+        addMesh(new THREE.BoxGeometry(1.38, 0.80, 0.02), credenzaBrassMat, [0, 0, 0.036], vintageClockGroup, { station: 'clock', cast: false });
+        // Digital VFD Display Plane
+        addMesh(new THREE.PlaneGeometry(1.32, 0.76), std(0xffffff, 0.35, 0.1, {
+            map: vintageClockTex,
+            emissive: 0xffffff,
+            emissiveMap: vintageClockTex,
+            emissiveIntensity: 0.65
+        }), [0, 0, 0.048], vintageClockGroup, { station: 'clock', cast: false });
+
+        // Floating bookshelf (repositioned cleanly below portrait & clock with breathing room)
         const shelf = new THREE.Group();
-        shelf.position.set(-5.78, 2.3, -2.5);
+        shelf.position.set(-5.78, 2.18, -2.42);
         scene.add(shelf);
-        addMesh(new THREE.BoxGeometry(0.42, 0.05, 2.9), walnutMat, [0, -0.005, 0], shelf);
-        addMesh(new THREE.BoxGeometry(0.43, 0.016, 2.92), marbleMat, [0, 0.026, 0], shelf);
-        addMesh(new THREE.BoxGeometry(0.012, 0.014, 2.92), credenzaBrassMat, [0.214, 0.012, 0], shelf, { cast: false });
+        addMesh(new THREE.BoxGeometry(0.42, 0.05, 2.80), walnutMat, [0, -0.005, 0], shelf);
+        addMesh(new THREE.BoxGeometry(0.43, 0.016, 2.82), marbleMat, [0, 0.026, 0], shelf);
+        addMesh(new THREE.BoxGeometry(0.012, 0.014, 2.82), credenzaBrassMat, [0.214, 0.012, 0], shelf, { cast: false });
         addMesh(new THREE.BoxGeometry(0.03, 0.02, 2.8), basic({ color: 0xffb066 }), [0.18, -0.04, 0], shelf, { cast: false, receive: false });
         glowPlane(3.6, 1.6, '255,170,90', 0.4, [-0.2, -0.55, 0], [0, Math.PI / 2, 0], shelf);
         const shelfLight = new THREE.PointLight(0xffb066, 0.6, 3.2, 2);
@@ -7918,6 +8128,7 @@
             { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.85, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 },
             { id: 'cv', code: '📄', label: 'Portafolio 2D', anchor: [-0.10, 1.38, 0.72], target: [-0.05, 1.07, 0.71], normal: [0, 0.85, 0.52], dist: 1.25, lift: 0.25 },
             { id: 'certifications', code: '07', label: 'Certificaciones', anchor: [-5.2, 4.05, 1.05], target: [-5.96, 2.85, 1.05], normal: [1, 0, 0], dist: 3.2, lift: 0.0 },
+            { id: 'clock', code: '🕒', label: 'Reloj & Clima', anchor: [-5.88, 4.30, -1.55], target: [-5.96, 3.68, -1.55], normal: [1, 0, 0], dist: 2.05, lift: 0.0 },
             { id: 'cat', code: '🐾', label: 'Kotetsu', anchor: [-4.75, 0.9, 1.25], target: [-4.75, 0.86, 1.25], normal: [0.6, 0.2, 0.77], dist: 1.8, lift: 0.1 },
             { id: 'coffee', code: '☕', label: 'Café Turbo', anchor: [0.72, 1.42, 0.00], target: [0.48, 1.48, -0.45], normal: [0.42, 0.18, 0.88], dist: 2.15, lift: 0.15 },
             { id: 'coffee_macro', code: '☕', label: 'Latte Art Macro', anchor: [0.86, 1.35, 0.09], target: [0.86, 1.12, 0.09], normal: [0.35, 0.68, 0.64], dist: 0.48, lift: 0.02, noDiamond: true },
