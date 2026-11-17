@@ -3066,6 +3066,29 @@
         const catDanceBtn = document.getElementById('cat-dance-btn');
         if (catDanceBtn) catDanceBtn.addEventListener('click', triggerCatDance);
 
+        const catLaserBtn = document.getElementById('cat-laser-btn');
+        function triggerCatLaserToggle() {
+            if (typeof toggleCatLaserMode === 'function') {
+                const active = toggleCatLaserMode();
+                if (catLaserBtn) catLaserBtn.classList.toggle('is-active', active);
+                if (active) {
+                    showCatThought('🔴 PUNTERO LÁSER ACTIVO', '¡Mueve el cursor por el piso de la oficina! Kotetsu perseguirá el punto láser rojo con saltos y derrapes 🐾⚡');
+                } else {
+                    showCatThought('🔴 LÁSER APAGADO', '¡Prrr! Qué buena carrera. Kotetsu vuelve a descansar o explorar la oficina.');
+                }
+            }
+        }
+        if (catLaserBtn) catLaserBtn.addEventListener('click', triggerCatLaserToggle);
+
+        const catTreeBtn = document.getElementById('cat-tree-btn');
+        function triggerCatTree() {
+            if (typeof sendCatToTree === 'function') {
+                sendCatToTree();
+            }
+            showCatThought('🎄 ADMIRANDO EL ÁRBOL', '¡Miau! Kotetsu va directo a mirar las luces brillantes y jugar suavemente con una esfera baja ✨🐾');
+        }
+        if (catTreeBtn) catTreeBtn.addEventListener('click', triggerCatTree);
+
         window.eduKotetsuPet = {
             pet: triggerCatInteraction,
             play: triggerCatPlay,
@@ -3073,6 +3096,8 @@
             goToFood: triggerCatFood,
             dance: triggerCatDance,
             goToSleep: triggerCatSleep,
+            toggleLaser: triggerCatLaserToggle,
+            goToTree: triggerCatTree,
             hideBubble: hideCatBubble,
             getState: () => ({
                 state: typeof catState !== 'undefined' ? catState : 'unknown',
@@ -3134,6 +3159,24 @@
         addMesh(new THREE.CylinderGeometry(0.015, 0.015, 0.22, 8), robotGray, [0.14, 0.38, 0], head);
         const antennaTipL = addMesh(new THREE.SphereGeometry(0.035, 12, 12), basic({ color: 0xf472b6 }), [-0.14, 0.5, 0], head, { cast: false });
         const antennaTipR = addMesh(new THREE.SphereGeometry(0.035, 12, 12), basic({ color: 0x38bdf8 }), [0.14, 0.5, 0], head, { cast: false });
+
+        function createSantaHat(scale = 1.0) {
+            const hat = new THREE.Group();
+            const redVelvet = std(0xdc2626, 0.72, 0.05);
+            const whiteFluff = std(0xf8fafc, 0.90, 0.02);
+            // Fluffy white brim
+            addMesh(new THREE.TorusGeometry(0.22 * scale, 0.052 * scale, 10, 24), whiteFluff, [0, 0, 0], hat, { rot: [Math.PI / 2, 0, 0], cast: false });
+            // Red tapered cone tilted slightly
+            const cone = addMesh(new THREE.ConeGeometry(0.20 * scale, 0.44 * scale, 18), redVelvet, [-0.03 * scale, 0.20 * scale, -0.02 * scale], hat, { rot: [-0.14, 0, 0.16] });
+            // White pom-pom at tip
+            addMesh(new THREE.SphereGeometry(0.058 * scale, 12, 12), whiteFluff, [-0.07 * scale, 0.42 * scale, -0.05 * scale], hat, { cast: false });
+            hat.visible = false;
+            return hat;
+        }
+
+        const robotSantaHat = createSantaHat(1.15);
+        robotSantaHat.position.set(0, 0.28, 0);
+        head.add(robotSantaHat);
 
         function makeArm(side) {
             const pivot = new THREE.Group();
@@ -6253,6 +6296,11 @@
         const catHead = addMesh(new THREE.SphereGeometry(0.135, 18, 14), catMat, [0, 0, 0], catHeadGroup, { station: 'cat' });
         catHead.userData.isCat = true;
 
+        const catSantaHat = createSantaHat(0.46);
+        catSantaHat.position.set(-0.01, 0.125, 0);
+        catSantaHat.rotation.y = -Math.PI / 2;
+        catHeadGroup.add(catSantaHat);
+
         // Calico patch on right ear/brow
         const headPatch = addMesh(new THREE.SphereGeometry(0.075, 10, 8), catSpotMat, [0.03, 0.05, 0.045], catHeadGroup, { station: 'cat' });
         headPatch.scale.set(1.0, 0.6, 0.8);
@@ -6548,13 +6596,14 @@
             'desk_front': { id: 'desk_front', x: -0.30, y: 0.16, z: 0.95, name: 'Frente al Escritorio', action: 'groom' },
             'desk_surface': { id: 'desk_surface', x: -0.05, y: 1.24, z: 0.28, isFurniture: true, name: 'Sobre el Escritorio de Eduardo', action: 'loaf_desk' },
             'desk_robot': { id: 'desk_robot', x: 0.65, y: 0.16, z: 0.75, name: 'Junto a EduBot', action: 'greet_robot' },
+            'tree_front': { id: 'tree_front', x: -3.35, y: 0.16, z: 3.65, name: 'Árbol Navideño', action: 'admire_tree' },
             'center': { id: 'center', x: -1.20, y: 0.16, z: 0.20, name: 'Alfombra Central', action: 'play_ball' }
         };
 
         const WAYPOINT_GRAPH = {
             'beanbag': ['lounge_rug'],
-            'lounge_rug': ['beanbag', 'food_station', 'toy_mouse', 'whiteboard', 'center'],
-            'food_station': ['lounge_rug', 'toy_mouse', 'center'],
+            'lounge_rug': ['beanbag', 'food_station', 'toy_mouse', 'whiteboard', 'tree_front', 'center'],
+            'food_station': ['lounge_rug', 'toy_mouse', 'tree_front', 'center'],
             'toy_mouse': ['lounge_rug', 'food_station', 'whiteboard', 'center'],
             'whiteboard': ['lounge_rug', 'toy_mouse', 'arcade', 'center'],
             'arcade': ['whiteboard', 'window', 'window_ledge'],
@@ -6566,7 +6615,8 @@
             'desk_robot': ['dj', 'credenza_front', 'desk_front', 'center'],
             'desk_front': ['desk_robot', 'desk_surface', 'center', 'lounge_rug'],
             'desk_surface': ['desk_front'],
-            'center': ['lounge_rug', 'food_station', 'toy_mouse', 'whiteboard', 'window', 'dj', 'credenza_front', 'desk_robot', 'desk_front']
+            'tree_front': ['lounge_rug', 'food_station', 'center'],
+            'center': ['lounge_rug', 'food_station', 'toy_mouse', 'whiteboard', 'window', 'dj', 'credenza_front', 'desk_robot', 'desk_front', 'tree_front']
         };
 
         function findCatPath(startId, goalId) {
@@ -6764,6 +6814,49 @@
             stateStartTime = performance.now();
             stateDuration = 0.50;
             playCatPlayChirp();
+        }
+
+        // 3D Red Laser Pointer Dot for Kotetsu
+        let isLaserMode = false;
+        const laserTarget = new THREE.Vector3(-1.2, 0.025, 0.2);
+        const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.025);
+        const laserRayTarget = new THREE.Vector3();
+
+        const laserDotGroup = new THREE.Group();
+        laserDotGroup.position.copy(laserTarget);
+        laserDotGroup.visible = false;
+        scene.add(laserDotGroup);
+        addMesh(new THREE.SphereGeometry(0.035, 12, 12), basic({ color: 0xff1e42 }), [0, 0.01, 0], laserDotGroup, { cast: false });
+        addMesh(new THREE.RingGeometry(0.045, 0.085, 20), basic({ color: 0xff1e42, transparent: true, opacity: 0.6, side: THREE.DoubleSide }), [0, 0.004, 0], laserDotGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
+        const laserLight = new THREE.PointLight(0xff1e42, 1.35, 2.2);
+        laserLight.position.set(0, 0.14, 0);
+        laserDotGroup.add(laserLight);
+
+        function toggleCatLaserMode(forceState = null) {
+            isLaserMode = forceState !== null ? Boolean(forceState) : !isLaserMode;
+            laserDotGroup.visible = isLaserMode;
+            if (isLaserMode) {
+                playCatMeow('chirp');
+                if (currentWaypointId === 'beanbag' || currentWaypointId === 'desk_surface' || currentWaypointId === 'credenza_surface' || currentWaypointId === 'window_ledge') {
+                    startJumpDown('laser_chase');
+                } else {
+                    catState = 'laser_chase';
+                    stateStartTime = performance.now();
+                }
+            } else {
+                if (catState === 'laser_chase') {
+                    catState = 'investigating';
+                    stateStartTime = performance.now();
+                    stateDuration = 3.0;
+                }
+            }
+            return isLaserMode;
+        }
+
+        function sendCatToTree() {
+            isCatVisitingDesk = false;
+            if (isLaserMode) toggleCatLaserMode(false);
+            startWalkTo('tree_front', 'walking');
         }
 
         /* ---------------------------------------------------------
@@ -8071,17 +8164,23 @@
         starPointLight.position.set(0, 2.44, 0);
         christmasTreeGroup.add(starPointLight);
 
-        // 7. Cajas de Regalos Decorativas con Moños (Exactas a la Imagen de Referencia)
+        // 7. Cajas de Regalos Decorativas con Moños (Interactivas!)
+        const giftBoxes = [];
+        let activeGiftAnim = null; // { boxGrp, baseY, startTime }
+
         function createGiftBox(w, h, d, boxColor, ribbonColor, [gx, gy, gz], rotY) {
             const boxGrp = new THREE.Group();
             boxGrp.position.set(gx, gy, gz);
             boxGrp.rotation.y = rotY;
             christmasTreeGroup.add(boxGrp);
 
+            const giftIdx = giftBoxes.length;
             const bMat = std(boxColor, 0.50, 0.12);
             const rMat = std(ribbonColor, 0.28, 0.60);
 
-            addMesh(new THREE.BoxGeometry(w, h, d), bMat, [0, h / 2, 0], boxGrp, { station: 'tree', isChristmasTree: true });
+            const bodyMesh = addMesh(new THREE.BoxGeometry(w, h, d), bMat, [0, h / 2, 0], boxGrp, { station: 'tree', isChristmasTree: true });
+            bodyMesh.userData.isChristmasGift = true;
+            bodyMesh.userData.giftIndex = giftIdx;
 
             const ribW = Math.min(w, d) * 0.18;
             addMesh(new THREE.BoxGeometry(ribW, h + 0.003, d + 0.003), rMat, [0, h / 2, 0], boxGrp, { cast: false });
@@ -8091,6 +8190,8 @@
             addMesh(new THREE.TorusGeometry(ribW * 0.95, ribW * 0.35, 8, 16), rMat, [-ribW * 0.5, h + ribW * 0.5, 0], boxGrp, { rot: [0, Math.PI / 4, Math.PI / 4], cast: false });
             addMesh(new THREE.TorusGeometry(ribW * 0.95, ribW * 0.35, 8, 16), rMat, [ribW * 0.5, h + ribW * 0.5, 0], boxGrp, { rot: [0, -Math.PI / 4, -Math.PI / 4], cast: false });
             addMesh(new THREE.SphereGeometry(ribW * 0.55, 8, 8), rMat, [0, h + ribW * 0.35, 0], boxGrp, { cast: false });
+
+            giftBoxes.push({ group: boxGrp, baseY: gy, baseRotY: rotY });
         }
 
         // 6 Regalos estilizados colocados sobre la bandeja circular
@@ -8108,11 +8209,203 @@
 
         let treeLightSurge = 0;
 
+        const RANDOM_GIFTS = [
+            {
+                gift: '☕ Café Espresso Infinito 24/7',
+                botReaction: '¡Jojojo! ¡Un pase vitalicio de Café Turbo para despliegues sin bugs a las 3 AM!',
+                catReaction: '¡Miau! ¡A mí dame leche tibia, pero celebro la energía extra de Eduardo! ☕🐾'
+            },
+            {
+                gift: '🐟 Caja Dorada de Salmón Gourmet',
+                botReaction: '¡Alerta nutricional! Kotetsu acaba de reclamar derechos exclusivos sobre este paquete.',
+                catReaction: '¡PRRRR MIAU!! ¡El mejor regalo de la historia! ¡Jojojo feliz Navidad! 🐟🎁✨'
+            },
+            {
+                gift: '🛡️ Escudo Anti-Vulnerabilidades Zero-Day',
+                botReaction: '¡Jojojo! Parches automáticos, ISO 27001 al 100% y producción blindada todo el año.',
+                catReaction: '¡Miau! Nadie pasará nuestro firewall mientras yo vigile el teclado RGB 🛡️🐾'
+            },
+            {
+                gift: '🕹️ Vida Extra & Récord en Edu Tetris',
+                botReaction: '¡T-Spins triples desbloqueados! Listo para romper el High Score en Edu Tetris Arcade.',
+                catReaction: '¡Miau! Yo también quiero aplastar las piezas de colores con mi patita 🕹️✨'
+            },
+            {
+                gift: '☁️ Clúster Cloud Multi-Región Sin Límites',
+                botReaction: '¡Jojojo! Latencia cero entre Santiago, Asunción y Montevideo con auto-scaling festivo.',
+                catReaction: '¡Prrr! Nubes esponjosas donde dormir la siesta todo el invierno ☁️🐱'
+            },
+            {
+                gift: '🎸 Sintetizador IA Edición Dorada',
+                botReaction: '¡Beats navideños y synthwave listos para el Modo Fiesta en el parlante 3D!',
+                catReaction: '¡Miau! ¡Pon música ya que quiero bailar en dos patas con mi gorrito de Santa! 🎶🕺'
+            }
+        ];
+
+        function openRandomChristmasGift(forcedIdx = null) {
+            if (!giftBoxes.length) return;
+            const gIdx = (forcedIdx !== null && giftBoxes[forcedIdx])
+                ? forcedIdx
+                : Math.floor(Math.random() * giftBoxes.length);
+            const pickedBox = giftBoxes[gIdx];
+            activeGiftAnim = {
+                group: pickedBox.group,
+                baseY: pickedBox.baseY,
+                baseRotY: pickedBox.baseRotY,
+                startTime: performance.now()
+            };
+
+            const reward = RANDOM_GIFTS[Math.floor(Math.random() * RANDOM_GIFTS.length)];
+            treeLightSurge = 1.0;
+            playChristmasJingleSound();
+            playCatMeow('happy');
+            if (typeof spawnCatHearts === 'function') {
+                spawnCatHearts(new THREE.Vector3(-4.65, 0.35, 4.10));
+            }
+            showRobotBubble(`🎁 ${reward.gift}`, `${reward.botReaction} — ¡Jojojo, Feliz Navidad! 🎅🎄`, 9000);
+            showCatThought(`🎁 REGALO: ${reward.gift}`, reward.catReaction);
+        }
+
         function triggerChristmasTreeJoy() {
             treeLightSurge = 1.0;
             playChristmasJingleSound();
-            showRobotBubble('🎄 ¡FELICES FIESTAS!', '¡Feliz Navidad y próspero Año Nuevo! Eduardo, EduBot & Kotetsu te desean éxito, alegría y código impecable ✨🎁', 10000);
+            showRobotBubble('🎄 ¡JOJOJO, FELIZ NAVIDAD!', '¡Feliz Navidad y próspero Año Nuevo! Haz clic en cualquier regalo bajo el árbol para abrirlo ✨🎁', 10000);
         }
+
+        // Soft 3D Snowfall Particle System for Christmas Mood
+        const SNOW_COUNT = mobileAtStart ? 80 : 150;
+        const snowPos = new Float32Array(SNOW_COUNT * 3);
+        const snowPhases = new Float32Array(SNOW_COUNT);
+        const snowRand = seededRandom(777);
+        for (let i = 0; i < SNOW_COUNT; i++) {
+            snowPos[i * 3] = -5.8 + snowRand() * 11.6;
+            snowPos[i * 3 + 1] = 0.1 + snowRand() * 5.2;
+            snowPos[i * 3 + 2] = -4.8 + snowRand() * 9.6;
+            snowPhases[i] = snowRand() * Math.PI * 2;
+        }
+        const snowGeo = new THREE.BufferGeometry();
+        snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPos, 3));
+        const snowPoints = new THREE.Points(
+            snowGeo,
+            new THREE.PointsMaterial({
+                color: 0xf8fafc,
+                size: 0.065,
+                transparent: true,
+                opacity: 0.82,
+                depthWrite: false
+            })
+        );
+        snowPoints.visible = false;
+        scene.add(snowPoints);
+
+        // Room Mood / Atmosphere Controller ('day' | 'night' | 'christmas' | 'cyber')
+        let activeMood = 'night';
+        const moodBtns = document.querySelectorAll('#stage-mood-pill .mood-btn');
+        const xmasGiftBtn = document.getElementById('xmas-open-gift-btn');
+
+        function setRoomMood(mood) {
+            activeMood = mood || 'night';
+            moodBtns.forEach((btn) => {
+                btn.classList.toggle('is-active', btn.dataset.mood === activeMood);
+            });
+            if (xmasGiftBtn) {
+                xmasGiftBtn.classList.toggle('hidden', activeMood !== 'christmas');
+            }
+
+            const isXmas = activeMood === 'christmas';
+            if (typeof robotSantaHat !== 'undefined') robotSantaHat.visible = isXmas;
+            if (typeof catSantaHat !== 'undefined') catSantaHat.visible = isXmas;
+            snowPoints.visible = isXmas;
+
+            const loc = SCENIC_LOCATIONS[currentScenicIdx];
+
+            if (activeMood === 'day') {
+                hemiLight.color.setHex(0xe0f2fe);
+                hemiLight.groundColor.setHex(0x334155);
+                hemiLight.intensity = 1.05;
+                ambientLight.intensity = 0.42;
+                sunLight.color.setHex(0xfff7ed);
+                sunLight.intensity = 1.85;
+                fillLight.color.setHex(0xdbeafe);
+                fillLight.intensity = 0.55;
+                if (deskLightRef) deskLightRef.intensity = 0.85;
+                if (shelfLightRef) shelfLightRef.intensity = 0.45;
+                if (pegLightRef) pegLightRef.intensity = 0.65;
+                if (ledMatRef) ledMatRef.color.setHex(0xfff3d6);
+                if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.65;
+                if (arcadeScreenLight) arcadeScreenLight.intensity = 0.45;
+                if (dustMesh) dustMesh.material.color.setHex(0xfef3c7);
+                playTechClickSound(880, 0.06);
+            } else if (activeMood === 'night') {
+                hemiLight.color.setHex(loc.hemiSky);
+                hemiLight.groundColor.setHex(loc.hemiGround);
+                hemiLight.intensity = 0.58;
+                ambientLight.intensity = 0.12;
+                sunLight.color.setHex(loc.sunColor);
+                sunLight.intensity = loc.sunIntensity;
+                fillLight.color.setHex(0x9db4ff);
+                fillLight.intensity = 0.35;
+                if (deskLightRef) deskLightRef.intensity = 1.25;
+                if (shelfLightRef) shelfLightRef.intensity = 0.6;
+                if (pegLightRef) pegLightRef.intensity = 0.8;
+                if (ledMatRef) ledMatRef.color.setHex(0xffb066);
+                if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.9;
+                if (arcadeScreenLight) arcadeScreenLight.intensity = 0.6;
+                if (dustMesh) dustMesh.material.color.setHex(loc.dustColor);
+                playTechClickSound(660, 0.06);
+            } else if (activeMood === 'cyber') {
+                hemiLight.color.setHex(0x00f0ff);
+                hemiLight.groundColor.setHex(0x2e1065);
+                hemiLight.intensity = 0.42;
+                ambientLight.intensity = 0.08;
+                sunLight.color.setHex(0xf472b6);
+                sunLight.intensity = 0.55;
+                fillLight.color.setHex(0x38bdf8);
+                fillLight.intensity = 0.48;
+                if (deskLightRef) deskLightRef.intensity = 1.45;
+                if (shelfLightRef) shelfLightRef.intensity = 0.85;
+                if (pegLightRef) pegLightRef.intensity = 0.95;
+                if (ledMatRef) ledMatRef.color.setHex(0x00f0ff);
+                if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 1.65;
+                if (arcadeScreenLight) arcadeScreenLight.intensity = 1.25;
+                if (dustMesh) dustMesh.material.color.setHex(0xe879f9);
+                playTechClickSound(1180, 0.07);
+            } else if (activeMood === 'christmas') {
+                // Dim all ambient & office lights so the Christmas tree illuminates the entire room!
+                hemiLight.color.setHex(0x1e293b);
+                hemiLight.groundColor.setHex(0x05070d);
+                hemiLight.intensity = 0.14;
+                ambientLight.intensity = 0.03;
+                sunLight.intensity = 0.08;
+                fillLight.intensity = 0.06;
+                if (deskLightRef) deskLightRef.intensity = 0.10;
+                if (shelfLightRef) shelfLightRef.intensity = 0.08;
+                if (pegLightRef) pegLightRef.intensity = 0.10;
+                if (ledMatRef) ledMatRef.color.setHex(0x16a34a);
+                if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.15;
+                if (arcadeScreenLight) arcadeScreenLight.intensity = 0.12;
+                if (dustMesh) dustMesh.material.color.setHex(0xfef08a);
+
+                treeLightSurge = 1.0;
+                playChristmasJingleSound();
+                playCatMeow('happy');
+                showRobotBubble('🎅 ¡JO JO JO! ¡FELIZ NAVIDAD!', '¡Jo, jo, jo! ¡Feliz Navidad! Activamos las luces del árbol y la nieve en toda la oficina. ¡Haz clic en un regalo para abrirlo! 🎄🎁✨', 10000);
+                showCatThought('🎅 ¡JO JO JO! ¡MIAU-NAVIDAD!', '¡Jojojo, feliz Navidad! ¡Mira mi gorrito de Santa y las luces del árbol! Vamos a abrir un regalo 🐾🎁🎄');
+            }
+        }
+
+        moodBtns.forEach((btn) => {
+            btn.addEventListener('click', () => setRoomMood(btn.dataset.mood));
+        });
+        if (xmasGiftBtn) {
+            xmasGiftBtn.addEventListener('click', () => openRandomChristmasGift());
+        }
+
+        window.eduMoodSystem = {
+            setMood: setRoomMood,
+            getMood: () => activeMood,
+            openGift: openRandomChristmasGift
+        };
 
         /* ---------------------------------------------------------
            HOTSPOTS (DIAMOND MARKERS) & CAMERA TARGETS
@@ -8348,6 +8641,17 @@
                 return;
             }
             if (e.target !== canvas) return;
+            if (isLaserMode && api.getViewMode() === 'stage3d') {
+                ndc.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+                ndc.y = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
+                raycaster.setFromCamera(ndc, camera);
+                if (raycaster.ray.intersectPlane(floorPlane, laserRayTarget)) {
+                    laserTarget.x = Math.max(-5.1, Math.min(5.1, laserRayTarget.x));
+                    laserTarget.z = Math.max(-4.2, Math.min(4.2, laserRayTarget.z));
+                    laserTarget.y = 0.025;
+                    laserDotGroup.position.copy(laserTarget);
+                }
+            }
             if (api.getActiveStation() === 'contact' && phoneScreenMesh) {
                 ndc.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
                 ndc.y = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
@@ -8434,11 +8738,16 @@
                         return;
                     }
                     if (id === 'cat' || (hit.object && hit.object.userData && hit.object.userData.isCat)) {
-                        if (hit.object && hit.object.userData && hit.object.userData.isCatToy) {
+                        const ud = hit.object && hit.object.userData;
+                        if (ud && (ud.isCatToy || ud.isToyMouse || ud.isYarnBall)) {
                             triggerCatPlay();
                         } else {
                             triggerCatInteraction();
                         }
+                        return;
+                    }
+                    if (hit.object && hit.object.userData && hit.object.userData.isChristmasGift) {
+                        openRandomChristmasGift(hit.object.userData.giftIndex);
                         return;
                     }
                     if (id === 'globe' || (hit.object && hit.object.userData && hit.object.userData.isGlobe)) {
@@ -8859,24 +9168,56 @@
                     globeMesh.rotation.y += globeSpinVelocity * dt;
                 }
 
-                // Christmas Tree Lights Twinkle & Surge
+                // Christmas Tree Lights Twinkle & Surge (amplified in Christmas Mood!)
                 if (treeLightMeshes && treeLightMeshes.length > 0) {
                     treeLightSurge *= Math.exp(-dt * 2.5);
-                    const treeSpeed = 4.2 + treeLightSurge * 14.0;
+                    const isXmasMood = activeMood === 'christmas';
+                    const treeSpeed = (isXmasMood ? 5.6 : 4.2) + treeLightSurge * 14.0;
                     treeLightMeshes.forEach((tl, idx) => {
                         const pulse = Math.sin(t * treeSpeed + tl.phase);
-                        const s = 0.85 + Math.max(0, pulse) * 0.55 + treeLightSurge * 0.8;
+                        const s = (isXmasMood ? 1.25 : 0.85) + Math.max(0, pulse) * (isXmasMood ? 0.85 : 0.55) + treeLightSurge * 0.8;
                         tl.mesh.scale.setScalar(s);
                         if (treeLightMats[idx % treeLightMats.length]) {
-                            treeLightMats[idx % treeLightMats.length].opacity = 0.65 + Math.max(0, pulse) * 0.35 + treeLightSurge * 0.3;
+                            treeLightMats[idx % treeLightMats.length].opacity = (isXmasMood ? 0.85 : 0.65) + Math.max(0, pulse) * 0.35 + treeLightSurge * 0.3;
                         }
                     });
                     if (typeof starPointLight !== 'undefined' && starPointLight) {
-                        starPointLight.intensity = 0.45 + Math.sin(t * 2.5) * 0.12 + treeLightSurge * 0.8;
+                        starPointLight.distance = isXmasMood ? 9.5 : 2.2;
+                        starPointLight.intensity = (isXmasMood ? 2.1 : 0.45) + Math.sin(t * 2.5) * (isXmasMood ? 0.35 : 0.12) + treeLightSurge * 0.8;
                     }
                     if (typeof treeWarmLight !== 'undefined' && treeWarmLight) {
-                        treeWarmLight.intensity = 0.22 + Math.sin(t * 2.0) * 0.06 + treeLightSurge * 0.5;
+                        treeWarmLight.distance = isXmasMood ? 13.0 : 2.8;
+                        treeWarmLight.intensity = (isXmasMood ? 2.5 : 0.22) + Math.sin(t * 2.0) * (isXmasMood ? 0.45 : 0.06) + treeLightSurge * 0.5;
                     }
+                }
+
+                // Active Gift Box Bounce & Spin Animation
+                if (activeGiftAnim) {
+                    const gElapsed = (performance.now() - activeGiftAnim.startTime) / 1000;
+                    if (gElapsed < 0.9) {
+                        const gp = gElapsed / 0.9;
+                        activeGiftAnim.group.position.y = activeGiftAnim.baseY + Math.sin(gp * Math.PI) * 0.38;
+                        activeGiftAnim.group.rotation.y = activeGiftAnim.baseRotY + gp * Math.PI * 2;
+                    } else {
+                        activeGiftAnim.group.position.y = activeGiftAnim.baseY;
+                        activeGiftAnim.group.rotation.y = activeGiftAnim.baseRotY;
+                        activeGiftAnim = null;
+                    }
+                }
+
+                // Soft 3D Snowfall Update (Christmas Mood)
+                if (snowPoints && snowPoints.visible) {
+                    const sArr = snowGeo.attributes.position.array;
+                    for (let i = 0; i < SNOW_COUNT; i++) {
+                        sArr[i * 3 + 1] -= dt * 0.62;
+                        sArr[i * 3] += Math.sin(t * 1.4 + snowPhases[i]) * dt * 0.18;
+                        if (sArr[i * 3 + 1] < 0.05) {
+                            sArr[i * 3 + 1] = 5.2;
+                            sArr[i * 3] = -5.8 + Math.random() * 11.6;
+                            sArr[i * 3 + 2] = -4.8 + Math.random() * 9.6;
+                        }
+                    }
+                    snowGeo.attributes.position.needsUpdate = true;
                 }
 
                 // ROBOT ANIMATIONS: MOBILITY PAUSA ACTIVA, GREETING WAVE, DANCING WITH MUSIC, OR IDLE TYPING
@@ -9898,6 +10239,11 @@
                                 stateStartTime = performance.now();
                                 stateDuration = 1.2;
                                 playToyMouseSqueak();
+                            } else if (currentWaypointId === 'tree_front') {
+                                catState = 'tree_admire';
+                                stateStartTime = performance.now();
+                                stateDuration = 5.5;
+                                playCatMeow('chirp');
                             } else if (currentWaypointId === 'lounge_rug' && catState !== 'waking') {
                                 startJumpUp('beanbag');
                             } else {
@@ -10200,6 +10546,68 @@
                             startCatPlayActivity();
                         }
                     }
+                }
+                else if (catState === 'tree_admire') {
+                    // Look up at the Christmas tree lights and bat playfully at a low ornament
+                    const dx = -4.65 - catRoot.position.x;
+                    const dz = 4.10 - catRoot.position.z;
+                    const targetRotY = -Math.atan2(dz, dx);
+                    catRoot.rotation.y = lerpAngle(catRoot.rotation.y, targetRotY, Math.min(1.0, dt * 8.0));
+                    catRoot.position.y = 0.16;
+                    catSpine.position.set(0, 0, 0);
+                    catSpine.rotation.x = -0.18;
+                    catHeadGroup.rotation.set(-0.42 + Math.sin(t * 2.5) * 0.08, Math.sin(t * 1.8) * 0.12, 0);
+                    legBL.rotation.x = 0.7;
+                    legBR.rotation.x = 0.7;
+                    // Playful paw swat at low ornament!
+                    const swat = Math.max(0, Math.sin(t * 5.0));
+                    legFR.rotation.set(0, 0, swat * 1.15);
+                    if (swat > 0.96 && treeLightSurge < 0.25) {
+                        treeLightSurge = 0.55;
+                        playChristmasJingleSound();
+                    }
+                    tailRoot.rotation.set(0.2, 0, 0.35 + Math.sin(t * 4.0) * 0.25);
+
+                    if (stateElapsed > stateDuration) {
+                        catSpine.rotation.x = 0;
+                        legFR.rotation.set(0, 0, 0);
+                        startWalkTo('center', 'walking');
+                    }
+                }
+                else if (catState === 'laser_chase') {
+                    // Real-time sprint & drift chasing the 3D red laser pointer!
+                    const dx = laserTarget.x - catRoot.position.x;
+                    const dz = laserTarget.z - catRoot.position.z;
+                    const dist = Math.hypot(dx, dz);
+
+                    const targetRotY = -Math.atan2(dz, dx);
+                    const prevRotY = catRoot.rotation.y;
+                    catRoot.rotation.y = lerpAngle(catRoot.rotation.y, targetRotY, Math.min(1.0, dt * 14.0));
+                    const turnDrift = Math.max(-0.28, Math.min(0.28, (catRoot.rotation.y - prevRotY) * 3.5));
+
+                    if (dist > 0.26) {
+                        const speed = Math.min(3.3, 1.8 + dist * 0.8);
+                        catRoot.position.x += (dx / dist) * Math.min(dist, dt * speed);
+                        catRoot.position.z += (dz / dist) * Math.min(dist, dt * speed);
+                        runPhase += dt * 22.0;
+                        catRoot.position.y = 0.16 + Math.abs(Math.sin(runPhase)) * 0.08;
+                        catSpine.rotation.set(0, 0, Math.cos(runPhase) * 0.09 + turnDrift);
+                        legFL.rotation.z = Math.sin(runPhase) * 1.05;
+                        legFR.rotation.z = Math.sin(runPhase + 0.25) * 1.05;
+                        legBL.rotation.z = -Math.sin(runPhase) * 1.05;
+                        legBR.rotation.z = -Math.sin(runPhase + 0.25) * 1.05;
+                        tailRoot.rotation.set(0, 0, -0.2 + Math.sin(runPhase * 2) * 0.15);
+                    } else {
+                        // Pounce bounce right on top of the laser dot!
+                        catRoot.position.y = 0.16 + Math.abs(Math.sin(t * 14.0)) * 0.11;
+                        catSpine.rotation.set(0, Math.sin(t * 24.0) * 0.14, 0);
+                        legFL.rotation.z = 0.55;
+                        legFR.rotation.z = 0.55;
+                        if (Math.random() < 0.06) {
+                            spawnCatHearts(catRoot.position);
+                        }
+                    }
+                    catHeadGroup.rotation.set(0.22, 0, 0);
                 }
 
                 // Coffee Mug Elastic Spring Press Physical Animation
