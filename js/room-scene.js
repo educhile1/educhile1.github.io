@@ -8009,7 +8009,8 @@
         --------------------------------------------------------- */
         const christmasTreeGroup = new THREE.Group();
         christmasTreeGroup.position.set(-4.65, 0, 4.10);
-        christmasTreeGroup.scale.set(0.92, 1.24, 0.92);
+        // 70% taller than previous 1.24 scale (1.24 * 1.70 ≈ 2.11)
+        christmasTreeGroup.scale.set(1.02, 2.11, 1.02);
         scene.add(christmasTreeGroup);
 
         // 1. Plataforma circular base festiva (Bandeja plato crema con borde verde bosque)
@@ -8112,38 +8113,49 @@
             }
         });
 
-        // 5. Luces Hada LED Festivas Twinkle (Multicolor suave en espiral)
-        const lightColors = [0xffd166, 0xef4444, 0x38bdf8, 0x10b981, 0xfffbeb, 0xfbbf24];
+        // 5. Luces Hada LED Festivas Twinkle (120 luces multicolor en doble espiral)
+        const lightColors = [0xffd166, 0xef4444, 0x38bdf8, 0x10b981, 0xf472b6, 0xa855f7, 0xfffbeb, 0xfbbf24];
         const treeLightMats = lightColors.map((c) => basic({ color: c, transparent: true }));
         const treeLightMeshes = [];
 
-        const lightCount = 48;
+        const lightCount = 120;
         for (let i = 0; i < lightCount; i++) {
             const prog = i / lightCount;
-            const y = 0.45 + prog * 1.85;
-            const radius = (1 - prog * 0.70) * 0.96;
-            const angle = prog * Math.PI * 11.0;
+            const y = 0.42 + prog * 1.92;
+            const radius = (1 - prog * 0.72) * 0.98;
+            const angle = prog * Math.PI * 18.0 + (i % 2 === 0 ? 0 : Math.PI);
             const lx = Math.cos(angle) * radius;
             const lz = Math.sin(angle) * radius;
             const matIdx = i % lightColors.length;
-            const lightMesh = addMesh(new THREE.SphereGeometry(0.022, 8, 8), treeLightMats[matIdx], [lx, y, lz], christmasTreeGroup, { cast: false, station: 'tree', isChristmasTree: true });
-            treeLightMeshes.push({ mesh: lightMesh, phase: i * 0.52, baseScale: 1.0 });
+            const lightMesh = addMesh(new THREE.SphereGeometry(0.025, 8, 8), treeLightMats[matIdx], [lx, y, lz], christmasTreeGroup, { cast: false, station: 'tree', isChristmasTree: true });
+            treeLightMeshes.push({ mesh: lightMesh, phase: i * 0.37, baseScale: 1.0 });
         }
 
-        // Luz cálida interior suave (muy suave para no sobreexponer el follaje verde)
-        const treeWarmLight = new THREE.PointLight(0xffedd5, 0.22, 2.8, 2.0);
+        // Luz cálida interior del árbol (ilumina toda la sala al activar Navidad o música)
+        const treeWarmLight = new THREE.PointLight(0xffedd5, 0.35, 4.5, 1.5);
         treeWarmLight.position.set(0, 1.25, 0);
         christmasTreeGroup.add(treeWarmLight);
 
-        // 6. Estrella 3D Dorada de 5 Puntas en la Cúspide (Biselada, Idéntica a la Referencia)
+        // 3 Luces dinámicas que barren todo el mapa con colores festivos cuando hay música / Navidad
+        const treeSweepLights = [
+            new THREE.PointLight(0xef4444, 0, 18.0, 1.35),
+            new THREE.PointLight(0x10b981, 0, 18.0, 1.35),
+            new THREE.PointLight(0x38bdf8, 0, 18.0, 1.35)
+        ];
+        treeSweepLights.forEach((sl, idx) => {
+            sl.position.set(Math.cos(idx * 2.1) * 1.1, 1.1 + idx * 0.45, Math.sin(idx * 2.1) * 1.1);
+            christmasTreeGroup.add(sl);
+        });
+
+        // 6. Estrella 3D Multicolor de 5 Puntas en la Cúspide con Halo Luminoso
         const starGroup = new THREE.Group();
-        starGroup.position.set(0, 2.42, 0);
+        starGroup.position.set(0, 2.44, 0);
         christmasTreeGroup.add(starGroup);
 
         const starShape = new THREE.Shape();
         const starPoints = 5;
-        const rOuter = 0.22;
-        const rInner = 0.095;
+        const rOuter = 0.24;
+        const rInner = 0.10;
         for (let p = 0; p < starPoints * 2; p++) {
             const r = p % 2 === 0 ? rOuter : rInner;
             const ang = (p * Math.PI) / starPoints - Math.PI / 2;
@@ -8155,20 +8167,33 @@
         starShape.closePath();
 
         const starExtrudeSettings = {
-            depth: 0.052,
+            depth: 0.056,
             bevelEnabled: true,
-            bevelThickness: 0.020,
-            bevelSize: 0.014,
+            bevelThickness: 0.022,
+            bevelSize: 0.015,
             bevelSegments: 3
         };
         const starGeo = new THREE.ExtrudeGeometry(starShape, starExtrudeSettings);
         starGeo.center();
-        const starGoldMat = std(0xfbbf24, 0.12, 0.95);
+        const starGoldMat = new THREE.MeshStandardMaterial({
+            color: 0xfbbf24,
+            emissive: 0xffd700,
+            emissiveIntensity: 1.35,
+            roughness: 0.12,
+            metalness: 0.85
+        });
         const starMesh = addMesh(starGeo, starGoldMat, [0, 0, 0], starGroup, { station: 'tree', isChristmasTree: true });
+        const starHaloMat = new THREE.MeshBasicMaterial({
+            color: 0xfbbf24,
+            transparent: true,
+            opacity: 0.35,
+            depthWrite: false
+        });
+        const starHaloMesh = addMesh(new THREE.SphereGeometry(0.32, 16, 16), starHaloMat, [0, 0, 0], starGroup, { cast: false });
 
-        // Luz tenue de la estrella superior
-        const starPointLight = new THREE.PointLight(0xffea80, 0.45, 2.2, 1.8);
-        starPointLight.position.set(0, 2.44, 0);
+        // Luz multicolor potente de la estrella superior
+        const starPointLight = new THREE.PointLight(0xffea80, 0.85, 4.0, 1.4);
+        starPointLight.position.set(0, 2.52, 0);
         christmasTreeGroup.add(starPointLight);
 
         // 7. Cajas de Regalos Decorativas con Moños (Interactivas!)
@@ -8654,7 +8679,7 @@
             { id: 'coffee', code: '☕', label: 'Café Turbo', anchor: [0.72, 1.42, 0.00], target: [0.48, 1.48, -0.45], normal: [0.42, 0.18, 0.88], dist: 2.15, lift: 0.15 },
             { id: 'coffee_macro', code: '☕', label: 'Latte Art Macro', anchor: [0.86, 1.35, 0.09], target: [0.86, 1.12, 0.09], normal: [0.35, 0.68, 0.64], dist: 0.48, lift: 0.02, noDiamond: true },
             { id: 'globe', code: '🌍', label: 'Mapamundi', anchor: [1.75, 1.70, -4.42], target: [1.75, 1.12, -4.42], normal: [-0.18, 0.22, 0.96], dist: 2.35, lift: 0.08 },
-            { id: 'tree', code: '🎄', label: 'Árbol Navideño', anchor: [-4.65, 3.45, 4.10], target: [-4.65, 1.48, 4.10], normal: [0.80, 0.15, -0.58], dist: 5.45, lift: 0.0 },
+            { id: 'tree', code: '🎄', label: 'Árbol Navideño', anchor: [-4.65, 5.55, 4.10], target: [-4.65, 2.35, 4.10], normal: [0.80, 0.15, -0.58], dist: 6.85, lift: 0.0 },
             { id: 'scenic', code: '🏔️', label: 'Ventanal Panorámico', anchor: [-0.20, 4.15, -4.95], target: [0.60, 2.90, -4.99], normal: [0, 0, 1], dist: 3.4, lift: 0.0 }
         ];
         const hotspotMap = new Map();
@@ -9400,26 +9425,62 @@
                     globeMesh.rotation.y += globeSpinVelocity * dt;
                 }
 
-                // Christmas Tree Lights Twinkle & Surge (amplified in Christmas Mood!)
+                // Christmas Tree Lights Twinkle, Multicolor Star & Whole-Map Sweeping Illumination
                 if (treeLightMeshes && treeLightMeshes.length > 0) {
-                    treeLightSurge *= Math.exp(-dt * 2.5);
+                    treeLightSurge *= Math.exp(-dt * 2.2);
                     const isXmasMood = activeMood === 'christmas';
-                    const treeSpeed = (isXmasMood ? 5.6 : 4.2) + treeLightSurge * 14.0;
+                    const isXmasAudioPlaying = typeof christmasAudio !== 'undefined' && christmasAudio && !christmasAudio.paused;
+                    const isMusicActive = isXmasAudioPlaying || (window.eduMusicState && window.eduMusicState.isPlaying);
+                    const musicBoost = isMusicActive ? 1.0 : 0.0;
+                    const treeSpeed = (isXmasMood ? 5.6 : 4.2) + musicBoost * 3.8 + treeLightSurge * 12.0;
+
                     treeLightMeshes.forEach((tl, idx) => {
                         const pulse = Math.sin(t * treeSpeed + tl.phase);
-                        const s = (isXmasMood ? 1.25 : 0.85) + Math.max(0, pulse) * (isXmasMood ? 0.85 : 0.55) + treeLightSurge * 0.8;
+                        const s = (isXmasMood || isMusicActive ? 1.35 : 0.90) + Math.max(0, pulse) * (isMusicActive ? 1.15 : 0.65) + treeLightSurge * 0.9;
                         tl.mesh.scale.setScalar(s);
                         if (treeLightMats[idx % treeLightMats.length]) {
-                            treeLightMats[idx % treeLightMats.length].opacity = (isXmasMood ? 0.85 : 0.65) + Math.max(0, pulse) * 0.35 + treeLightSurge * 0.3;
+                            treeLightMats[idx % treeLightMats.length].opacity = (isXmasMood || isMusicActive ? 0.9 : 0.7) + Math.max(0, pulse) * 0.35 + treeLightSurge * 0.3;
                         }
                     });
+
+                    // Multicolor glowing star + halo + gentle rotation
+                    const starHue = (t * (isMusicActive ? 0.42 : 0.14)) % 1.0;
+                    if (typeof starGoldMat !== 'undefined' && starGoldMat) {
+                        starGoldMat.emissive.setHSL(starHue, 0.95, 0.55);
+                        starGoldMat.emissiveIntensity = (isMusicActive ? 2.4 : isXmasMood ? 1.7 : 1.0) + Math.sin(t * 6.0) * 0.45 + treeLightSurge;
+                    }
+                    if (typeof starHaloMat !== 'undefined' && starHaloMat) {
+                        starHaloMat.color.setHSL(starHue, 1.0, 0.6);
+                        starHaloMat.opacity = (isMusicActive ? 0.55 : isXmasMood ? 0.38 : 0.18) + Math.sin(t * 5.0) * 0.12;
+                    }
+                    if (typeof starGroup !== 'undefined' && starGroup) {
+                        starGroup.rotation.y += dt * (isMusicActive ? 1.6 : 0.45);
+                        const starScale = 1.0 + (isMusicActive ? Math.sin(t * 7.5) * 0.14 : Math.sin(t * 2.5) * 0.05);
+                        starGroup.scale.setScalar(starScale);
+                    }
+
                     if (typeof starPointLight !== 'undefined' && starPointLight) {
-                        starPointLight.distance = isXmasMood ? 9.5 : 2.2;
-                        starPointLight.intensity = (isXmasMood ? 2.1 : 0.45) + Math.sin(t * 2.5) * (isXmasMood ? 0.35 : 0.12) + treeLightSurge * 0.8;
+                        starPointLight.color.setHSL(starHue, 0.95, 0.62);
+                        starPointLight.distance = (isXmasMood || isMusicActive) ? 20.0 : 4.5;
+                        starPointLight.intensity = (isMusicActive ? 4.2 : isXmasMood ? 2.8 : 0.75) + Math.sin(t * 4.5) * (isMusicActive ? 1.1 : 0.35) + treeLightSurge * 1.5;
                     }
                     if (typeof treeWarmLight !== 'undefined' && treeWarmLight) {
-                        treeWarmLight.distance = isXmasMood ? 13.0 : 2.8;
-                        treeWarmLight.intensity = (isXmasMood ? 2.5 : 0.22) + Math.sin(t * 2.0) * (isXmasMood ? 0.45 : 0.06) + treeLightSurge * 0.5;
+                        treeWarmLight.distance = (isXmasMood || isMusicActive) ? 22.0 : 4.5;
+                        treeWarmLight.intensity = (isMusicActive ? 4.8 : isXmasMood ? 3.2 : 0.35) + Math.sin(t * 3.5) * (isMusicActive ? 1.2 : 0.45) + treeLightSurge * 1.2;
+                    }
+                    if (typeof treeSweepLights !== 'undefined' && treeSweepLights.length) {
+                        const sweepActive = isXmasMood || isMusicActive;
+                        treeSweepLights.forEach((sl, idx) => {
+                            const orbitAng = t * (isMusicActive ? 1.9 : 0.75) + idx * (Math.PI * 2 / 3);
+                            const orbitRad = sweepActive ? 2.4 + Math.sin(t * 1.3 + idx) * 0.8 : 1.0;
+                            sl.position.set(
+                                Math.cos(orbitAng) * orbitRad,
+                                0.8 + idx * 0.65 + Math.sin(t * 2.2 + idx) * 0.25,
+                                Math.sin(orbitAng) * orbitRad
+                            );
+                            sl.color.setHSL((t * (isMusicActive ? 0.32 : 0.10) + idx * 0.33) % 1.0, 1.0, 0.56);
+                            sl.intensity = sweepActive ? ((isMusicActive ? 3.2 : 1.8) + Math.sin(t * 5.0 + idx * 2.0) * 0.9 + treeLightSurge) : 0;
+                        });
                     }
                 }
 
