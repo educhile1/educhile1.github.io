@@ -36,18 +36,22 @@
         const reduced = !!options.reducedMotion;
         if (!THREE || !canvas || !api) return false;
 
+        const isMobile = () => window.innerWidth < 768;
+        const isTabletOrTouch = () => window.innerWidth <= 1180
+            || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0 && window.innerWidth <= 1366)
+            || (typeof navigator !== 'undefined' && /iPad|Android|Tablet|Mobile/i.test(navigator.userAgent));
+        const mobileAtStart = isTabletOrTouch();
+
         let renderer;
         try {
-            renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobileAtStart, powerPreference: 'high-performance' });
         } catch (err) {
             return false;
         }
         if (!renderer || !renderer.getContext()) return false;
 
-        const isMobile = () => window.innerWidth < 768;
-        const mobileAtStart = isMobile();
-
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobileAtStart ? 1.5 : 2));
+        let currentMaxDpr = isMobile() ? 1.15 : (mobileAtStart ? 1.25 : 2.0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x05060b, 1);
         renderer.outputEncoding = THREE.sRGBEncoding;
@@ -60,7 +64,7 @@
         scene.fog = new THREE.Fog(0x05060b, 26, 48);
 
         const camera = new THREE.PerspectiveCamera(
-            mobileAtStart ? 52 : 38,
+            isMobile() ? 52 : (window.innerWidth <= 1024 ? 44 : 38),
             window.innerWidth / window.innerHeight,
             0.1,
             120
@@ -77,7 +81,7 @@
             const ctx = c.getContext('2d');
             const tex = new THREE.CanvasTexture(c);
             tex.encoding = THREE.sRGBEncoding;
-            tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+            tex.anisotropy = Math.min(mobileAtStart ? 2 : 8, renderer.capabilities.getMaxAnisotropy());
             if (opts && opts.repeat) {
                 tex.wrapS = THREE.RepeatWrapping;
                 tex.wrapT = THREE.RepeatWrapping;
@@ -6830,11 +6834,13 @@
         const laserOuterRing = addMesh(new THREE.RingGeometry(0.055, 0.11, 24), basic({ color: 0xff2244, transparent: true, opacity: 0.72, side: THREE.DoubleSide }), [0, 0.006, 0], laserDotGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
         const laserLight = new THREE.PointLight(0xff1e42, 1.85, 2.8);
         laserLight.position.set(0, 0.16, 0);
+        laserLight.visible = false;
         laserDotGroup.add(laserLight);
 
         function toggleCatLaserMode(forceState = null) {
             isLaserMode = forceState !== null ? Boolean(forceState) : !isLaserMode;
             laserDotGroup.visible = isLaserMode;
+            laserLight.visible = isLaserMode;
             if (typeof canvas !== 'undefined' && canvas) {
                 canvas.style.cursor = isLaserMode ? 'crosshair' : '';
             }
@@ -7032,6 +7038,7 @@
             { light: new THREE.PointLight(0x10b981, 0, 13.0, 1.3), color: 0x10b981, baseInt: 3.2, beatAmp: 2.8, offset: Math.PI * 0.8, speed: 2.1, r: 3.2, yAmp: 0.6 }
         ];
         partyPointLights.forEach(p => {
+            p.light.visible = false;
             scene.add(p.light);
         });
 
@@ -7070,6 +7077,7 @@
             ww.target = new THREE.Object3D();
             ww.spot.position.set(ww.pos[0], ww.pos[1], ww.pos[2]);
             ww.target.position.set(ww.targetPos[0], ww.targetPos[1], ww.targetPos[2]);
+            ww.spot.visible = false;
             scene.add(ww.spot);
             scene.add(ww.target);
             ww.spot.target = ww.target;
@@ -7119,6 +7127,7 @@
         ];
         stageSpotlights.forEach(sp => {
             sp.spot.position.set(sp.origin[0], sp.origin[1], sp.origin[2]);
+            sp.spot.visible = false;
             scene.add(sp.spot);
             scene.add(sp.target);
             sp.spot.target = sp.target;
@@ -7127,6 +7136,7 @@
         // 9. Overhead Beat Strobe Point Light (flashes on kick/snare impacts)
         const strobeLight = new THREE.PointLight(0xffffff, 0, 16.0, 1.4);
         strobeLight.position.set(discoCenterX, 6.2, discoCenterZ);
+        strobeLight.visible = false;
         scene.add(strobeLight);
 
         // 10. Saturated Moving Neon Light Pools & Wall Gobos across stage surfaces
@@ -8144,6 +8154,7 @@
         ];
         treeSweepLights.forEach((sl, idx) => {
             sl.position.set(Math.cos(idx * 2.1) * 1.1, 1.1 + idx * 0.45, Math.sin(idx * 2.1) * 1.1);
+            sl.visible = false;
             christmasTreeGroup.add(sl);
         });
 
@@ -8867,6 +8878,7 @@
         let lastY = 0;
         let dragDist = 0;
         let lastInteraction = 0;
+        let lastHoverPickMs = 0;
 
         function pickHit(clientX, clientY) {
             ndc.x = (clientX / Math.max(1, window.innerWidth)) * 2 - 1;
@@ -8934,6 +8946,12 @@
                 }
             }
             if (e.target !== canvas) return;
+            if (e.pointerType === 'touch') return;
+            if (mobileAtStart) {
+                const nowHover = performance.now();
+                if (nowHover - lastHoverPickMs < 45) return;
+                lastHoverPickMs = nowHover;
+            }
             if (api.getActiveStation() === 'contact' && phoneScreenMesh) {
                 ndc.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
                 ndc.y = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
@@ -9155,9 +9173,10 @@
         );
 
         window.addEventListener('resize', () => {
-            camera.fov = isMobile() ? 52 : 38;
+            camera.fov = isMobile() ? 52 : (window.innerWidth <= 1024 ? 44 : 38);
             camera.aspect = window.innerWidth / Math.max(1, window.innerHeight);
             camera.updateProjectionMatrix();
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
             renderer.setSize(window.innerWidth, window.innerHeight);
             if (!hotspotMap.has(api.getActiveStation())) orbit.tR = baseRadius();
         });
@@ -9275,10 +9294,29 @@
         let animId = null;
         let lastTime = performance.now();
         let nextBlink = 2.5;
+        let fpsFrames = 0;
+        let fpsTimeAcc = 0;
+        let dprStepDownDone = false;
 
         function frame(now) {
-            const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) / 1000));
+            const rawDt = Math.max(0.001, (now - lastTime) / 1000);
+            const dt = Math.min(0.05, rawDt);
             lastTime = now;
+            if (!dprStepDownDone && api.getViewMode() === 'stage3d' && rawDt < 0.25) {
+                fpsFrames += 1;
+                fpsTimeAcc += rawDt;
+                if (fpsTimeAcc >= 2.5) {
+                    const avgFps = fpsFrames / fpsTimeAcc;
+                    if (avgFps < 34) {
+                        currentMaxDpr = Math.max(0.85, currentMaxDpr * 0.78);
+                        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
+                        renderer.shadowMap.enabled = false;
+                        dprStepDownDone = true;
+                    }
+                    fpsFrames = 0;
+                    fpsTimeAcc = 0;
+                }
+            }
             const t = now * 0.001;
             const k = 1 - Math.exp(-dt * 4.2);
             const active = api.getActiveStation();
@@ -9500,15 +9538,20 @@
                     if (typeof treeSweepLights !== 'undefined' && treeSweepLights.length) {
                         const sweepActive = isXmasMood || isMusicActive;
                         treeSweepLights.forEach((sl, idx) => {
+                            sl.visible = sweepActive;
+                            if (!sweepActive) {
+                                sl.intensity = 0;
+                                return;
+                            }
                             const orbitAng = t * (isMusicActive ? 1.9 : 0.75) + idx * (Math.PI * 2 / 3);
-                            const orbitRad = sweepActive ? 2.4 + Math.sin(t * 1.3 + idx) * 0.8 : 1.0;
+                            const orbitRad = 2.4 + Math.sin(t * 1.3 + idx) * 0.8;
                             sl.position.set(
                                 Math.cos(orbitAng) * orbitRad,
                                 0.8 + idx * 0.65 + Math.sin(t * 2.2 + idx) * 0.25,
                                 Math.sin(orbitAng) * orbitRad
                             );
                             sl.color.setHSL((t * (isMusicActive ? 0.32 : 0.10) + idx * 0.33) % 1.0, 1.0, 0.56);
-                            sl.intensity = sweepActive ? ((isMusicActive ? 3.2 : 1.8) + Math.sin(t * 5.0 + idx * 2.0) * 0.9 + treeLightSurge) : 0;
+                            sl.intensity = (isMusicActive ? 3.2 : 1.8) + Math.sin(t * 5.0 + idx * 2.0) * 0.9 + treeLightSurge;
                         });
                     }
                 }
@@ -10199,6 +10242,7 @@
                     // 2. High-power stage point lights orbiting
                     const pT = t * 2.2;
                     partyPointLights.forEach((p, idx) => {
+                        p.light.visible = true;
                         const angle = pT * (p.speed * 0.5) + p.offset;
                         const lx = discoCenterX + Math.cos(angle) * p.r;
                         const lz = discoCenterZ + Math.sin(angle) * p.r;
@@ -10209,11 +10253,13 @@
 
                     // 3. Stage Wall Washers (intense concert uplights on walls)
                     stageWallWashers.forEach(ww => {
+                        ww.spot.visible = true;
                         ww.spot.intensity = partyModeLerp * (ww.baseInt + beat * ww.beatAmp);
                     });
 
                     // 4. Stage Moving-Head Spotlights sweeping walls and stage perimeter
                     stageSpotlights.forEach(sp => {
+                        sp.spot.visible = true;
                         sp.target.position.set(
                             discoCenterX + Math.cos(t * sp.speed + sp.phase) * sp.rX,
                             sp.yBase + Math.sin(t * sp.speed * 1.3 + sp.phase) * sp.yAmp,
@@ -10224,8 +10270,10 @@
 
                     // 5. Strobe light flashing on heavy beats
                     if (beat > 0.75) {
+                        strobeLight.visible = true;
                         strobeLight.intensity = partyModeLerp * 4.5;
                     } else {
+                        strobeLight.visible = false;
                         strobeLight.intensity = 0;
                     }
 
@@ -10268,19 +10316,21 @@
                     }
                     if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = THREE.MathUtils.lerp(0.55, 0.04, partyModeLerp);
                     if (deskLightRef) {
+                        deskLightRef.visible = true;
                         deskLightRef.color.setHSL((t * 0.25) % 1, 1.0, 0.5);
                         deskLightRef.intensity = THREE.MathUtils.lerp(1.25, 0.15 + beat * 0.25, partyModeLerp);
                     }
-                    if (lampLightRef) lampLightRef.intensity = THREE.MathUtils.lerp(1.1, 0.08, partyModeLerp);
-                    if (shelfLightRef) shelfLightRef.intensity = THREE.MathUtils.lerp(0.6, 0.05, partyModeLerp);
-                    if (pegLightRef) pegLightRef.intensity = THREE.MathUtils.lerp(0.8, 0.08, partyModeLerp);
+                    if (lampLightRef) { lampLightRef.visible = true; lampLightRef.intensity = THREE.MathUtils.lerp(1.1, 0.08, partyModeLerp); }
+                    if (shelfLightRef) { shelfLightRef.visible = true; shelfLightRef.intensity = THREE.MathUtils.lerp(0.6, 0.05, partyModeLerp); }
+                    if (pegLightRef) { pegLightRef.visible = true; pegLightRef.intensity = THREE.MathUtils.lerp(0.8, 0.08, partyModeLerp); }
                     if (ledMatRef) ledMatRef.color.setHSL((t * 0.25) % 1, 1.0, 0.5);
                 } else {
                     discoBallGroup.position.y = discoRetractedY;
                     chainMesh.visible = false;
-                    partyPointLights.forEach(p => { p.light.intensity = 0; });
-                    stageWallWashers.forEach(ww => { ww.spot.intensity = 0; });
-                    stageSpotlights.forEach(sp => { sp.spot.intensity = 0; });
+                    partyPointLights.forEach(p => { p.light.visible = false; p.light.intensity = 0; });
+                    stageWallWashers.forEach(ww => { ww.spot.visible = false; ww.spot.intensity = 0; });
+                    stageSpotlights.forEach(sp => { sp.spot.visible = false; sp.spot.intensity = 0; });
+                    strobeLight.visible = false;
                     strobeLight.intensity = 0;
                     stageGoboMeshes.forEach(gb => { gb.mat.opacity = 0; });
                     laserBeams.forEach(lb => { lb.mat.opacity = 0; });
@@ -10296,10 +10346,10 @@
                         sunLight.intensity = 0.04 + stormFlashIntensity * 1.2;
                         if (windowFloorGlow) windowFloorGlow.material.opacity = 0.04 + stormFlashIntensity * 0.2;
                         if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.03;
-                        if (deskLightRef) deskLightRef.intensity = 0.0;
-                        if (lampLightRef) lampLightRef.intensity = 0.0;
-                        if (shelfLightRef) shelfLightRef.intensity = 0.0;
-                        if (pegLightRef) pegLightRef.intensity = 0.0;
+                        if (deskLightRef) { deskLightRef.visible = false; deskLightRef.intensity = 0.0; }
+                        if (lampLightRef) { lampLightRef.visible = false; lampLightRef.intensity = 0.0; }
+                        if (shelfLightRef) { shelfLightRef.visible = false; shelfLightRef.intensity = 0.0; }
+                        if (pegLightRef) { pegLightRef.visible = false; pegLightRef.intensity = 0.0; }
                         if (ledMatRef) ledMatRef.color.setHex(0xdc2626);
                         if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.04;
                         if (arcadeScreenLight) arcadeScreenLight.intensity = 0.04;
@@ -10310,12 +10360,13 @@
                         sunLight.intensity = 1.85 + sunnyBoost + stormFlashIntensity;
                         if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.45;
                         if (deskLightRef) {
+                            deskLightRef.visible = true;
                             deskLightRef.color.setHex(0xfff3d6);
                             deskLightRef.intensity = 0.85;
                         }
-                        if (lampLightRef) lampLightRef.intensity = 0.65;
-                        if (shelfLightRef) shelfLightRef.intensity = 0.45;
-                        if (pegLightRef) pegLightRef.intensity = 0.65;
+                        if (lampLightRef) { lampLightRef.visible = true; lampLightRef.intensity = 0.65; }
+                        if (shelfLightRef) { shelfLightRef.visible = true; shelfLightRef.intensity = 0.45; }
+                        if (pegLightRef) { pegLightRef.visible = true; pegLightRef.intensity = 0.65; }
                         if (ledMatRef) ledMatRef.color.setHex(0xfff3d6);
                         if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.65;
                         if (arcadeScreenLight) arcadeScreenLight.intensity = 0.45;
@@ -10326,12 +10377,13 @@
                         sunLight.intensity = 0.55 + sunnyBoost * 0.4 + stormFlashIntensity;
                         if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.65;
                         if (deskLightRef) {
+                            deskLightRef.visible = true;
                             deskLightRef.color.setHex(0x00f0ff);
                             deskLightRef.intensity = 1.45 + Math.sin(t * 2.2) * 0.18;
                         }
-                        if (lampLightRef) lampLightRef.intensity = 1.15;
-                        if (shelfLightRef) shelfLightRef.intensity = 0.85;
-                        if (pegLightRef) pegLightRef.intensity = 0.95;
+                        if (lampLightRef) { lampLightRef.visible = true; lampLightRef.intensity = 1.15; }
+                        if (shelfLightRef) { shelfLightRef.visible = true; shelfLightRef.intensity = 0.85; }
+                        if (pegLightRef) { pegLightRef.visible = true; pegLightRef.intensity = 0.95; }
                         if (ledMatRef) ledMatRef.color.setHex(0x00f0ff);
                         if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 1.65;
                         if (arcadeScreenLight) arcadeScreenLight.intensity = 1.25;
@@ -10346,12 +10398,13 @@
                         }
                         if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.55;
                         if (deskLightRef) {
+                            deskLightRef.visible = true;
                             deskLightRef.color.setHex(0xffa24d);
                             deskLightRef.intensity = 1.15 + Math.sin(t * 1.4) * 0.12;
                         }
-                        if (lampLightRef) lampLightRef.intensity = 1.1;
-                        if (shelfLightRef) shelfLightRef.intensity = 0.6;
-                        if (pegLightRef) pegLightRef.intensity = 0.8;
+                        if (lampLightRef) { lampLightRef.visible = true; lampLightRef.intensity = 1.1; }
+                        if (shelfLightRef) { shelfLightRef.visible = true; shelfLightRef.intensity = 0.6; }
+                        if (pegLightRef) { pegLightRef.visible = true; pegLightRef.intensity = 0.8; }
                         if (ledMatRef) ledMatRef.color.setHex(0xffb066);
                         if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.9;
                         if (arcadeScreenLight) arcadeScreenLight.intensity = 0.6;

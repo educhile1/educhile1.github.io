@@ -2350,3 +2350,18 @@ body.full-scroll-active #stage-weather-pill,
 body.full-scroll-active #xmas-gift-toast {
     display: none !important;
 }
+
+/* =================================================================
+   TABLET & MOBILE GPU COMPOSITING OPTIMIZATION
+================================================================== */
+@media (max-width: 1180px) {
+    #stage-scenic-pill,
+    #stage-mood-pill,
+    #stage-weather-pill,
+    .edubot-bubble,
+    .cat-bubble {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: rgba(11, 10, 20, 0.94) !important;
+    }
+}
