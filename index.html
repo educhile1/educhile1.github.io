@@ -184,6 +184,12 @@
                 <button id="cat-play-btn" type="button" class="cat-btn-play" title="¡Zoomies y jugar con su ratoncito!">
                     <span>🎾 ¡A jugar!</span>
                 </button>
+                <button id="cat-laser-btn" type="button" class="cat-btn-laser" title="Activar puntero láser rojo 3D para que Kotetsu lo persiga">
+                    <span>🔴 Láser</span>
+                </button>
+                <button id="cat-tree-btn" type="button" class="edubot-btn-secondary" title="Enviar a Kotetsu a mirar las luces del árbol">
+                    <span>🎄 Ver Árbol</span>
+                </button>
                 <button id="cat-food-btn" type="button" class="cat-btn-food"
                     title="Ir al bebedero y comer croquetas de salmón">
                     <span>🍽️ Comer / Beber</span>
@@ -254,6 +260,18 @@
                 <span class="text-pink-300" aria-hidden="true">◆</span>
                 <span>Arrastra para explorar · Clic en la ventana para cambiar vista</span>
             </div>
+        </div>
+
+        <!-- Room Mood / Theme Selector Pill (Día / Noche / Navidad / Cyber) -->
+        <div id="stage-mood-pill"
+            class="pointer-events-auto fixed top-[7.4rem] md:top-[9.7rem] right-4 sm:right-6 flex items-center gap-1 p-1 rounded-full bg-[#0b0a14]/88 border border-white/15 backdrop-blur-xl shadow-xl z-20 select-none">
+            <button type="button" class="mood-btn" data-mood="day" title="Modo Día luminoso">☀️ <span class="hidden sm:inline">Día</span></button>
+            <button type="button" class="mood-btn is-active" data-mood="night" title="Modo Noche ejecutivo">🌙 <span class="hidden sm:inline">Noche</span></button>
+            <button type="button" class="mood-btn" data-mood="christmas" title="Modo Navidad (luces del árbol, nieve y regalos)">🎄 <span class="hidden sm:inline">Navidad</span></button>
+            <button type="button" class="mood-btn" data-mood="cyber" title="Modo Cyberpunk neón">⚡ <span class="hidden sm:inline">Cyber</span></button>
+            <button id="xmas-open-gift-btn" type="button" class="hidden mood-gift-btn" title="Abrir un regalo aleatorio bajo el árbol">
+                🎁 <span class="hidden sm:inline">Abrir Regalo</span>
+            </button>
         </div>
 
         <!-- Back to full room view (visible while inspecting) -->
