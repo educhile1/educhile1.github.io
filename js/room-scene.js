@@ -8535,14 +8535,14 @@
             xmasGiftBtn.addEventListener('click', () => openRandomChristmasGift());
         }
 
-        // Weather / Climate Atmosphere Controller (music/clima/)
+        // Weather / Climate Atmosphere Controller (music/clima/) — affects the exterior panoramic window view ONLY
         const WEATHER_CONFIG = {
-            sunny: { label: '☀️ Soleado', file: 'music/clima/sunny_sonido_atmosfera.mp3', fogDensity: 0 },
-            rain: { label: '🌧️ Lluvia', file: 'music/clima/rain_sonido_atmosfera.mp3', fogDensity: 0.042, fogColor: 0x1e293b },
-            storm: { label: '⛈️ Tormenta', file: 'music/clima/storm_sonido_atmosfera.mp3', fogDensity: 0.062, fogColor: 0x090d16 },
-            wind: { label: '💨 Viento', file: 'music/clima/wind_sonido_atmosfera.mp3', fogDensity: 0.018, fogColor: 0x1e293b },
-            fog: { label: '🌫️ Niebla', file: 'music/clima/fog_sonido_atmosfera.mp3', fogDensity: 0.14, fogColor: 0x64748b },
-            forest: { label: '🌲 Bosque', file: 'music/clima/forest_sonido_atmosfera.mp3', fogDensity: 0.025, fogColor: 0x0b1f17 }
+            sunny: { label: '☀️ Soleado', file: 'music/clima/sunny_sonido_atmosfera.mp3', tintColor: 0xfde68a, tintOpacity: 0.14, skyColor: 0xfff5d6 },
+            rain: { label: '🌧️ Lluvia', file: 'music/clima/rain_sonido_atmosfera.mp3', tintColor: 0x0f172a, tintOpacity: 0.30, skyColor: 0x94a3b8 },
+            storm: { label: '⛈️ Tormenta', file: 'music/clima/storm_sonido_atmosfera.mp3', tintColor: 0x020617, tintOpacity: 0.45, skyColor: 0x64748b },
+            wind: { label: '💨 Viento', file: 'music/clima/wind_sonido_atmosfera.mp3', tintColor: 0x1e293b, tintOpacity: 0.12, skyColor: 0xdbeafe },
+            fog: { label: '🌫️ Niebla', file: 'music/clima/fog_sonido_atmosfera.mp3', tintColor: 0xcbd5e1, tintOpacity: 0.62, skyColor: 0xe2e8f0 },
+            forest: { label: '🌲 Bosque', file: 'music/clima/forest_sonido_atmosfera.mp3', tintColor: 0x065f46, tintOpacity: 0.22, skyColor: 0xd1fae5 }
         };
 
         let activeWeather = 'none';
@@ -8558,47 +8558,60 @@
             weatherPillEl.addEventListener('pointerdown', (e) => e.stopPropagation());
         }
 
-        // 3D Rain Streaks (LineSegments so drops are clearly visible in 3D!)
-        const RAIN_COUNT = mobileAtStart ? 200 : 380;
+        // Exterior window tint overlay (strictly behind the window glass inside scenicGroup)
+        const scenicWeatherTintMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.0,
+            depthWrite: false
+        });
+        const scenicWeatherTintMesh = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 3.6), scenicWeatherTintMat);
+        scenicWeatherTintMesh.position.z = 0.04;
+        scenicWeatherTintMesh.renderOrder = 2;
+        scenicWeatherTintMesh.visible = false;
+        scenicGroup.add(scenicWeatherTintMesh);
+
+        // 3D Exterior Rain Streaks (strictly outside the window inside scenicGroup)
+        const RAIN_COUNT = mobileAtStart ? 180 : 320;
         const rainPos = new Float32Array(RAIN_COUNT * 6);
         const rainRand = seededRandom(321);
         for (let i = 0; i < RAIN_COUNT; i++) {
-            const rx = -5.8 + rainRand() * 11.6;
-            const ry = 0.2 + rainRand() * 5.2;
-            const rz = -4.8 + rainRand() * 9.6;
+            const rx = -3.1 + rainRand() * 6.2;
+            const ry = -1.6 + rainRand() * 3.2;
+            const rz = 0.14 + rainRand() * 0.40;
             rainPos[i * 6] = rx;
             rainPos[i * 6 + 1] = ry;
             rainPos[i * 6 + 2] = rz;
-            rainPos[i * 6 + 3] = rx - 0.04;
-            rainPos[i * 6 + 4] = ry - 0.36;
+            rainPos[i * 6 + 3] = rx - 0.03;
+            rainPos[i * 6 + 4] = ry - 0.28;
             rainPos[i * 6 + 5] = rz;
         }
         const rainGeo = new THREE.BufferGeometry();
         rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
         const rainLines = new THREE.LineSegments(
             rainGeo,
-            new THREE.LineBasicMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.65 })
+            new THREE.LineBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.78 })
         );
         rainLines.visible = false;
-        scene.add(rainLines);
+        scenicGroup.add(rainLines);
 
-        // 3D Wind / Forest Floating Motes Particle System
-        const WIND_COUNT = mobileAtStart ? 110 : 200;
+        // 3D Exterior Wind / Fog / Forest Particles (strictly outside the window inside scenicGroup)
+        const WIND_COUNT = mobileAtStart ? 90 : 160;
         const windPos = new Float32Array(WIND_COUNT * 3);
         const windPhases = new Float32Array(WIND_COUNT);
         const windRand = seededRandom(654);
         for (let i = 0; i < WIND_COUNT; i++) {
-            windPos[i * 3] = -5.8 + windRand() * 11.6;
-            windPos[i * 3 + 1] = 0.2 + windRand() * 4.6;
-            windPos[i * 3 + 2] = -4.8 + windRand() * 9.6;
+            windPos[i * 3] = -3.1 + windRand() * 6.2;
+            windPos[i * 3 + 1] = -1.6 + windRand() * 3.2;
+            windPos[i * 3 + 2] = 0.16 + windRand() * 0.36;
             windPhases[i] = windRand() * Math.PI * 2;
         }
         const windGeo = new THREE.BufferGeometry();
         windGeo.setAttribute('position', new THREE.BufferAttribute(windPos, 3));
-        const windMat = new THREE.PointsMaterial({ color: 0xbae6fd, size: 0.14, transparent: true, opacity: 0.85, depthWrite: false });
+        const windMat = new THREE.PointsMaterial({ color: 0xe0f2fe, size: 0.11, transparent: true, opacity: 0.85, depthWrite: false });
         const windPoints = new THREE.Points(windGeo, windMat);
         windPoints.visible = false;
-        scene.add(windPoints);
+        scenicGroup.add(windPoints);
 
         function setWeatherState(weatherKey) {
             if (!weatherKey || weatherKey === activeWeather) {
@@ -8613,19 +8626,33 @@
                 btn.classList.toggle('is-active', btn.dataset.weather === activeWeather);
             });
 
+            // Never fog the interior of the office
+            scene.fog = null;
+
             rainLines.visible = activeWeather === 'rain' || activeWeather === 'storm';
-            windPoints.visible = activeWeather === 'wind' || activeWeather === 'forest';
+            windPoints.visible = activeWeather === 'wind' || activeWeather === 'forest' || activeWeather === 'fog';
             if (activeWeather === 'forest') {
                 windMat.color.setHex(0x86efac);
-                windMat.size = 0.16;
+                windMat.size = 0.12;
+                windMat.opacity = 0.90;
+            } else if (activeWeather === 'fog') {
+                windMat.color.setHex(0xe2e8f0);
+                windMat.size = 0.34;
+                windMat.opacity = 0.42;
             } else {
-                windMat.color.setHex(0xbae6fd);
-                windMat.size = 0.14;
+                windMat.color.setHex(0xe0f2fe);
+                windMat.size = 0.10;
+                windMat.opacity = 0.85;
             }
 
             const cfg = WEATHER_CONFIG[activeWeather];
             if (cfg) {
-                scene.fog = cfg.fogDensity > 0 ? new THREE.FogExp2(cfg.fogColor, cfg.fogDensity) : null;
+                scenicMatA.color.setHex(cfg.skyColor);
+                scenicMatB.color.setHex(cfg.skyColor);
+                scenicWeatherTintMat.color.setHex(cfg.tintColor);
+                scenicWeatherTintMat.opacity = cfg.tintOpacity;
+                scenicWeatherTintMesh.visible = true;
+
                 weatherAudio.pause();
                 weatherAudio.src = cfg.file;
                 weatherAudio.currentTime = 0;
@@ -8636,9 +8663,11 @@
                         console.warn('[Clima] No se pudo reproducir el audio:', cfg.file, err);
                     });
                 }
-                showRobotBubble(`🌦️ CLIMA: ${cfg.label.toUpperCase()}`, `Atmósfera "${cfg.label}" activada con sonido ambiente y efectos 3D en la oficina.`, 5500);
+                showRobotBubble(`🌦️ CLIMA EXTERIOR: ${cfg.label.toUpperCase()}`, `Vista por la ventana en modo "${cfg.label}" con sonido ambiente.`, 5500);
             } else {
-                scene.fog = null;
+                scenicMatA.color.setHex(0xffffff);
+                scenicMatB.color.setHex(0xffffff);
+                scenicWeatherTintMesh.visible = false;
                 weatherAudio.pause();
                 weatherAudio.currentTime = 0;
                 playTechClickSound(520, 0.05);
