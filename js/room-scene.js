@@ -9321,8 +9321,12 @@
                 catHs.anchorV.set(catRoot.position.x, catRoot.position.y + 0.48, catRoot.position.z);
             }
             const homeHs = hotspotMap.get('home');
-            if (homeHs && typeof robot !== 'undefined') {
-                homeHs.anchorV.set(robot.position.x, robot.position.y + 1.25, robot.position.z);
+            if (homeHs && typeof head !== 'undefined') {
+                head.getWorldPosition(homeHs.anchorV);
+                homeHs.anchorV.y += 0.62;
+            } else if (homeHs && typeof robot !== 'undefined') {
+                robot.getWorldPosition(homeHs.anchorV);
+                homeHs.anchorV.y += 2.25;
             }
 
             camera.position.lerp(desiredPos, k);
