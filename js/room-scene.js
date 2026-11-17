@@ -892,7 +892,7 @@
                 ['SICA · Contraloría CL · PY · UY', '#818cf8'],
                 ['SIGFE 2 · Min. Hacienda (DIPRES)', '#34d399'],
                 ['UNIS GIS · Tierra-Ayni', '#fbbf24'],
-                ['ANDE Paraguay · AWS & GIS', '#f472b6']
+                ['ANDE Paraguay · Infra AWS ATLAS', '#f472b6']
             ];
             items.forEach(([label, col], i) => {
                 const y = 318 + i * 52;
