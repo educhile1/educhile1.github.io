@@ -9542,22 +9542,23 @@
                     snowGeo.attributes.position.needsUpdate = true;
                 }
 
-                // 3D Rain / Storm Streaks Update (LineSegments)
+                // 3D Exterior Rain / Storm Streaks Update (strictly outside the window)
                 if (rainLines && rainLines.visible) {
                     const rArr = rainGeo.attributes.position.array;
-                    const rainSpeed = activeWeather === 'storm' ? 6.5 : 4.2;
-                    const windDrift = activeWeather === 'storm' ? 1.4 : 0.35;
-                    const streakLen = activeWeather === 'storm' ? 0.48 : 0.34;
-                    const streakTilt = activeWeather === 'storm' ? 0.11 : 0.03;
+                    const rainSpeed = activeWeather === 'storm' ? 6.2 : 4.0;
+                    const windDrift = activeWeather === 'storm' ? 1.2 : 0.30;
+                    const streakLen = activeWeather === 'storm' ? 0.38 : 0.26;
+                    const streakTilt = activeWeather === 'storm' ? 0.09 : 0.025;
                     for (let i = 0; i < RAIN_COUNT; i++) {
                         let x = rArr[i * 6] - dt * windDrift;
                         let y = rArr[i * 6 + 1] - dt * rainSpeed;
                         let z = rArr[i * 6 + 2];
-                        if (y < 0.05) {
-                            y = 5.3;
-                            x = -5.8 + Math.random() * 11.6;
-                            z = -4.8 + Math.random() * 9.6;
+                        if (y < -1.7) {
+                            y = 1.7;
+                            x = -3.1 + Math.random() * 6.2;
+                            z = 0.14 + Math.random() * 0.40;
                         }
+                        if (x < -3.2) x = 3.1;
                         rArr[i * 6] = x;
                         rArr[i * 6 + 1] = y;
                         rArr[i * 6 + 2] = z;
@@ -9568,31 +9569,44 @@
                     rainGeo.attributes.position.needsUpdate = true;
                 }
 
-                // 3D Wind / Forest Motes Particle Update
+                // 3D Exterior Wind / Fog / Forest Particles Update (strictly outside the window)
                 if (windPoints && windPoints.visible) {
                     const wArr = windGeo.attributes.position.array;
                     const isForest = activeWeather === 'forest';
+                    const isFog = activeWeather === 'fog';
                     for (let i = 0; i < WIND_COUNT; i++) {
                         if (isForest) {
-                            wArr[i * 3] += Math.sin(t * 0.9 + windPhases[i]) * dt * 0.25;
+                            wArr[i * 3] += Math.sin(t * 0.9 + windPhases[i]) * dt * 0.22;
                             wArr[i * 3 + 1] += Math.cos(t * 1.1 + windPhases[i]) * dt * 0.14;
+                        } else if (isFog) {
+                            wArr[i * 3] += dt * (0.28 + Math.sin(windPhases[i]) * 0.08);
+                            if (wArr[i * 3] > 3.2) wArr[i * 3] = -3.2;
                         } else {
-                            wArr[i * 3] += dt * (1.8 + Math.sin(windPhases[i]) * 0.6);
-                            wArr[i * 3 + 1] += Math.sin(t * 2.5 + windPhases[i]) * dt * 0.25;
-                            if (wArr[i * 3] > 5.8) wArr[i * 3] = -5.8;
+                            wArr[i * 3] += dt * (2.2 + Math.sin(windPhases[i]) * 0.7);
+                            wArr[i * 3 + 1] += Math.sin(t * 3.0 + windPhases[i]) * dt * 0.22;
+                            if (wArr[i * 3] > 3.2) wArr[i * 3] = -3.2;
                         }
                     }
                     windGeo.attributes.position.needsUpdate = true;
                 }
 
-                // Storm Lightning Flash Timer
+                // Exterior Storm Lightning Flash (flashes outside the window)
                 if (activeWeather === 'storm') {
                     nextStormFlash -= dt;
                     if (nextStormFlash <= 0) {
-                        stormFlashIntensity = 2.4;
-                        nextStormFlash = 3.2 + Math.random() * 4.5;
+                        stormFlashIntensity = 1.0;
+                        nextStormFlash = 2.8 + Math.random() * 4.2;
                     }
-                    stormFlashIntensity *= Math.exp(-dt * 7.5);
+                    stormFlashIntensity *= Math.exp(-dt * 8.0);
+                    if (scenicWeatherTintMesh && scenicWeatherTintMesh.visible) {
+                        if (stormFlashIntensity > 0.15) {
+                            scenicWeatherTintMat.color.setHex(0xe0f2fe);
+                            scenicWeatherTintMat.opacity = Math.min(0.75, 0.35 + stormFlashIntensity * 0.45);
+                        } else {
+                            scenicWeatherTintMat.color.setHex(WEATHER_CONFIG.storm.tintColor);
+                            scenicWeatherTintMat.opacity = WEATHER_CONFIG.storm.tintOpacity;
+                        }
+                    }
                 } else {
                     stormFlashIntensity = 0;
                 }
