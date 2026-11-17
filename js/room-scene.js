@@ -8513,41 +8513,52 @@
         // Weather / Climate Atmosphere Controller (music/clima/)
         const WEATHER_CONFIG = {
             sunny: { label: '☀️ Soleado', file: 'music/clima/sunny_sonido_atmosfera.mp3', fogDensity: 0 },
-            rain: { label: '🌧️ Lluvia', file: 'music/clima/rain_sonido_atmosfera.mp3', fogDensity: 0.028, fogColor: 0x0f172a },
-            storm: { label: '⛈️ Tormenta', file: 'music/clima/storm_sonido_atmosfera.mp3', fogDensity: 0.042, fogColor: 0x090d16 },
-            wind: { label: '💨 Viento', file: 'music/clima/wind_sonido_atmosfera.mp3', fogDensity: 0.014, fogColor: 0x1e293b },
-            fog: { label: '🌫️ Niebla', file: 'music/clima/fog_sonido_atmosfera.mp3', fogDensity: 0.085, fogColor: 0x1e293b },
-            forest: { label: '🌲 Bosque', file: 'music/clima/forest_sonido_atmosfera.mp3', fogDensity: 0.018, fogColor: 0x0b1f17 }
+            rain: { label: '🌧️ Lluvia', file: 'music/clima/rain_sonido_atmosfera.mp3', fogDensity: 0.042, fogColor: 0x1e293b },
+            storm: { label: '⛈️ Tormenta', file: 'music/clima/storm_sonido_atmosfera.mp3', fogDensity: 0.062, fogColor: 0x090d16 },
+            wind: { label: '💨 Viento', file: 'music/clima/wind_sonido_atmosfera.mp3', fogDensity: 0.018, fogColor: 0x1e293b },
+            fog: { label: '🌫️ Niebla', file: 'music/clima/fog_sonido_atmosfera.mp3', fogDensity: 0.14, fogColor: 0x64748b },
+            forest: { label: '🌲 Bosque', file: 'music/clima/forest_sonido_atmosfera.mp3', fogDensity: 0.025, fogColor: 0x0b1f17 }
         };
 
         let activeWeather = 'none';
         let stormFlashIntensity = 0;
-        let nextStormFlash = 3.5;
+        let nextStormFlash = 2.0;
         const weatherAudio = new Audio();
+        weatherAudio.preload = 'auto';
         weatherAudio.loop = true;
-        weatherAudio.volume = 0.45;
+        weatherAudio.volume = 0.78;
+        const weatherPillEl = document.getElementById('stage-weather-pill');
         const weatherBtns = document.querySelectorAll('#stage-weather-pill .weather-btn');
+        if (weatherPillEl) {
+            weatherPillEl.addEventListener('pointerdown', (e) => e.stopPropagation());
+        }
 
-        // 3D Rain Streaks Particle System
-        const RAIN_COUNT = mobileAtStart ? 120 : 240;
-        const rainPos = new Float32Array(RAIN_COUNT * 3);
+        // 3D Rain Streaks (LineSegments so drops are clearly visible in 3D!)
+        const RAIN_COUNT = mobileAtStart ? 200 : 380;
+        const rainPos = new Float32Array(RAIN_COUNT * 6);
         const rainRand = seededRandom(321);
         for (let i = 0; i < RAIN_COUNT; i++) {
-            rainPos[i * 3] = -5.8 + rainRand() * 11.6;
-            rainPos[i * 3 + 1] = 0.1 + rainRand() * 5.2;
-            rainPos[i * 3 + 2] = -4.8 + rainRand() * 9.6;
+            const rx = -5.8 + rainRand() * 11.6;
+            const ry = 0.2 + rainRand() * 5.2;
+            const rz = -4.8 + rainRand() * 9.6;
+            rainPos[i * 6] = rx;
+            rainPos[i * 6 + 1] = ry;
+            rainPos[i * 6 + 2] = rz;
+            rainPos[i * 6 + 3] = rx - 0.04;
+            rainPos[i * 6 + 4] = ry - 0.36;
+            rainPos[i * 6 + 5] = rz;
         }
         const rainGeo = new THREE.BufferGeometry();
         rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
-        const rainPoints = new THREE.Points(
+        const rainLines = new THREE.LineSegments(
             rainGeo,
-            new THREE.PointsMaterial({ color: 0x93c5fd, size: 0.048, transparent: true, opacity: 0.72, depthWrite: false })
+            new THREE.LineBasicMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.65 })
         );
-        rainPoints.visible = false;
-        scene.add(rainPoints);
+        rainLines.visible = false;
+        scene.add(rainLines);
 
         // 3D Wind / Forest Floating Motes Particle System
-        const WIND_COUNT = mobileAtStart ? 70 : 130;
+        const WIND_COUNT = mobileAtStart ? 110 : 200;
         const windPos = new Float32Array(WIND_COUNT * 3);
         const windPhases = new Float32Array(WIND_COUNT);
         const windRand = seededRandom(654);
@@ -8559,7 +8570,7 @@
         }
         const windGeo = new THREE.BufferGeometry();
         windGeo.setAttribute('position', new THREE.BufferAttribute(windPos, 3));
-        const windMat = new THREE.PointsMaterial({ color: 0xbae6fd, size: 0.055, transparent: true, opacity: 0.75, depthWrite: false });
+        const windMat = new THREE.PointsMaterial({ color: 0xbae6fd, size: 0.14, transparent: true, opacity: 0.85, depthWrite: false });
         const windPoints = new THREE.Points(windGeo, windMat);
         windPoints.visible = false;
         scene.add(windPoints);
@@ -8577,23 +8588,29 @@
                 btn.classList.toggle('is-active', btn.dataset.weather === activeWeather);
             });
 
-            rainPoints.visible = activeWeather === 'rain' || activeWeather === 'storm';
+            rainLines.visible = activeWeather === 'rain' || activeWeather === 'storm';
             windPoints.visible = activeWeather === 'wind' || activeWeather === 'forest';
             if (activeWeather === 'forest') {
                 windMat.color.setHex(0x86efac);
-                windMat.size = 0.068;
+                windMat.size = 0.16;
             } else {
                 windMat.color.setHex(0xbae6fd);
-                windMat.size = 0.052;
+                windMat.size = 0.14;
             }
 
             const cfg = WEATHER_CONFIG[activeWeather];
             if (cfg) {
                 scene.fog = cfg.fogDensity > 0 ? new THREE.FogExp2(cfg.fogColor, cfg.fogDensity) : null;
-                if (!weatherAudio.src || !weatherAudio.src.endsWith(cfg.file)) {
-                    weatherAudio.src = cfg.file;
+                weatherAudio.pause();
+                weatherAudio.src = cfg.file;
+                weatherAudio.currentTime = 0;
+                weatherAudio.load();
+                const playPromise = weatherAudio.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch((err) => {
+                        console.warn('[Clima] No se pudo reproducir el audio:', cfg.file, err);
+                    });
                 }
-                weatherAudio.play().catch(() => {});
                 showRobotBubble(`🌦️ CLIMA: ${cfg.label.toUpperCase()}`, `Atmósfera "${cfg.label}" activada con sonido ambiente y efectos 3D en la oficina.`, 5500);
             } else {
                 scene.fog = null;
@@ -8604,7 +8621,10 @@
         }
 
         weatherBtns.forEach((btn) => {
-            btn.addEventListener('click', () => setWeatherState(btn.dataset.weather));
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setWeatherState(btn.dataset.weather);
+            });
         });
 
         window.eduMoodSystem = {
@@ -9428,18 +9448,28 @@
                     snowGeo.attributes.position.needsUpdate = true;
                 }
 
-                // 3D Rain / Storm Particle Update
-                if (rainPoints && rainPoints.visible) {
+                // 3D Rain / Storm Streaks Update (LineSegments)
+                if (rainLines && rainLines.visible) {
                     const rArr = rainGeo.attributes.position.array;
-                    const rainSpeed = activeWeather === 'storm' ? 4.8 : 3.1;
+                    const rainSpeed = activeWeather === 'storm' ? 6.5 : 4.2;
+                    const windDrift = activeWeather === 'storm' ? 1.4 : 0.35;
+                    const streakLen = activeWeather === 'storm' ? 0.48 : 0.34;
+                    const streakTilt = activeWeather === 'storm' ? 0.11 : 0.03;
                     for (let i = 0; i < RAIN_COUNT; i++) {
-                        rArr[i * 3 + 1] -= dt * rainSpeed;
-                        rArr[i * 3] -= dt * (activeWeather === 'storm' ? 0.85 : 0.25);
-                        if (rArr[i * 3 + 1] < 0.05) {
-                            rArr[i * 3 + 1] = 5.2;
-                            rArr[i * 3] = -5.8 + Math.random() * 11.6;
-                            rArr[i * 3 + 2] = -4.8 + Math.random() * 9.6;
+                        let x = rArr[i * 6] - dt * windDrift;
+                        let y = rArr[i * 6 + 1] - dt * rainSpeed;
+                        let z = rArr[i * 6 + 2];
+                        if (y < 0.05) {
+                            y = 5.3;
+                            x = -5.8 + Math.random() * 11.6;
+                            z = -4.8 + Math.random() * 9.6;
                         }
+                        rArr[i * 6] = x;
+                        rArr[i * 6 + 1] = y;
+                        rArr[i * 6 + 2] = z;
+                        rArr[i * 6 + 3] = x - streakTilt;
+                        rArr[i * 6 + 4] = y - streakLen;
+                        rArr[i * 6 + 5] = z;
                     }
                     rainGeo.attributes.position.needsUpdate = true;
                 }
