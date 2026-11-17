@@ -5939,7 +5939,7 @@
            CORNER LUXURY DARK CAT BED & INTERACTIVE 3D ROAMING MASCOT
         --------------------------------------------------------- */
         const lounge = new THREE.Group();
-        lounge.position.set(-4.85, 0, 2.25);
+        lounge.position.set(-4.75, 0, 1.25);
         scene.add(lounge);
 
         // Circular dark velvet accent rug under bed with cyber-accent rim
@@ -5999,7 +5999,7 @@
            KOTETSU CAT MASCOT (ARTICULATED 3D CHARACTER)
         --------------------------------------------------------- */
         const catRoot = new THREE.Group();
-        catRoot.position.set(-4.85, 0.80, 2.25);
+        catRoot.position.set(-4.75, 0.80, 1.25);
         catRoot.rotation.y = 0.25;
         scene.add(catRoot);
         const cat = catRoot; // Alias for compatibility with all existing references
@@ -6175,7 +6175,7 @@
            KOTETSU'S PLAY AREA: PLUSH CYBER-MOUSE & COZY YARN BALL
         --------------------------------------------------------- */
         const catPlayArea = new THREE.Group();
-        catPlayArea.position.set(-4.15, 0.04, 1.65);
+        catPlayArea.position.set(-3.25, 0.04, 1.45);
         scene.add(catPlayArea);
 
         // 1. Plush Toy Mouse (Ratón de felpa con orejas, bigotes y colita con cascabel)
@@ -6226,8 +6226,8 @@
            KOTETSU'S GOURMET BISTRO: WATER FOUNTAIN & FOOD STATION
         --------------------------------------------------------- */
         const catFoodStation = new THREE.Group();
-        catFoodStation.position.set(-3.70, 0, 3.25);
-        catFoodStation.rotation.y = -0.35;
+        catFoodStation.position.set(-2.85, 0, 3.05);
+        catFoodStation.rotation.y = 0;
         scene.add(catFoodStation);
 
         // 1. Walnut wood elevated feeder tray with beveled stand
@@ -6324,11 +6324,11 @@
            KOTETSU WAYPOINT MAP, GRAPH & PATHFINDING (ROAMING & FURNITURE)
         --------------------------------------------------------- */
         const KOTETSU_WAYPOINTS = {
-            'beanbag': { id: 'beanbag', x: -4.85, y: 0.44, z: 2.25, isBed: true, name: 'Cama Nido Escandinava', action: 'sleep' },
-            'lounge_rug': { id: 'lounge_rug', x: -3.85, y: 0.16, z: 2.15, name: 'Zona Lounge', action: 'stretch' },
-            'food_station': { id: 'food_station', x: -3.45, y: 0.16, z: 3.05, name: 'Gourmet Bistro (Agua & Comida)', action: 'nourish' },
-            'toy_mouse': { id: 'toy_mouse', x: -4.10, y: 0.16, z: 1.55, name: 'Rincón de Juguetes', action: 'play_mouse' },
-            'whiteboard': { id: 'whiteboard', x: -4.30, y: 0.16, z: 0.90, name: 'Pizarra de Certificaciones', action: 'sniff' },
+            'beanbag': { id: 'beanbag', x: -4.75, y: 0.44, z: 1.25, isBed: true, name: 'Cama Nido Escandinava', action: 'sleep' },
+            'lounge_rug': { id: 'lounge_rug', x: -3.55, y: 0.16, z: 1.35, name: 'Zona Lounge', action: 'stretch' },
+            'food_station': { id: 'food_station', x: -2.85, y: 0.16, z: 2.65, name: 'Gourmet Bistro (Agua & Comida)', action: 'nourish' },
+            'toy_mouse': { id: 'toy_mouse', x: -3.25, y: 0.16, z: 1.50, name: 'Rincón de Juguetes', action: 'play_mouse' },
+            'whiteboard': { id: 'whiteboard', x: -4.25, y: 0.16, z: -0.25, name: 'Pizarra de Certificaciones', action: 'sniff' },
             'arcade': { id: 'arcade', x: -4.30, y: 0.16, z: -3.00, name: 'Edu Tetris Arcade', action: 'watch_arcade' },
             'window': { id: 'window', x: 0.40, y: 0.16, z: -3.20, name: 'Ventanal Panorámico', action: 'sunbathe' },
             'window_ledge': { id: 'window_ledge', x: 0.40, y: 0.91, z: -4.25, isFurniture: true, name: 'Alféizar del Ventanal', action: 'watch_birds' },
@@ -6437,7 +6437,7 @@
             stateStartTime = performance.now();
             stateDuration = 0.75;
             jumpStartPos.copy(catRoot.position);
-            jumpEndPos.set(-3.85, 0.16, 2.15); // lounge_rug
+            jumpEndPos.set(-3.55, 0.16, 1.35); // lounge_rug
             catRoot.rotation.y = -Math.atan2(jumpEndPos.z - jumpStartPos.z, jumpEndPos.x - jumpStartPos.x);
             triggerBedSquish(false); // Elastic rebound of bed cushion
         }
@@ -7698,7 +7698,8 @@
            Estrella 3D de 5 Puntas, Luces Hada Twinkle y Cajas de Regalo)
         --------------------------------------------------------- */
         const christmasTreeGroup = new THREE.Group();
-        christmasTreeGroup.position.set(-4.75, 0, 3.85);
+        christmasTreeGroup.position.set(-4.65, 0, 4.10);
+        christmasTreeGroup.scale.set(0.92, 1.24, 0.92);
         scene.add(christmasTreeGroup);
 
         // 1. Plataforma circular base festiva (Bandeja plato crema con borde verde bosque)
@@ -7917,11 +7918,11 @@
             { id: 'music', code: '06', label: 'Música IA', anchor: [3.9, 1.85, -4.5], target: [3.9, 1.15, -4.5], normal: [-0.1, 0.5, 0.86], dist: 1.8, lift: 0.2 },
             { id: 'cv', code: '📄', label: 'Portafolio 2D', anchor: [-0.10, 1.38, 0.72], target: [-0.05, 1.07, 0.71], normal: [0, 0.85, 0.52], dist: 1.25, lift: 0.25 },
             { id: 'certifications', code: '07', label: 'Certificaciones', anchor: [-5.2, 4.05, 1.05], target: [-5.96, 2.85, 1.05], normal: [1, 0, 0], dist: 3.2, lift: 0.0 },
-            { id: 'cat', code: '🐾', label: 'Kotetsu', anchor: [-4.2, 0.9, 2.4], target: [-4.25, 0.86, 2.45], normal: [0.6, 0.2, 0.77], dist: 1.8, lift: 0.1 },
+            { id: 'cat', code: '🐾', label: 'Kotetsu', anchor: [-4.75, 0.9, 1.25], target: [-4.75, 0.86, 1.25], normal: [0.6, 0.2, 0.77], dist: 1.8, lift: 0.1 },
             { id: 'coffee', code: '☕', label: 'Café Turbo', anchor: [0.72, 1.42, 0.00], target: [0.48, 1.48, -0.45], normal: [0.42, 0.18, 0.88], dist: 2.15, lift: 0.15 },
             { id: 'coffee_macro', code: '☕', label: 'Latte Art Macro', anchor: [0.86, 1.35, 0.09], target: [0.86, 1.12, 0.09], normal: [0.35, 0.68, 0.64], dist: 0.48, lift: 0.02, noDiamond: true },
             { id: 'globe', code: '🌍', label: 'Mapamundi', anchor: [1.75, 1.70, -4.42], target: [1.75, 1.12, -4.42], normal: [-0.18, 0.22, 0.96], dist: 2.35, lift: 0.08 },
-            { id: 'tree', code: '🎄', label: 'Árbol Navideño', anchor: [-4.75, 2.85, 3.85], target: [-4.75, 1.18, 3.85], normal: [0.80, 0.15, -0.58], dist: 5.15, lift: 0.0 },
+            { id: 'tree', code: '🎄', label: 'Árbol Navideño', anchor: [-4.65, 3.45, 4.10], target: [-4.65, 1.48, 4.10], normal: [0.80, 0.15, -0.58], dist: 5.45, lift: 0.0 },
             { id: 'scenic', code: '🏔️', label: 'Ventanal Panorámico', anchor: [-0.20, 4.15, -4.95], target: [0.60, 2.90, -4.99], normal: [0, 0, 1], dist: 3.4, lift: 0.0 }
         ];
         const hotspotMap = new Map();
@@ -8483,9 +8484,9 @@
 
             if (hs) {
                 if (active === 'cat' && typeof catRoot !== 'undefined') {
-                    if (currentWaypointId === 'beanbag' || (catRoot.position.x < -4.1 && catRoot.position.z > 1.8)) {
+                    if (currentWaypointId === 'beanbag' || (catRoot.position.x < -4.1 && catRoot.position.z > 0.5 && catRoot.position.z < 2.2)) {
                         // Bed corner view: captures dark bed, squish effect and nearby plush mouse & yarn toys!
-                        hs.targetV.set(-4.50, 0.32, 1.95);
+                        hs.targetV.set(-4.35, 0.32, 1.30);
                         hs.normalV.set(0.68, 0.42, 0.60).normalize();
                         hs.dist = 2.45;
                         hs.lift = 0.18;
@@ -9500,7 +9501,7 @@
                 // STATE MACHINE IMPLEMENTATION
                 else if (catState === 'sleeping') {
                     // Resting breathing on dark corner bed
-                    catRoot.position.set(-4.85, 0.44, 2.25);
+                    catRoot.position.set(-4.75, 0.44, 1.25);
                     catRoot.rotation.y = -2.15;
                     catSpine.scale.set(1.0, 1 + Math.sin(t * 1.5) * 0.035, 1.0);
                     catSpine.position.set(0, -0.02, 0);
