@@ -6826,20 +6826,27 @@
         laserDotGroup.position.copy(laserTarget);
         laserDotGroup.visible = false;
         scene.add(laserDotGroup);
-        addMesh(new THREE.SphereGeometry(0.035, 12, 12), basic({ color: 0xff1e42 }), [0, 0.01, 0], laserDotGroup, { cast: false });
-        addMesh(new THREE.RingGeometry(0.045, 0.085, 20), basic({ color: 0xff1e42, transparent: true, opacity: 0.6, side: THREE.DoubleSide }), [0, 0.004, 0], laserDotGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
-        const laserLight = new THREE.PointLight(0xff1e42, 1.35, 2.2);
-        laserLight.position.set(0, 0.14, 0);
+        addMesh(new THREE.SphereGeometry(0.045, 14, 14), basic({ color: 0xff2244 }), [0, 0.014, 0], laserDotGroup, { cast: false });
+        const laserOuterRing = addMesh(new THREE.RingGeometry(0.055, 0.11, 24), basic({ color: 0xff2244, transparent: true, opacity: 0.72, side: THREE.DoubleSide }), [0, 0.006, 0], laserDotGroup, { rot: [-Math.PI / 2, 0, 0], cast: false });
+        const laserLight = new THREE.PointLight(0xff1e42, 1.85, 2.8);
+        laserLight.position.set(0, 0.16, 0);
         laserDotGroup.add(laserLight);
 
         function toggleCatLaserMode(forceState = null) {
             isLaserMode = forceState !== null ? Boolean(forceState) : !isLaserMode;
             laserDotGroup.visible = isLaserMode;
+            if (typeof canvas !== 'undefined' && canvas) {
+                canvas.style.cursor = isLaserMode ? 'crosshair' : '';
+            }
             if (isLaserMode) {
                 playCatMeow('chirp');
+                if (typeof api !== 'undefined' && api.getActiveStation && api.getActiveStation() === 'cat') {
+                    api.focusStation('overview');
+                }
                 if (currentWaypointId === 'beanbag' || currentWaypointId === 'desk_surface' || currentWaypointId === 'credenza_surface' || currentWaypointId === 'window_ledge') {
                     startJumpDown('laser_chase');
                 } else {
+                    catRoot.position.y = 0.16;
                     catState = 'laser_chase';
                     stateStartTime = performance.now();
                 }
@@ -8183,8 +8190,12 @@
             bodyMesh.userData.giftIndex = giftIdx;
 
             const ribW = Math.min(w, d) * 0.18;
-            addMesh(new THREE.BoxGeometry(ribW, h + 0.003, d + 0.003), rMat, [0, h / 2, 0], boxGrp, { cast: false });
-            addMesh(new THREE.BoxGeometry(w + 0.003, h + 0.003, ribW), rMat, [0, h / 2, 0], boxGrp, { cast: false });
+            const rib1 = addMesh(new THREE.BoxGeometry(ribW, h + 0.003, d + 0.003), rMat, [0, h / 2, 0], boxGrp, { station: 'tree', isChristmasTree: true, cast: false });
+            rib1.userData.isChristmasGift = true;
+            rib1.userData.giftIndex = giftIdx;
+            const rib2 = addMesh(new THREE.BoxGeometry(w + 0.003, h + 0.003, ribW), rMat, [0, h / 2, 0], boxGrp, { station: 'tree', isChristmasTree: true, cast: false });
+            rib2.userData.isChristmasGift = true;
+            rib2.userData.giftIndex = giftIdx;
 
             // Lazos y nudo superior
             addMesh(new THREE.TorusGeometry(ribW * 0.95, ribW * 0.35, 8, 16), rMat, [-ribW * 0.5, h + ribW * 0.5, 0], boxGrp, { rot: [0, Math.PI / 4, Math.PI / 4], cast: false });
@@ -8242,6 +8253,88 @@
             }
         ];
 
+        // Exclusive Christmas Music Player (music/navidad/)
+        const CHRISTMAS_TRACKS = [
+            'music/navidad/navidad1.mp3',
+            'music/navidad/navidad2.mp3',
+            'music/navidad/navidad3.mp3',
+            'music/navidad/navidad4.mp3'
+        ];
+        let christmasTrackIdx = 0;
+        const christmasAudio = new Audio();
+        christmasAudio.preload = 'auto';
+        christmasAudio.volume = 0.62;
+        christmasAudio.addEventListener('ended', () => {
+            if (activeMood === 'christmas') {
+                christmasTrackIdx = (christmasTrackIdx + 1) % CHRISTMAS_TRACKS.length;
+                christmasAudio.src = CHRISTMAS_TRACKS[christmasTrackIdx];
+                christmasAudio.play().catch(() => {});
+            }
+        });
+
+        function stopOtherMusicForChristmas() {
+            if (window.eduSpotifyPlayer && window.eduSpotifyPlayer.isPlaying && window.eduSpotifyPlayer.isPlaying()) {
+                window.eduSpotifyPlayer.pause();
+            }
+            if (window.eduMusicState) {
+                window.eduMusicState.isPlaying = false;
+            }
+        }
+
+        function playChristmasMusic(advanceTrack = false) {
+            stopOtherMusicForChristmas();
+            if (advanceTrack) {
+                christmasTrackIdx = (christmasTrackIdx + 1) % CHRISTMAS_TRACKS.length;
+            }
+            const targetSrc = CHRISTMAS_TRACKS[christmasTrackIdx];
+            if (!christmasAudio.src || !christmasAudio.src.endsWith(targetSrc)) {
+                christmasAudio.src = targetSrc;
+            }
+            christmasAudio.play().catch(() => {});
+        }
+
+        function stopChristmasMusic() {
+            if (!christmasAudio.paused) {
+                christmasAudio.pause();
+            }
+            christmasAudio.currentTime = 0;
+        }
+
+        if (window.eduSpotifyPlayer && typeof window.eduSpotifyPlayer.onStateChange === 'function') {
+            window.eduSpotifyPlayer.onStateChange((state) => {
+                if (activeMood === 'christmas' && state && state.isPlaying) {
+                    setTimeout(() => {
+                        if (activeMood === 'christmas' && window.eduSpotifyPlayer.isPlaying()) {
+                            window.eduSpotifyPlayer.pause();
+                        }
+                    }, 0);
+                }
+            });
+        }
+
+        const giftToastEl = document.getElementById('xmas-gift-toast');
+        const giftToastTitleEl = document.getElementById('xmas-gift-toast-title');
+        const giftToastBotEl = document.getElementById('xmas-gift-toast-bot');
+        const giftToastCatEl = document.getElementById('xmas-gift-toast-cat');
+        const giftToastCloseBtn = document.getElementById('xmas-gift-toast-close');
+        let giftToastTimer = null;
+
+        if (giftToastCloseBtn && giftToastEl) {
+            giftToastCloseBtn.addEventListener('click', () => giftToastEl.classList.add('hidden'));
+        }
+
+        function showGiftToast(giftName, botReaction, catReaction) {
+            if (!giftToastEl) return;
+            if (giftToastTitleEl) giftToastTitleEl.textContent = `🎁 ${giftName}`;
+            if (giftToastBotEl) giftToastBotEl.textContent = `🤖 EduBot: ${botReaction} — ¡Jojojo, Feliz Navidad! 🎅`;
+            if (giftToastCatEl) giftToastCatEl.textContent = `🐱 Kotetsu: ${catReaction}`;
+            giftToastEl.classList.remove('hidden');
+            if (giftToastTimer) clearTimeout(giftToastTimer);
+            giftToastTimer = setTimeout(() => {
+                giftToastEl.classList.add('hidden');
+            }, 9000);
+        }
+
         function openRandomChristmasGift(forcedIdx = null) {
             if (!giftBoxes.length) return;
             const gIdx = (forcedIdx !== null && giftBoxes[forcedIdx])
@@ -8260,16 +8353,25 @@
             playChristmasJingleSound();
             playCatMeow('happy');
             if (typeof spawnCatHearts === 'function') {
-                spawnCatHearts(new THREE.Vector3(-4.65, 0.35, 4.10));
+                const worldGiftPos = new THREE.Vector3();
+                pickedBox.group.getWorldPosition(worldGiftPos);
+                worldGiftPos.y += 0.35;
+                spawnCatHearts(worldGiftPos);
             }
+            showGiftToast(reward.gift, reward.botReaction, reward.catReaction);
             showRobotBubble(`🎁 ${reward.gift}`, `${reward.botReaction} — ¡Jojojo, Feliz Navidad! 🎅🎄`, 9000);
             showCatThought(`🎁 REGALO: ${reward.gift}`, reward.catReaction);
         }
 
         function triggerChristmasTreeJoy() {
             treeLightSurge = 1.0;
-            playChristmasJingleSound();
-            showRobotBubble('🎄 ¡JOJOJO, FELIZ NAVIDAD!', '¡Feliz Navidad y próspero Año Nuevo! Haz clic en cualquier regalo bajo el árbol para abrirlo ✨🎁', 10000);
+            if (activeMood !== 'christmas') {
+                setRoomMood('christmas');
+            } else {
+                playChristmasJingleSound();
+                playChristmasMusic(true);
+                showRobotBubble('🎄 ¡JOJOJO, FELIZ NAVIDAD!', `¡Cambiando villancico (${christmasTrackIdx + 1}/${CHRISTMAS_TRACKS.length})! Haz clic en cualquier regalo bajo el árbol para abrirlo ✨🎁`, 9000);
+            }
         }
 
         // Soft 3D Snowfall Particle System for Christmas Mood
@@ -8319,6 +8421,10 @@
 
             const loc = SCENIC_LOCATIONS[currentScenicIdx];
 
+            if (!isXmas) {
+                stopChristmasMusic();
+            }
+
             if (activeMood === 'day') {
                 hemiLight.color.setHex(0xe0f2fe);
                 hemiLight.groundColor.setHex(0x334155);
@@ -8334,7 +8440,7 @@
                 if (ledMatRef) ledMatRef.color.setHex(0xfff3d6);
                 if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.65;
                 if (arcadeScreenLight) arcadeScreenLight.intensity = 0.45;
-                if (dustMesh) dustMesh.material.color.setHex(0xfef3c7);
+                if (typeof dust !== 'undefined' && dust) dust.material.color.setHex(0xfef3c7);
                 playTechClickSound(880, 0.06);
             } else if (activeMood === 'night') {
                 hemiLight.color.setHex(loc.hemiSky);
@@ -8351,7 +8457,7 @@
                 if (ledMatRef) ledMatRef.color.setHex(0xffb066);
                 if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.9;
                 if (arcadeScreenLight) arcadeScreenLight.intensity = 0.6;
-                if (dustMesh) dustMesh.material.color.setHex(loc.dustColor);
+                if (typeof dust !== 'undefined' && dust) dust.material.color.setHex(loc.dustColor);
                 playTechClickSound(660, 0.06);
             } else if (activeMood === 'cyber') {
                 hemiLight.color.setHex(0x00f0ff);
@@ -8368,28 +8474,31 @@
                 if (ledMatRef) ledMatRef.color.setHex(0x00f0ff);
                 if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 1.65;
                 if (arcadeScreenLight) arcadeScreenLight.intensity = 1.25;
-                if (dustMesh) dustMesh.material.color.setHex(0xe879f9);
+                if (typeof dust !== 'undefined' && dust) dust.material.color.setHex(0xe879f9);
                 playTechClickSound(1180, 0.07);
             } else if (activeMood === 'christmas') {
-                // Dim all ambient & office lights so the Christmas tree illuminates the entire room!
-                hemiLight.color.setHex(0x1e293b);
-                hemiLight.groundColor.setHex(0x05070d);
-                hemiLight.intensity = 0.14;
+                // Turn off all other office lights so ONLY the Christmas tree lights & snow shine!
+                hemiLight.color.setHex(0x0f172a);
+                hemiLight.groundColor.setHex(0x03050a);
+                hemiLight.intensity = 0.08;
                 ambientLight.intensity = 0.03;
-                sunLight.intensity = 0.08;
-                fillLight.intensity = 0.06;
-                if (deskLightRef) deskLightRef.intensity = 0.10;
-                if (shelfLightRef) shelfLightRef.intensity = 0.08;
-                if (pegLightRef) pegLightRef.intensity = 0.10;
-                if (ledMatRef) ledMatRef.color.setHex(0x16a34a);
-                if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.15;
-                if (arcadeScreenLight) arcadeScreenLight.intensity = 0.12;
-                if (dustMesh) dustMesh.material.color.setHex(0xfef08a);
+                sunLight.intensity = 0.04;
+                fillLight.intensity = 0.02;
+                if (deskLightRef) deskLightRef.intensity = 0.0;
+                if (lampLightRef) lampLightRef.intensity = 0.0;
+                if (shelfLightRef) shelfLightRef.intensity = 0.0;
+                if (pegLightRef) pegLightRef.intensity = 0.0;
+                if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.03;
+                if (ledMatRef) ledMatRef.color.setHex(0xdc2626);
+                if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.04;
+                if (arcadeScreenLight) arcadeScreenLight.intensity = 0.04;
+                if (typeof dust !== 'undefined' && dust) dust.material.color.setHex(0xfef08a);
 
                 treeLightSurge = 1.0;
                 playChristmasJingleSound();
+                playChristmasMusic(false);
                 playCatMeow('happy');
-                showRobotBubble('🎅 ¡JO JO JO! ¡FELIZ NAVIDAD!', '¡Jo, jo, jo! ¡Feliz Navidad! Activamos las luces del árbol y la nieve en toda la oficina. ¡Haz clic en un regalo para abrirlo! 🎄🎁✨', 10000);
+                showRobotBubble('🎅 ¡JO JO JO! ¡FELIZ NAVIDAD!', '¡Jo, jo, jo! ¡Feliz Navidad! Apagamos las luces de la oficina para disfrutar el árbol, la nieve y la música navideña. ¡Abre un regalo! 🎄🎁✨', 10000);
                 showCatThought('🎅 ¡JO JO JO! ¡MIAU-NAVIDAD!', '¡Jojojo, feliz Navidad! ¡Mira mi gorrito de Santa y las luces del árbol! Vamos a abrir un regalo 🐾🎁🎄');
             }
         }
@@ -8401,10 +8510,109 @@
             xmasGiftBtn.addEventListener('click', () => openRandomChristmasGift());
         }
 
+        // Weather / Climate Atmosphere Controller (music/clima/)
+        const WEATHER_CONFIG = {
+            sunny: { label: '☀️ Soleado', file: 'music/clima/sunny_sonido_atmosfera.mp3', fogDensity: 0 },
+            rain: { label: '🌧️ Lluvia', file: 'music/clima/rain_sonido_atmosfera.mp3', fogDensity: 0.028, fogColor: 0x0f172a },
+            storm: { label: '⛈️ Tormenta', file: 'music/clima/storm_sonido_atmosfera.mp3', fogDensity: 0.042, fogColor: 0x090d16 },
+            wind: { label: '💨 Viento', file: 'music/clima/wind_sonido_atmosfera.mp3', fogDensity: 0.014, fogColor: 0x1e293b },
+            fog: { label: '🌫️ Niebla', file: 'music/clima/fog_sonido_atmosfera.mp3', fogDensity: 0.085, fogColor: 0x1e293b },
+            forest: { label: '🌲 Bosque', file: 'music/clima/forest_sonido_atmosfera.mp3', fogDensity: 0.018, fogColor: 0x0b1f17 }
+        };
+
+        let activeWeather = 'none';
+        let stormFlashIntensity = 0;
+        let nextStormFlash = 3.5;
+        const weatherAudio = new Audio();
+        weatherAudio.loop = true;
+        weatherAudio.volume = 0.45;
+        const weatherBtns = document.querySelectorAll('#stage-weather-pill .weather-btn');
+
+        // 3D Rain Streaks Particle System
+        const RAIN_COUNT = mobileAtStart ? 120 : 240;
+        const rainPos = new Float32Array(RAIN_COUNT * 3);
+        const rainRand = seededRandom(321);
+        for (let i = 0; i < RAIN_COUNT; i++) {
+            rainPos[i * 3] = -5.8 + rainRand() * 11.6;
+            rainPos[i * 3 + 1] = 0.1 + rainRand() * 5.2;
+            rainPos[i * 3 + 2] = -4.8 + rainRand() * 9.6;
+        }
+        const rainGeo = new THREE.BufferGeometry();
+        rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+        const rainPoints = new THREE.Points(
+            rainGeo,
+            new THREE.PointsMaterial({ color: 0x93c5fd, size: 0.048, transparent: true, opacity: 0.72, depthWrite: false })
+        );
+        rainPoints.visible = false;
+        scene.add(rainPoints);
+
+        // 3D Wind / Forest Floating Motes Particle System
+        const WIND_COUNT = mobileAtStart ? 70 : 130;
+        const windPos = new Float32Array(WIND_COUNT * 3);
+        const windPhases = new Float32Array(WIND_COUNT);
+        const windRand = seededRandom(654);
+        for (let i = 0; i < WIND_COUNT; i++) {
+            windPos[i * 3] = -5.8 + windRand() * 11.6;
+            windPos[i * 3 + 1] = 0.2 + windRand() * 4.6;
+            windPos[i * 3 + 2] = -4.8 + windRand() * 9.6;
+            windPhases[i] = windRand() * Math.PI * 2;
+        }
+        const windGeo = new THREE.BufferGeometry();
+        windGeo.setAttribute('position', new THREE.BufferAttribute(windPos, 3));
+        const windMat = new THREE.PointsMaterial({ color: 0xbae6fd, size: 0.055, transparent: true, opacity: 0.75, depthWrite: false });
+        const windPoints = new THREE.Points(windGeo, windMat);
+        windPoints.visible = false;
+        scene.add(windPoints);
+
+        function setWeatherState(weatherKey) {
+            if (!weatherKey || weatherKey === activeWeather) {
+                activeWeather = 'none';
+            } else if (WEATHER_CONFIG[weatherKey]) {
+                activeWeather = weatherKey;
+            } else {
+                activeWeather = 'none';
+            }
+
+            weatherBtns.forEach((btn) => {
+                btn.classList.toggle('is-active', btn.dataset.weather === activeWeather);
+            });
+
+            rainPoints.visible = activeWeather === 'rain' || activeWeather === 'storm';
+            windPoints.visible = activeWeather === 'wind' || activeWeather === 'forest';
+            if (activeWeather === 'forest') {
+                windMat.color.setHex(0x86efac);
+                windMat.size = 0.068;
+            } else {
+                windMat.color.setHex(0xbae6fd);
+                windMat.size = 0.052;
+            }
+
+            const cfg = WEATHER_CONFIG[activeWeather];
+            if (cfg) {
+                scene.fog = cfg.fogDensity > 0 ? new THREE.FogExp2(cfg.fogColor, cfg.fogDensity) : null;
+                if (!weatherAudio.src || !weatherAudio.src.endsWith(cfg.file)) {
+                    weatherAudio.src = cfg.file;
+                }
+                weatherAudio.play().catch(() => {});
+                showRobotBubble(`🌦️ CLIMA: ${cfg.label.toUpperCase()}`, `Atmósfera "${cfg.label}" activada con sonido ambiente y efectos 3D en la oficina.`, 5500);
+            } else {
+                scene.fog = null;
+                weatherAudio.pause();
+                weatherAudio.currentTime = 0;
+                playTechClickSound(520, 0.05);
+            }
+        }
+
+        weatherBtns.forEach((btn) => {
+            btn.addEventListener('click', () => setWeatherState(btn.dataset.weather));
+        });
+
         window.eduMoodSystem = {
             setMood: setRoomMood,
             getMood: () => activeMood,
-            openGift: openRandomChristmasGift
+            openGift: openRandomChristmasGift,
+            setWeather: setWeatherState,
+            getWeather: () => activeWeather
         };
 
         /* ---------------------------------------------------------
@@ -8640,7 +8848,6 @@
                 }
                 return;
             }
-            if (e.target !== canvas) return;
             if (isLaserMode && api.getViewMode() === 'stage3d') {
                 ndc.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
                 ndc.y = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
@@ -8652,6 +8859,7 @@
                     laserDotGroup.position.copy(laserTarget);
                 }
             }
+            if (e.target !== canvas) return;
             if (api.getActiveStation() === 'contact' && phoneScreenMesh) {
                 ndc.x = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
                 ndc.y = -(e.clientY / Math.max(1, window.innerHeight)) * 2 + 1;
@@ -8671,7 +8879,7 @@
                 canvas.style.cursor = 'pointer';
             } else {
                 if (hoveredId && !(hotspotMap.get(hoveredId) || {}).el?.matches(':hover')) hoveredId = null;
-                canvas.style.cursor = '';
+                canvas.style.cursor = isLaserMode ? 'crosshair' : '';
             }
         });
 
@@ -9218,6 +9426,57 @@
                         }
                     }
                     snowGeo.attributes.position.needsUpdate = true;
+                }
+
+                // 3D Rain / Storm Particle Update
+                if (rainPoints && rainPoints.visible) {
+                    const rArr = rainGeo.attributes.position.array;
+                    const rainSpeed = activeWeather === 'storm' ? 4.8 : 3.1;
+                    for (let i = 0; i < RAIN_COUNT; i++) {
+                        rArr[i * 3 + 1] -= dt * rainSpeed;
+                        rArr[i * 3] -= dt * (activeWeather === 'storm' ? 0.85 : 0.25);
+                        if (rArr[i * 3 + 1] < 0.05) {
+                            rArr[i * 3 + 1] = 5.2;
+                            rArr[i * 3] = -5.8 + Math.random() * 11.6;
+                            rArr[i * 3 + 2] = -4.8 + Math.random() * 9.6;
+                        }
+                    }
+                    rainGeo.attributes.position.needsUpdate = true;
+                }
+
+                // 3D Wind / Forest Motes Particle Update
+                if (windPoints && windPoints.visible) {
+                    const wArr = windGeo.attributes.position.array;
+                    const isForest = activeWeather === 'forest';
+                    for (let i = 0; i < WIND_COUNT; i++) {
+                        if (isForest) {
+                            wArr[i * 3] += Math.sin(t * 0.9 + windPhases[i]) * dt * 0.25;
+                            wArr[i * 3 + 1] += Math.cos(t * 1.1 + windPhases[i]) * dt * 0.14;
+                        } else {
+                            wArr[i * 3] += dt * (1.8 + Math.sin(windPhases[i]) * 0.6);
+                            wArr[i * 3 + 1] += Math.sin(t * 2.5 + windPhases[i]) * dt * 0.25;
+                            if (wArr[i * 3] > 5.8) wArr[i * 3] = -5.8;
+                        }
+                    }
+                    windGeo.attributes.position.needsUpdate = true;
+                }
+
+                // Storm Lightning Flash Timer
+                if (activeWeather === 'storm') {
+                    nextStormFlash -= dt;
+                    if (nextStormFlash <= 0) {
+                        stormFlashIntensity = 2.4;
+                        nextStormFlash = 3.2 + Math.random() * 4.5;
+                    }
+                    stormFlashIntensity *= Math.exp(-dt * 7.5);
+                } else {
+                    stormFlashIntensity = 0;
+                }
+
+                // Pulse 3D Red Laser Ring when active
+                if (isLaserMode && typeof laserOuterRing !== 'undefined' && laserOuterRing) {
+                    const ringPulse = 1.0 + Math.sin(t * 12.0) * 0.22;
+                    laserOuterRing.scale.setScalar(ringPulse);
                 }
 
                 // ROBOT ANIMATIONS: MOBILITY PAUSA ACTIVA, GREETING WAVE, DANCING WITH MUSIC, OR IDLE TYPING
@@ -9890,19 +10149,75 @@
                     beamMeshes.forEach(bm => { bm.material.opacity = 0; });
                     sparklesGroup.visible = false;
 
-                    // Restore daytime office lighting
-                    ambientLight.intensity = 0.12;
-                    hemiLight.intensity = 0.58;
-                    fillLight.intensity = 0.35;
-                    if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.55;
-                    if (deskLightRef) {
-                        deskLightRef.color.setHex(0xffa24d);
-                        deskLightRef.intensity = 1.15 + Math.sin(t * 1.4) * 0.12;
+                    // Apply active room mood lighting (day | night | cyber | christmas) + weather modulation
+                    const sunnyBoost = activeWeather === 'sunny' ? 0.55 : 0;
+                    if (activeMood === 'christmas') {
+                        ambientLight.intensity = 0.03 + stormFlashIntensity * 0.15;
+                        hemiLight.intensity = 0.08 + stormFlashIntensity * 0.25;
+                        fillLight.intensity = 0.02;
+                        sunLight.intensity = 0.04 + stormFlashIntensity * 1.2;
+                        if (windowFloorGlow) windowFloorGlow.material.opacity = 0.04 + stormFlashIntensity * 0.2;
+                        if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.03;
+                        if (deskLightRef) deskLightRef.intensity = 0.0;
+                        if (lampLightRef) lampLightRef.intensity = 0.0;
+                        if (shelfLightRef) shelfLightRef.intensity = 0.0;
+                        if (pegLightRef) pegLightRef.intensity = 0.0;
+                        if (ledMatRef) ledMatRef.color.setHex(0xdc2626);
+                        if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.04;
+                        if (arcadeScreenLight) arcadeScreenLight.intensity = 0.04;
+                    } else if (activeMood === 'day') {
+                        ambientLight.intensity = 0.42 + stormFlashIntensity * 0.15;
+                        hemiLight.intensity = 1.05 + sunnyBoost * 0.2;
+                        fillLight.intensity = 0.55;
+                        sunLight.intensity = 1.85 + sunnyBoost + stormFlashIntensity;
+                        if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.45;
+                        if (deskLightRef) {
+                            deskLightRef.color.setHex(0xfff3d6);
+                            deskLightRef.intensity = 0.85;
+                        }
+                        if (lampLightRef) lampLightRef.intensity = 0.65;
+                        if (shelfLightRef) shelfLightRef.intensity = 0.45;
+                        if (pegLightRef) pegLightRef.intensity = 0.65;
+                        if (ledMatRef) ledMatRef.color.setHex(0xfff3d6);
+                        if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.65;
+                        if (arcadeScreenLight) arcadeScreenLight.intensity = 0.45;
+                    } else if (activeMood === 'cyber') {
+                        ambientLight.intensity = 0.08 + stormFlashIntensity * 0.15;
+                        hemiLight.intensity = 0.42;
+                        fillLight.intensity = 0.48;
+                        sunLight.intensity = 0.55 + sunnyBoost * 0.4 + stormFlashIntensity;
+                        if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.65;
+                        if (deskLightRef) {
+                            deskLightRef.color.setHex(0x00f0ff);
+                            deskLightRef.intensity = 1.45 + Math.sin(t * 2.2) * 0.18;
+                        }
+                        if (lampLightRef) lampLightRef.intensity = 1.15;
+                        if (shelfLightRef) shelfLightRef.intensity = 0.85;
+                        if (pegLightRef) pegLightRef.intensity = 0.95;
+                        if (ledMatRef) ledMatRef.color.setHex(0x00f0ff);
+                        if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 1.65;
+                        if (arcadeScreenLight) arcadeScreenLight.intensity = 1.25;
+                    } else {
+                        // Default 'night' executive mood
+                        ambientLight.intensity = 0.12 + stormFlashIntensity * 0.15;
+                        hemiLight.intensity = 0.58;
+                        fillLight.intensity = 0.35;
+                        if (sunnyBoost > 0 || stormFlashIntensity > 0.01) {
+                            const currLoc = SCENIC_LOCATIONS[currentScenicIdx];
+                            sunLight.intensity = currLoc.sunIntensity + sunnyBoost + stormFlashIntensity;
+                        }
+                        if (deskFloorGlowRef) deskFloorGlowRef.material.opacity = 0.55;
+                        if (deskLightRef) {
+                            deskLightRef.color.setHex(0xffa24d);
+                            deskLightRef.intensity = 1.15 + Math.sin(t * 1.4) * 0.12;
+                        }
+                        if (lampLightRef) lampLightRef.intensity = 1.1;
+                        if (shelfLightRef) shelfLightRef.intensity = 0.6;
+                        if (pegLightRef) pegLightRef.intensity = 0.8;
+                        if (ledMatRef) ledMatRef.color.setHex(0xffb066);
+                        if (arcadeMarqueeLight) arcadeMarqueeLight.intensity = 0.9;
+                        if (arcadeScreenLight) arcadeScreenLight.intensity = 0.6;
                     }
-                    if (lampLightRef) lampLightRef.intensity = 1.1;
-                    if (shelfLightRef) shelfLightRef.intensity = 0.6;
-                    if (pegLightRef) pegLightRef.intensity = 0.8;
-                    if (ledMatRef) ledMatRef.color.setHex(0xffb066);
                 }
 
                 // Badges sway, 3D flip rotation & cat breathing
@@ -10126,8 +10441,9 @@
                         playCatMeow('chirp');
                         const target = nextActivityAfterLanding;
                         nextActivityAfterLanding = null;
-                        if (target === 'running_zoomies') {
-                            catState = 'running_zoomies';
+                        if (target === 'running_zoomies' || target === 'laser_chase') {
+                            catState = target;
+                            stateStartTime = performance.now();
                         } else if (target) {
                             startWalkTo(target, 'walking');
                         } else {

@@ -2312,6 +2312,41 @@ body.full-scroll-active #party-music-hud {
     box-shadow: 0 0 16px rgba(251, 191, 36, 0.5);
 }
 
-body.full-scroll-active #stage-mood-pill {
+.mood-gift-btn.hidden,
+#xmas-gift-toast.hidden {
+    display: none !important;
+}
+
+.weather-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #cbd5e1;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.weather-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.weather-btn.is-active {
+    color: #ffffff;
+    background: rgba(16, 185, 129, 0.28);
+    border-color: rgba(52, 211, 153, 0.65);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+}
+
+body.full-scroll-active #stage-mood-pill,
+body.full-scroll-active #stage-weather-pill,
+body.full-scroll-active #xmas-gift-toast {
     display: none !important;
 }
