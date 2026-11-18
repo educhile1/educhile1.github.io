@@ -262,7 +262,7 @@
             </div>
         </div>
 
-        <!-- Room Mood / Theme Selector Pill (Día / Noche / Navidad / Cyber) -->
+        <!-- Room Mood / Theme Selector Pill (Día / Noche / Navidad / Cyber + HD/SD Quality) -->
         <div id="stage-mood-pill"
             class="pointer-events-auto fixed top-[7.4rem] md:top-[9.7rem] right-4 sm:right-6 flex items-center gap-1 p-1 rounded-full bg-[#0b0a14]/88 border border-white/15 backdrop-blur-xl shadow-xl z-30 select-none">
             <button type="button" class="mood-btn" data-mood="day" title="Modo Día luminoso">☀️ <span class="hidden sm:inline">Día</span></button>
@@ -272,18 +272,10 @@
             <button id="xmas-open-gift-btn" type="button" class="hidden mood-gift-btn" title="Abrir un regalo aleatorio bajo el árbol">
                 🎁 <span class="hidden sm:inline">Abrir Regalo</span>
             </button>
-        </div>
-
-        <!-- Weather / Climate Atmosphere Selector Pill (music/clima/) -->
-        <div id="stage-weather-pill"
-            class="pointer-events-auto fixed top-[10.1rem] md:top-[12.4rem] right-4 sm:right-6 flex flex-wrap items-center gap-1 p-1 rounded-full bg-[#0b0a14]/88 border border-white/15 backdrop-blur-xl shadow-xl z-30 select-none">
-            <span class="px-1.5 font-mono-tech text-[9px] text-slate-400 uppercase tracking-wider hidden lg:inline">Clima</span>
-            <button type="button" class="weather-btn" data-weather="sunny" title="Clima Soleado + audio ambiente">☀️ <span class="hidden sm:inline">Sol</span></button>
-            <button type="button" class="weather-btn" data-weather="rain" title="Lluvia + audio ambiente">🌧️ <span class="hidden sm:inline">Lluvia</span></button>
-            <button type="button" class="weather-btn" data-weather="storm" title="Tormenta + audio ambiente">⛈️ <span class="hidden sm:inline">Tormenta</span></button>
-            <button type="button" class="weather-btn" data-weather="wind" title="Viento + audio ambiente">💨 <span class="hidden sm:inline">Viento</span></button>
-            <button type="button" class="weather-btn" data-weather="fog" title="Niebla + audio ambiente">🌫️ <span class="hidden sm:inline">Niebla</span></button>
-            <button type="button" class="weather-btn" data-weather="forest" title="Bosque + audio ambiente">🌲 <span class="hidden sm:inline">Bosque</span></button>
+            <span class="w-px h-3.5 bg-white/15 mx-0.5"></span>
+            <button id="stage-quality-btn" type="button" class="quality-toggle-btn" title="Cambiar entre Alta Resolución (HD) y Baja Resolución (SD - Rendimiento)">
+                ⚡ <span id="stage-quality-label">HD</span>
+            </button>
         </div>
 
         <!-- Floating Christmas Gift Celebration Toast -->
@@ -1625,7 +1617,7 @@
                         <div class="os-window-body flex flex-col flex-grow">
                             <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative cursor-pointer"
                                 data-case-study="sica">
-                                <img src="images/project-sica.png" alt="SICA Contraloría"
+                                <img src="images/project-sica.png" alt="SICA Contraloría" loading="lazy" decoding="async"
                                     class="w-full h-full object-cover hover:scale-105 transition duration-500">
                             </div>
                             <div class="p-6 sm:p-7 flex flex-col flex-grow">
@@ -1679,7 +1671,7 @@
                         <div class="os-window-body flex flex-col flex-grow">
                             <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative cursor-pointer"
                                 data-case-study="sigfe2">
-                                <img src="images/project-sigfe2.png" alt="SIGFE 2 DIPRES"
+                                <img src="images/project-sigfe2.png" alt="SIGFE 2 DIPRES" loading="lazy" decoding="async"
                                     class="w-full h-full object-cover hover:scale-105 transition duration-500">
                             </div>
                             <div class="p-6 sm:p-7 flex flex-col flex-grow">
@@ -1730,7 +1722,7 @@
                         <div class="os-window-body flex flex-col flex-grow">
                             <div class="h-52 overflow-hidden bg-slate-950 border-b border-white/10 relative cursor-pointer"
                                 data-case-study="unis">
-                                <img src="images/project-unis.png" alt="UNIS Tierra-Ayni"
+                                <img src="images/project-unis.png" alt="UNIS Tierra-Ayni" loading="lazy" decoding="async"
                                     class="w-full h-full object-cover hover:scale-105 transition duration-500">
                             </div>
                             <div class="p-6 sm:p-7 flex flex-col flex-grow">
@@ -1854,7 +1846,7 @@
                         <div class="flex items-center gap-4">
                             <!-- Small Music Cover Art Image -->
                             <div class="relative shrink-0">
-                                <img src="images/cruzando-cielos-cover.jpg" alt="Cruzando Cielos - Eduardo Cayún M."
+                                <img src="images/cruzando-cielos-cover.jpg" alt="Cruzando Cielos - Eduardo Cayún M." loading="lazy" decoding="async"
                                     class="spotify-track-cover w-14 h-14 rounded-xl object-cover ring-2 ring-[#1ed760]/40 shadow-lg">
                                 <div
                                     class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#121212] border border-[#1ed760] flex items-center justify-center">
@@ -2421,7 +2413,7 @@
     <div id="spotify-mini-pill"
         class="fixed bottom-20 sm:bottom-24 right-4 sm:right-8 z-40 flex items-center gap-2.5 px-3 py-2 rounded-full cursor-pointer select-none"
         title="Abrir reproductor Spotify Hi-Fi">
-        <img src="images/cruzando-cielos-cover.jpg" alt="Mini Portada"
+        <img src="images/cruzando-cielos-cover.jpg" alt="Mini Portada" loading="lazy" decoding="async"
             class="spotify-track-cover w-7 h-7 rounded-lg object-cover shadow ring-1 ring-[#1ed760]/40 shrink-0">
         <div class="flex items-center gap-2 max-w-[130px] sm:max-w-[160px] truncate">
             <svg viewBox="0 0 24 24" class="w-4 h-4 text-[#1ed760] fill-current shrink-0" aria-hidden="true">
@@ -2498,7 +2490,7 @@
             <!-- Track Info & Small Album Art Image -->
             <div class="flex items-center gap-3.5">
                 <div class="relative shrink-0 group">
-                    <img src="images/cruzando-cielos-cover.jpg" alt="Portada de la música"
+                    <img src="images/cruzando-cielos-cover.jpg" alt="Portada de la música" loading="lazy" decoding="async"
                         class="spotify-track-cover w-16 h-16 rounded-xl object-cover shadow-lg border border-white/10 ring-2 ring-[#1ed760]/30 transition transform group-hover:scale-105">
                     <div
                         class="absolute inset-0 rounded-xl bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
@@ -2583,7 +2575,7 @@
         <!-- Tab 2: Spotify Web Embed (Official streaming) -->
         <div id="spotify-body-web" class="p-3 hidden">
             <iframe id="spotify-embed-iframe" style="border-radius:12px; width: 100%; height: 152px;"
-                src="https://open.spotify.com/embed/playlist/37i9dQZF1DXdLEN7aqioXM?utm_source=generator&theme=0"
+                data-src="https://open.spotify.com/embed/playlist/37i9dQZF1DXdLEN7aqioXM?utm_source=generator&theme=0"
                 frameBorder="0" allowfullscreen=""
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"></iframe>

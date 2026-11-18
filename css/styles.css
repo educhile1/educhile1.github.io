@@ -2317,36 +2317,34 @@ body.full-scroll-active #party-music-hud {
     display: none !important;
 }
 
-.weather-btn {
+.quality-toggle-btn {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
+    gap: 3px;
+    padding: 4px 9px;
     border-radius: 999px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
-    font-weight: 600;
-    color: #cbd5e1;
-    background: transparent;
-    border: 1px solid transparent;
+    font-weight: 700;
+    color: #fde047;
+    background: rgba(234, 179, 8, 0.16);
+    border: 1px solid rgba(250, 204, 21, 0.45);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.weather-btn:hover {
+.quality-toggle-btn:hover {
+    background: rgba(234, 179, 8, 0.28);
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
 }
 
-.weather-btn.is-active {
-    color: #ffffff;
-    background: rgba(16, 185, 129, 0.28);
-    border-color: rgba(52, 211, 153, 0.65);
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+.quality-toggle-btn.is-sd {
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.20);
+    border-color: rgba(52, 211, 153, 0.5);
 }
 
 body.full-scroll-active #stage-mood-pill,
-body.full-scroll-active #stage-weather-pill,
 body.full-scroll-active #xmas-gift-toast {
     display: none !important;
 }
@@ -2357,7 +2355,6 @@ body.full-scroll-active #xmas-gift-toast {
 @media (max-width: 1180px) {
     #stage-scenic-pill,
     #stage-mood-pill,
-    #stage-weather-pill,
     .edubot-bubble,
     .cat-bubble {
         backdrop-filter: none !important;

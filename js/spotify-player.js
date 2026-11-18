@@ -173,13 +173,15 @@
     }
 
     function loadTrack(index, autoPlay = false) {
-        initAudio();
         currentIndex = (index + TRACKS.length) % TRACKS.length;
         const track = TRACKS[currentIndex];
         window.eduMusicState.currentIndex = currentIndex;
         window.eduMusicState.currentTrack = track;
 
-        audio.src = encodeURI(track.file);
+        if (autoPlay || audio) {
+            initAudio();
+            audio.src = encodeURI(track.file);
+        }
 
         // Update widget elements
         const titleEls = document.querySelectorAll('.spotify-track-title');
@@ -204,16 +206,19 @@
         });
 
         const iframe = document.getElementById('spotify-embed-iframe');
-        if (iframe && iframe.dataset.currentId !== track.id) {
-            iframe.src = track.embedUrl;
-            iframe.dataset.currentId = track.id;
+        if (iframe) {
+            iframe.dataset.pendingSrc = track.embedUrl;
+            if (activeTab === 'web' && iframe.dataset.currentId !== track.id) {
+                iframe.src = track.embedUrl;
+                iframe.dataset.currentId = track.id;
+            }
         }
 
         updateProgress();
         syncUIState();
         notifyChange();
 
-        if (autoPlay) {
+        if (autoPlay && audio) {
             audio.play().catch(e => console.log('Autoplay deferred:', e));
         }
     }
@@ -221,7 +226,7 @@
     function play() {
         partyHudDismissed = false;
         initAudio();
-        if (!audio.src) {
+        if (!audio || !audio.src) {
             loadTrack(currentIndex, true);
             return;
         }
@@ -411,8 +416,10 @@
 
         if (tab === 'web') {
             const iframe = document.getElementById('spotify-embed-iframe');
-            if (iframe && !iframe.src) {
-                iframe.src = TRACKS[currentIndex].embedUrl;
+            const targetSrc = (iframe && iframe.dataset.pendingSrc) || TRACKS[currentIndex].embedUrl || (iframe && iframe.dataset.src);
+            if (iframe && targetSrc && iframe.getAttribute('src') !== targetSrc) {
+                iframe.src = targetSrc;
+                iframe.dataset.currentId = TRACKS[currentIndex].id;
             }
         }
     }

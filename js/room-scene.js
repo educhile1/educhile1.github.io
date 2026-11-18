@@ -50,14 +50,15 @@
         }
         if (!renderer || !renderer.getContext()) return false;
 
-        let currentMaxDpr = isMobile() ? 1.15 : (mobileAtStart ? 1.25 : 2.0);
+        let isLowResMode = mobileAtStart;
+        let currentMaxDpr = isLowResMode ? 0.95 : 2.0;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x05060b, 1);
         renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.08;
-        renderer.shadowMap.enabled = !mobileAtStart;
+        renderer.shadowMap.enabled = !isLowResMode;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
         const scene = new THREE.Scene();
@@ -71,25 +72,54 @@
         );
 
         /* ---------------------------------------------------------
-           TEXTURE FACTORY (redraws once web fonts are ready)
+           TEXTURE FACTORY (50% scaling in SD + staggered lazy redraws)
         --------------------------------------------------------- */
         const redrawQueue = [];
+        let activeRedrawRaf = null;
+        function scheduleStaggeredRedraws() {
+            if (activeRedrawRaf) cancelAnimationFrame(activeRedrawRaf);
+            let idx = 0;
+            const step = () => {
+                const limit = Math.min(idx + 2, redrawQueue.length);
+                for (; idx < limit; idx++) {
+                    try { redrawQueue[idx](); } catch (e) {}
+                }
+                if (idx < redrawQueue.length) {
+                    activeRedrawRaf = requestAnimationFrame(step);
+                } else {
+                    activeRedrawRaf = null;
+                }
+            };
+            activeRedrawRaf = requestAnimationFrame(step);
+        }
+
         function canvasTexture(w, h, draw, opts) {
             const c = document.createElement('canvas');
-            c.width = w;
-            c.height = h;
+            const initialScale = isLowResMode ? 0.5 : 1.0;
+            c.width = Math.max(32, Math.round(w * initialScale));
+            c.height = Math.max(32, Math.round(h * initialScale));
             const ctx = c.getContext('2d');
             const tex = new THREE.CanvasTexture(c);
             tex.encoding = THREE.sRGBEncoding;
-            tex.anisotropy = Math.min(mobileAtStart ? 2 : 8, renderer.capabilities.getMaxAnisotropy());
+            tex.anisotropy = Math.min(isLowResMode ? 2 : 8, renderer.capabilities.getMaxAnisotropy());
             if (opts && opts.repeat) {
                 tex.wrapS = THREE.RepeatWrapping;
                 tex.wrapT = THREE.RepeatWrapping;
                 tex.repeat.set(opts.repeat[0], opts.repeat[1]);
             }
             const redraw = () => {
+                const scale = isLowResMode ? 0.5 : 1.0;
+                const targetW = Math.max(32, Math.round(w * scale));
+                const targetH = Math.max(32, Math.round(h * scale));
+                if (c.width !== targetW || c.height !== targetH) {
+                    c.width = targetW;
+                    c.height = targetH;
+                }
+                ctx.save();
+                ctx.setTransform(scale, 0, 0, scale, 0, 0);
                 ctx.clearRect(0, 0, w, h);
                 draw(ctx, w, h);
+                ctx.restore();
                 tex.needsUpdate = true;
             };
             redraw();
@@ -99,7 +129,7 @@
         }
 
         if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(() => redrawQueue.forEach((fn) => fn()));
+            document.fonts.ready.then(() => scheduleStaggeredRedraws());
         }
 
         const glowCache = {};
@@ -3485,8 +3515,14 @@
             }
         })();
 
+        let lastClockRedrawMs = performance.now();
         setInterval(() => {
-            if (vintageClockTex.userData && vintageClockTex.userData.redraw) {
+            if (!vintageClockTex.userData || !vintageClockTex.userData.redraw) return;
+            if (api.getViewMode() !== 'stage3d') return;
+            const focusedClock = api.getActiveStation() === 'clock' && !isLowResMode;
+            const nowClockMs = performance.now();
+            if (focusedClock || (nowClockMs - lastClockRedrawMs) >= 30000) {
+                lastClockRedrawMs = nowClockMs;
                 vintageClockTex.userData.redraw();
             }
         }, 1000);
@@ -6897,6 +6933,7 @@
             })
         );
         scene.add(dust);
+        dust.visible = !isLowResMode;
         dustMesh = dust;
 
         /* ---------------------------------------------------------
@@ -8298,7 +8335,7 @@
         ];
         let christmasTrackIdx = 0;
         const christmasAudio = new Audio();
-        christmasAudio.preload = 'auto';
+        christmasAudio.preload = 'none';
         christmasAudio.volume = 0.62;
         christmasAudio.addEventListener('ended', () => {
             if (activeMood === 'christmas') {
@@ -8546,158 +8583,62 @@
             xmasGiftBtn.addEventListener('click', () => openRandomChristmasGift());
         }
 
-        // Weather / Climate Atmosphere Controller (music/clima/) — affects the exterior panoramic window view ONLY
-        const WEATHER_CONFIG = {
-            sunny: { label: '☀️ Soleado', file: 'music/clima/sunny_sonido_atmosfera.mp3', tintColor: 0xfde68a, tintOpacity: 0.14, skyColor: 0xfff5d6 },
-            rain: { label: '🌧️ Lluvia', file: 'music/clima/rain_sonido_atmosfera.mp3', tintColor: 0x0f172a, tintOpacity: 0.30, skyColor: 0x94a3b8 },
-            storm: { label: '⛈️ Tormenta', file: 'music/clima/storm_sonido_atmosfera.mp3', tintColor: 0x020617, tintOpacity: 0.45, skyColor: 0x64748b },
-            wind: { label: '💨 Viento', file: 'music/clima/wind_sonido_atmosfera.mp3', tintColor: 0x1e293b, tintOpacity: 0.12, skyColor: 0xdbeafe },
-            fog: { label: '🌫️ Niebla', file: 'music/clima/fog_sonido_atmosfera.mp3', tintColor: 0xcbd5e1, tintOpacity: 0.62, skyColor: 0xe2e8f0 },
-            forest: { label: '🌲 Bosque', file: 'music/clima/forest_sonido_atmosfera.mp3', tintColor: 0x065f46, tintOpacity: 0.22, skyColor: 0xd1fae5 }
-        };
-
+        // Weather stub (removed heavy exterior weather system to maximize mobile/tablet FPS)
         let activeWeather = 'none';
         let stormFlashIntensity = 0;
-        let nextStormFlash = 2.0;
-        const weatherAudio = new Audio();
-        weatherAudio.preload = 'auto';
-        weatherAudio.loop = true;
-        weatherAudio.volume = 0.78;
-        const weatherPillEl = document.getElementById('stage-weather-pill');
-        const weatherBtns = document.querySelectorAll('#stage-weather-pill .weather-btn');
-        if (weatherPillEl) {
-            weatherPillEl.addEventListener('pointerdown', (e) => e.stopPropagation());
-        }
+        const rainLines = { visible: false };
+        const windPoints = { visible: false };
+        function setWeatherState() {}
 
-        // Exterior window tint overlay (strictly behind the window glass inside scenicGroup)
-        const scenicWeatherTintMat = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.0,
-            depthWrite: false
-        });
-        const scenicWeatherTintMesh = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 3.6), scenicWeatherTintMat);
-        scenicWeatherTintMesh.position.z = 0.04;
-        scenicWeatherTintMesh.renderOrder = 2;
-        scenicWeatherTintMesh.visible = false;
-        scenicGroup.add(scenicWeatherTintMesh);
+        // Quality Toggle (Alta Resolución HD vs Baja Resolución SD - Rendimiento)
+        const qualityBtnEl = document.getElementById('stage-quality-btn');
+        const qualityLabelEl = document.getElementById('stage-quality-label');
 
-        // 3D Exterior Rain Streaks (strictly outside the window inside scenicGroup)
-        const RAIN_COUNT = mobileAtStart ? 180 : 320;
-        const rainPos = new Float32Array(RAIN_COUNT * 6);
-        const rainRand = seededRandom(321);
-        for (let i = 0; i < RAIN_COUNT; i++) {
-            const rx = -3.1 + rainRand() * 6.2;
-            const ry = -1.6 + rainRand() * 3.2;
-            const rz = 0.14 + rainRand() * 0.40;
-            rainPos[i * 6] = rx;
-            rainPos[i * 6 + 1] = ry;
-            rainPos[i * 6 + 2] = rz;
-            rainPos[i * 6 + 3] = rx - 0.03;
-            rainPos[i * 6 + 4] = ry - 0.28;
-            rainPos[i * 6 + 5] = rz;
-        }
-        const rainGeo = new THREE.BufferGeometry();
-        rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
-        const rainLines = new THREE.LineSegments(
-            rainGeo,
-            new THREE.LineBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.78 })
-        );
-        rainLines.visible = false;
-        scenicGroup.add(rainLines);
-
-        // 3D Exterior Wind / Fog / Forest Particles (strictly outside the window inside scenicGroup)
-        const WIND_COUNT = mobileAtStart ? 90 : 160;
-        const windPos = new Float32Array(WIND_COUNT * 3);
-        const windPhases = new Float32Array(WIND_COUNT);
-        const windRand = seededRandom(654);
-        for (let i = 0; i < WIND_COUNT; i++) {
-            windPos[i * 3] = -3.1 + windRand() * 6.2;
-            windPos[i * 3 + 1] = -1.6 + windRand() * 3.2;
-            windPos[i * 3 + 2] = 0.16 + windRand() * 0.36;
-            windPhases[i] = windRand() * Math.PI * 2;
-        }
-        const windGeo = new THREE.BufferGeometry();
-        windGeo.setAttribute('position', new THREE.BufferAttribute(windPos, 3));
-        const windMat = new THREE.PointsMaterial({ color: 0xe0f2fe, size: 0.11, transparent: true, opacity: 0.85, depthWrite: false });
-        const windPoints = new THREE.Points(windGeo, windMat);
-        windPoints.visible = false;
-        scenicGroup.add(windPoints);
-
-        function setWeatherState(weatherKey) {
-            if (!weatherKey || weatherKey === activeWeather) {
-                activeWeather = 'none';
-            } else if (WEATHER_CONFIG[weatherKey]) {
-                activeWeather = weatherKey;
-            } else {
-                activeWeather = 'none';
+        function setQualityMode(lowRes) {
+            isLowResMode = Boolean(lowRes);
+            currentMaxDpr = isLowResMode ? 0.95 : 2.0;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
+            renderer.shadowMap.enabled = !isLowResMode;
+            if (typeof dust !== 'undefined' && dust) {
+                dust.visible = !isLowResMode;
             }
-
-            weatherBtns.forEach((btn) => {
-                btn.classList.toggle('is-active', btn.dataset.weather === activeWeather);
-            });
-
-            // Never fog the interior of the office
-            scene.fog = null;
-
-            rainLines.visible = activeWeather === 'rain' || activeWeather === 'storm';
-            windPoints.visible = activeWeather === 'wind' || activeWeather === 'forest' || activeWeather === 'fog';
-            if (activeWeather === 'forest') {
-                windMat.color.setHex(0x86efac);
-                windMat.size = 0.12;
-                windMat.opacity = 0.90;
-            } else if (activeWeather === 'fog') {
-                windMat.color.setHex(0xe2e8f0);
-                windMat.size = 0.34;
-                windMat.opacity = 0.42;
-            } else {
-                windMat.color.setHex(0xe0f2fe);
-                windMat.size = 0.10;
-                windMat.opacity = 0.85;
+            if (qualityLabelEl) {
+                qualityLabelEl.textContent = isLowResMode ? 'SD' : 'HD';
             }
-
-            const cfg = WEATHER_CONFIG[activeWeather];
-            if (cfg) {
-                scenicMatA.color.setHex(cfg.skyColor);
-                scenicMatB.color.setHex(cfg.skyColor);
-                scenicWeatherTintMat.color.setHex(cfg.tintColor);
-                scenicWeatherTintMat.opacity = cfg.tintOpacity;
-                scenicWeatherTintMesh.visible = true;
-
-                weatherAudio.pause();
-                weatherAudio.src = cfg.file;
-                weatherAudio.currentTime = 0;
-                weatherAudio.load();
-                const playPromise = weatherAudio.play();
-                if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch((err) => {
-                        console.warn('[Clima] No se pudo reproducir el audio:', cfg.file, err);
-                    });
-                }
-                showRobotBubble(`🌦️ CLIMA EXTERIOR: ${cfg.label.toUpperCase()}`, `Vista por la ventana en modo "${cfg.label}" con sonido ambiente.`, 5500);
-            } else {
-                scenicMatA.color.setHex(0xffffff);
-                scenicMatB.color.setHex(0xffffff);
-                scenicWeatherTintMesh.visible = false;
-                weatherAudio.pause();
-                weatherAudio.currentTime = 0;
-                playTechClickSound(520, 0.05);
+            if (qualityBtnEl) {
+                qualityBtnEl.classList.toggle('is-sd', isLowResMode);
+                qualityBtnEl.title = isLowResMode
+                    ? 'Modo Baja Resolución (SD Rápido activo) — Clic para Alta Resolución HD'
+                    : 'Modo Alta Resolución (HD activo) — Clic para Baja Resolución SD';
             }
+            scheduleStaggeredRedraws();
         }
 
-        weatherBtns.forEach((btn) => {
-            btn.addEventListener('click', (e) => {
+        if (qualityLabelEl) qualityLabelEl.textContent = isLowResMode ? 'SD' : 'HD';
+        if (qualityBtnEl) {
+            qualityBtnEl.classList.toggle('is-sd', isLowResMode);
+            qualityBtnEl.addEventListener('click', (e) => {
                 e.stopPropagation();
-                setWeatherState(btn.dataset.weather);
+                setQualityMode(!isLowResMode);
+                playTechClickSound(isLowResMode ? 520 : 880, 0.05);
+                showRobotBubble(
+                    isLowResMode ? '⚡ MODO BAJA RESOLUCIÓN (SD)' : '✨ MODO ALTA RESOLUCIÓN (HD)',
+                    isLowResMode
+                        ? 'Optimizado para máxima fluidez en tablet y smartphone (50% VRAM, sombras y animaciones autónomas desactivadas).'
+                        : 'Gráficos completos HD activados con sombras suaves y texturas al 100%.',
+                    4500
+                );
             });
-        });
+        }
 
         window.eduMoodSystem = {
             setMood: setRoomMood,
             getMood: () => activeMood,
             openGift: openRandomChristmasGift,
             setWeather: setWeatherState,
-            getWeather: () => activeWeather
+            getWeather: () => activeWeather,
+            setLowRes: setQualityMode,
+            isLowRes: () => isLowResMode
         };
 
         /* ---------------------------------------------------------
@@ -9298,11 +9239,23 @@
         let fpsTimeAcc = 0;
         let dprStepDownDone = false;
 
+        let idle2dTimer = null;
         function frame(now) {
+            if (api.getViewMode() !== 'stage3d') {
+                animId = null;
+                if (!idle2dTimer) {
+                    idle2dTimer = setTimeout(() => {
+                        idle2dTimer = null;
+                        lastTime = performance.now();
+                        animId = requestAnimationFrame(frame);
+                    }, 250);
+                }
+                return;
+            }
             const rawDt = Math.max(0.001, (now - lastTime) / 1000);
             const dt = Math.min(0.05, rawDt);
             lastTime = now;
-            if (!dprStepDownDone && api.getViewMode() === 'stage3d' && rawDt < 0.25) {
+            if (!dprStepDownDone && rawDt < 0.25) {
                 fpsFrames += 1;
                 fpsTimeAcc += rawDt;
                 if (fpsTimeAcc >= 2.5) {
@@ -9585,75 +9538,6 @@
                     snowGeo.attributes.position.needsUpdate = true;
                 }
 
-                // 3D Exterior Rain / Storm Streaks Update (strictly outside the window)
-                if (rainLines && rainLines.visible) {
-                    const rArr = rainGeo.attributes.position.array;
-                    const rainSpeed = activeWeather === 'storm' ? 6.2 : 4.0;
-                    const windDrift = activeWeather === 'storm' ? 1.2 : 0.30;
-                    const streakLen = activeWeather === 'storm' ? 0.38 : 0.26;
-                    const streakTilt = activeWeather === 'storm' ? 0.09 : 0.025;
-                    for (let i = 0; i < RAIN_COUNT; i++) {
-                        let x = rArr[i * 6] - dt * windDrift;
-                        let y = rArr[i * 6 + 1] - dt * rainSpeed;
-                        let z = rArr[i * 6 + 2];
-                        if (y < -1.7) {
-                            y = 1.7;
-                            x = -3.1 + Math.random() * 6.2;
-                            z = 0.14 + Math.random() * 0.40;
-                        }
-                        if (x < -3.2) x = 3.1;
-                        rArr[i * 6] = x;
-                        rArr[i * 6 + 1] = y;
-                        rArr[i * 6 + 2] = z;
-                        rArr[i * 6 + 3] = x - streakTilt;
-                        rArr[i * 6 + 4] = y - streakLen;
-                        rArr[i * 6 + 5] = z;
-                    }
-                    rainGeo.attributes.position.needsUpdate = true;
-                }
-
-                // 3D Exterior Wind / Fog / Forest Particles Update (strictly outside the window)
-                if (windPoints && windPoints.visible) {
-                    const wArr = windGeo.attributes.position.array;
-                    const isForest = activeWeather === 'forest';
-                    const isFog = activeWeather === 'fog';
-                    for (let i = 0; i < WIND_COUNT; i++) {
-                        if (isForest) {
-                            wArr[i * 3] += Math.sin(t * 0.9 + windPhases[i]) * dt * 0.22;
-                            wArr[i * 3 + 1] += Math.cos(t * 1.1 + windPhases[i]) * dt * 0.14;
-                        } else if (isFog) {
-                            wArr[i * 3] += dt * (0.28 + Math.sin(windPhases[i]) * 0.08);
-                            if (wArr[i * 3] > 3.2) wArr[i * 3] = -3.2;
-                        } else {
-                            wArr[i * 3] += dt * (2.2 + Math.sin(windPhases[i]) * 0.7);
-                            wArr[i * 3 + 1] += Math.sin(t * 3.0 + windPhases[i]) * dt * 0.22;
-                            if (wArr[i * 3] > 3.2) wArr[i * 3] = -3.2;
-                        }
-                    }
-                    windGeo.attributes.position.needsUpdate = true;
-                }
-
-                // Exterior Storm Lightning Flash (flashes outside the window)
-                if (activeWeather === 'storm') {
-                    nextStormFlash -= dt;
-                    if (nextStormFlash <= 0) {
-                        stormFlashIntensity = 1.0;
-                        nextStormFlash = 2.8 + Math.random() * 4.2;
-                    }
-                    stormFlashIntensity *= Math.exp(-dt * 8.0);
-                    if (scenicWeatherTintMesh && scenicWeatherTintMesh.visible) {
-                        if (stormFlashIntensity > 0.15) {
-                            scenicWeatherTintMat.color.setHex(0xe0f2fe);
-                            scenicWeatherTintMat.opacity = Math.min(0.75, 0.35 + stormFlashIntensity * 0.45);
-                        } else {
-                            scenicWeatherTintMat.color.setHex(WEATHER_CONFIG.storm.tintColor);
-                            scenicWeatherTintMat.opacity = WEATHER_CONFIG.storm.tintOpacity;
-                        }
-                    }
-                } else {
-                    stormFlashIntensity = 0;
-                }
-
                 // Pulse 3D Red Laser Ring when active
                 if (isLaserMode && typeof laserOuterRing !== 'undefined' && laserOuterRing) {
                     const ringPulse = 1.0 + Math.sin(t * 12.0) * 0.22;
@@ -9665,9 +9549,9 @@
                 const isGreetingNow = isInitialWelcomeActive || (isGreetingActive && (nowMs - greetingStartTime) < (isInitialWelcomeActive ? 18000 : 5000));
                 const isUserInspecting = hotspotMap.has(api.getActiveStation()) && api.getActiveStation() !== 'overview' && api.getActiveStation() !== 'cat' && api.getActiveStation() !== 'globe' && api.getActiveStation() !== 'tree';
 
-                // Check autonomous break timer when seated
+                // Check autonomous break timer when seated (paused in SD low-res mode to save CPU)
                 if (robotState === 'SEATED') {
-                    if (!isAudioPlaying && !isUserInspecting && !isInitialWelcomeActive && !isGreetingNow && !isCoffeeSipping) {
+                    if (!isLowResMode && !isAudioPlaying && !isUserInspecting && !isInitialWelcomeActive && !isGreetingNow && !isCoffeeSipping) {
                         timeSinceLastBreak += dt;
                         if (timeSinceLastBreak > 75.0) {
                             triggerStretchWalk();
@@ -10216,9 +10100,12 @@
                 updateRobotBubble();
                 updateCatBubble();
 
-                // DISCO BALL & STAGE PARTY ANIMATION LOOP
-                const targetParty = isAudioPlaying ? 1.0 : 0.0;
-                partyModeLerp += (targetParty - partyModeLerp) * (1 - Math.exp(-dt * 2.6));
+                // DISCO BALL & STAGE PARTY ANIMATION LOOP (disabled for global performance)
+                const targetParty = 0.0;
+                partyModeLerp = 0.0;
+                if (typeof discoBallGroup !== 'undefined' && discoBallGroup) {
+                    discoBallGroup.visible = false;
+                }
 
                 if (partyModeLerp > 0.001) {
                     discoCurrentY = THREE.MathUtils.lerp(discoRetractedY, discoPartyY, partyModeLerp);
@@ -10430,8 +10317,8 @@
                 // =========================================================
                 const stateElapsed = (now - stateStartTime) / 1000;
 
-                // Autonomous state progression timers (variedad de acciones aleatorias)
-                if (now - lastAutoActionTime > 14000) {
+                // Autonomous state progression timers (paused in SD low-res mode until clicked)
+                if (!isLowResMode && (now - lastAutoActionTime > 14000)) {
                     lastAutoActionTime = now;
                     if (catState === 'sleeping' && Math.random() < 0.65) {
                         startWaking();
@@ -11261,7 +11148,7 @@
 
         animId = requestAnimationFrame(frame);
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && !animId) {
+            if (!document.hidden && !animId && api.getViewMode() === 'stage3d') {
                 lastTime = performance.now();
                 animId = requestAnimationFrame(frame);
             }
