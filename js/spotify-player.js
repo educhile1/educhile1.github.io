@@ -222,13 +222,23 @@
         notifyChange();
 
         if (autoPlay && audio) {
-            const p = audio.play();
-            if (p && typeof p.catch === 'function') {
-                p.catch(e => {
-                    if (e && e.name === 'AbortError') return;
-                    console.log('Autoplay deferred:', e);
-                });
-            }
+            safePlayAudio();
+        }
+    }
+
+    let pendingPlayPromise = null;
+    function safePlayAudio() {
+        if (!audio) return;
+        const p = audio.play();
+        if (p && typeof p.then === 'function') {
+            pendingPlayPromise = p;
+            p.then(() => {
+                if (pendingPlayPromise === p) pendingPlayPromise = null;
+            }).catch(e => {
+                if (pendingPlayPromise === p) pendingPlayPromise = null;
+                if (e && e.name === 'AbortError') return;
+                console.log('Play gesture required:', e);
+            });
         }
     }
 
@@ -239,17 +249,19 @@
             loadTrack(currentIndex, true);
             return;
         }
-        const p = audio.play();
-        if (p && typeof p.catch === 'function') {
-            p.catch(e => {
-                if (e && e.name === 'AbortError') return;
-                console.log('Play gesture required:', e);
-            });
-        }
+        safePlayAudio();
     }
 
     function pause() {
-        if (audio) audio.pause();
+        if (!audio) return;
+        if (pendingPlayPromise) {
+            const p = pendingPlayPromise;
+            p.then(() => {
+                if (audio) audio.pause();
+            }).catch(() => {});
+        } else {
+            audio.pause();
+        }
     }
 
     function togglePlay() {
