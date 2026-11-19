@@ -50,7 +50,9 @@
         }
         if (!renderer || !renderer.getContext()) return false;
 
-        let isLowResMode = mobileAtStart;
+        let savedQuality = null;
+        try { savedQuality = localStorage.getItem('edu_quality_mode'); } catch (e) {}
+        let isLowResMode = savedQuality === 'sd' ? true : (savedQuality === 'hd' ? false : mobileAtStart);
         let currentMaxDpr = isLowResMode ? 0.95 : 2.0;
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -72,13 +74,13 @@
         );
 
         /* ---------------------------------------------------------
-           TEXTURE FACTORY (50% scaling in SD + staggered lazy redraws)
+           TEXTURE FACTORY (50% scaling in SD + deferred initial boot queue)
         --------------------------------------------------------- */
         const redrawQueue = [];
         let activeRedrawRaf = null;
-        function scheduleStaggeredRedraws() {
+        function scheduleStaggeredRedraws(startIdx = 0) {
             if (activeRedrawRaf) cancelAnimationFrame(activeRedrawRaf);
-            let idx = 0;
+            let idx = startIdx;
             const step = () => {
                 const limit = Math.min(idx + 2, redrawQueue.length);
                 for (; idx < limit; idx++) {
@@ -95,9 +97,6 @@
 
         function canvasTexture(w, h, draw, opts) {
             const c = document.createElement('canvas');
-            const initialScale = isLowResMode ? 0.5 : 1.0;
-            c.width = Math.max(32, Math.round(w * initialScale));
-            c.height = Math.max(32, Math.round(h * initialScale));
             const ctx = c.getContext('2d');
             const tex = new THREE.CanvasTexture(c);
             tex.encoding = THREE.sRGBEncoding;
@@ -122,14 +121,26 @@
                 ctx.restore();
                 tex.needsUpdate = true;
             };
-            redraw();
+            // Draw only the first 8 core structural textures on frame 0; stream the remaining 30+ station textures at 2/frame!
+            if (redrawQueue.length < 8) {
+                redraw();
+            } else {
+                c.width = 32;
+                c.height = 32;
+                ctx.fillStyle = '#0b0f19';
+                ctx.fillRect(0, 0, 32, 32);
+                tex.needsUpdate = true;
+                if (!activeRedrawRaf) {
+                    scheduleStaggeredRedraws(8);
+                }
+            }
             redrawQueue.push(redraw);
             tex.userData.redraw = redraw;
             return tex;
         }
 
         if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(() => scheduleStaggeredRedraws());
+            document.fonts.ready.then(() => scheduleStaggeredRedraws(0));
         }
 
         const glowCache = {};
@@ -444,10 +455,10 @@
 
             const tex = textureLoader.load(SCENIC_LOCATIONS[safeIdx].image);
             tex.encoding = THREE.sRGBEncoding;
-            tex.anisotropy = Math.min(8, renderer ? renderer.capabilities.getMaxAnisotropy() : 8);
-            tex.minFilter = THREE.LinearMipmapLinearFilter;
+            tex.anisotropy = isLowResMode ? 1 : Math.min(8, renderer ? renderer.capabilities.getMaxAnisotropy() : 8);
+            tex.minFilter = isLowResMode ? THREE.LinearFilter : THREE.LinearMipmapLinearFilter;
             tex.magFilter = THREE.LinearFilter;
-            tex.generateMipmaps = true;
+            tex.generateMipmaps = !isLowResMode;
             scenicTextures[safeIdx] = tex;
             return tex;
         }
@@ -6937,370 +6948,27 @@
         dustMesh = dust;
 
         /* ---------------------------------------------------------
-           DISCO BALL & STAGE PARTY LIGHTING SYSTEM (→ Fiesta 3D)
+           DISCO BALL & STAGE PARTY LIGHTING STUBS (230+ meshes skipped for lightweight WebGL boot)
         --------------------------------------------------------- */
         const discoCenterX = 0.2;
         const discoCenterZ = -0.6;
-        const discoRetractedY = 8.85; // Tucked into upper ceiling (walls reach 9.05)
-        const discoPartyY = 4.85;     // Lowered into stage center above desk
+        const discoRetractedY = 8.85;
+        const discoPartyY = 4.85;
         let discoCurrentY = discoRetractedY;
         let partyModeLerp = 0.0;
-
-        // 1. Ceiling mount flange & eyelet hook
-        addMesh(
-            new THREE.CylinderGeometry(0.24, 0.24, 0.04, 24),
-            std(0x27272a, 0.3, 0.9),
-            [discoCenterX, 8.98, discoCenterZ],
-            scene,
-            { cast: false }
-        );
-        addMesh(
-            new THREE.TorusGeometry(0.045, 0.012, 10, 20),
-            std(0xd4d4d8, 0.2, 0.95),
-            [discoCenterX, 8.94, discoCenterZ],
-            scene,
-            { cast: false }
-        );
-
-        // 2. Dynamic hanging metallic chain/cable
-        const chainMesh = addMesh(
-            new THREE.CylinderGeometry(0.014, 0.014, 1, 12),
-            std(0xd4d4d8, 0.2, 0.95),
-            [discoCenterX, 7.0, discoCenterZ],
-            scene,
-            { cast: false }
-        );
-        chainMesh.visible = false;
-
-        // 3. Disco Ball Root Group (moves vertically)
+        const chainMesh = { visible: false, position: new THREE.Vector3(), scale: new THREE.Vector3() };
         const discoBallGroup = new THREE.Group();
-        discoBallGroup.position.set(discoCenterX, discoRetractedY, discoCenterZ);
-        scene.add(discoBallGroup);
-
-        // 4. Disco Ball Rotating Body
+        discoBallGroup.visible = false;
         const discoBallBody = new THREE.Group();
-        discoBallGroup.add(discoBallBody);
-
-        // Procedural Faceted Mirror Mosaic Texture (512x512)
-        const discoTileTex = canvasTexture(512, 512, (ctx, w, h) => {
-            ctx.fillStyle = '#0f1117';
-            ctx.fillRect(0, 0, w, h);
-            const cols = 24, rows = 24;
-            const tw = w / cols, th = h / rows;
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    const x = c * tw, y = r * th;
-                    const grad = ctx.createLinearGradient(x, y, x + tw, y + th);
-                    const b = 0.65 + Math.random() * 0.35;
-                    const rC = Math.floor(b * 220 + Math.random() * 35);
-                    const gC = Math.floor(b * 230 + Math.random() * 25);
-                    const bC = Math.floor(b * 255);
-                    grad.addColorStop(0, `rgb(${rC}, ${gC}, ${bC})`);
-                    grad.addColorStop(0.45, '#ffffff');
-                    grad.addColorStop(1, `rgb(${Math.floor(rC * 0.5)}, ${Math.floor(gC * 0.5)}, ${Math.floor(bC * 0.6)})`);
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(x + 1, y + 1, tw - 2, th - 2);
-
-                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
-                    ctx.lineWidth = 0.8;
-                    ctx.strokeRect(x + 1.5, y + 1.5, tw - 3, th - 3);
-                }
-            }
-        });
-
-        // Mirror sphere with flat shading for sharp specular facet gleams
-        const discoBallMat = std(0xffffff, 0.05, 0.98, {
-            map: discoTileTex,
-            roughness: 0.08,
-            metalness: 0.98,
-            flatShading: true,
-            envMapIntensity: 2.8
-        });
-        addMesh(
-            new THREE.SphereGeometry(0.44, 28, 20),
-            discoBallMat,
-            [0, 0, 0],
-            discoBallBody,
-            { cast: false, receive: false }
-        );
-
-        // Top suspension cap & loop
-        addMesh(new THREE.CylinderGeometry(0.1, 0.04, 0.05, 16), std(0xd4d4d8, 0.2, 0.95), [0, 0.44, 0], discoBallBody, { cast: false });
-        addMesh(new THREE.TorusGeometry(0.04, 0.01, 8, 16), std(0xd4d4d8, 0.2, 0.95), [0, 0.48, 0], discoBallBody, { cast: false });
-        // Bottom chrome finial cap
-        addMesh(new THREE.CylinderGeometry(0.03, 0.08, 0.04, 16), std(0xd4d4d8, 0.2, 0.95), [0, -0.44, 0], discoBallBody, { cast: false });
-
-        // 5. Volumetric Sweeping Party Light Beams (Atmospheric misty beams radiating outwards across room)
-        const partyBeamGroup = new THREE.Group();
-        discoBallBody.add(partyBeamGroup);
-
-        const beamAlphaTex = canvasTexture(64, 256, (ctx, w, h) => {
-            const grad = ctx.createLinearGradient(0, 0, 0, h);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
-            grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.28)');
-            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.10)');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-        });
-
-        const beamColors = [0xff007f, 0x00e5ff, 0xf59e0b, 0xa855f7, 0x10b981, 0xec4899, 0x38bdf8, 0xf43f5e];
         const beamMeshes = [];
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            const tilt = 0.82 + (i % 3) * 0.14; // Wide angles (47 - 63 deg) so beams sweep walls & perimeter, never converging on desk
-            const beamGeo = new THREE.ConeGeometry(0.55, 8.2, 16, 1, true);
-            beamGeo.translate(0, -4.1, 0);
-            const beamMat = new THREE.MeshBasicMaterial({
-                map: beamAlphaTex,
-                color: beamColors[i],
-                transparent: true,
-                opacity: 0.0,
-                side: THREE.DoubleSide,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            const beamMesh = new THREE.Mesh(beamGeo, beamMat);
-            beamMesh.rotation.set(Math.sin(angle) * tilt, angle, Math.cos(angle) * tilt);
-            partyBeamGroup.add(beamMesh);
-            beamMeshes.push(beamMesh);
-        }
-
-        // 6. Saturated Dynamic Orbiting Stage Party PointLights (Magenta, Cyan, Gold, Violet, Emerald)
-        const partyPointLights = [
-            { light: new THREE.PointLight(0xff007f, 0, 14.0, 1.3), color: 0xff007f, baseInt: 4.0, beatAmp: 3.5, offset: 0, speed: 2.2, r: 3.2, yAmp: 0.8 },
-            { light: new THREE.PointLight(0x00f0ff, 0, 14.0, 1.3), color: 0x00f0ff, baseInt: 4.0, beatAmp: 3.5, offset: Math.PI * 0.5, speed: 2.5, r: 3.0, yAmp: 0.7 },
-            { light: new THREE.PointLight(0xf59e0b, 0, 13.0, 1.3), color: 0xf59e0b, baseInt: 3.5, beatAmp: 3.0, offset: Math.PI, speed: 1.9, r: 3.5, yAmp: 0.9 },
-            { light: new THREE.PointLight(0xa855f7, 0, 14.0, 1.3), color: 0xa855f7, baseInt: 3.8, beatAmp: 3.2, offset: Math.PI * 1.5, speed: 2.7, r: 2.9, yAmp: 0.75 },
-            { light: new THREE.PointLight(0x10b981, 0, 13.0, 1.3), color: 0x10b981, baseInt: 3.2, beatAmp: 2.8, offset: Math.PI * 0.8, speed: 2.1, r: 3.2, yAmp: 0.6 }
-        ];
-        partyPointLights.forEach(p => {
-            p.light.visible = false;
-            scene.add(p.light);
-        });
-
-        // 7. Stage Wall Washers (Powerful uplights/par fixtures washing left and back walls in concert neons)
-        const stageWallWashers = [
-            {
-                spot: new THREE.SpotLight(0xa855f7, 0, 16.0, 0.75, 0.9, 1.2),
-                pos: [-5.4, 0.3, -3.8],
-                targetPos: [-6.15, 4.2, -3.8],
-                baseInt: 6.5,
-                beatAmp: 5.0
-            },
-            {
-                spot: new THREE.SpotLight(0x00f0ff, 0, 16.0, 0.75, 0.9, 1.2),
-                pos: [-5.4, 0.3, 1.5],
-                targetPos: [-6.15, 4.2, 1.5],
-                baseInt: 6.5,
-                beatAmp: 5.0
-            },
-            {
-                spot: new THREE.SpotLight(0xff007f, 0, 16.0, 0.78, 0.9, 1.2),
-                pos: [-3.8, 0.3, -4.5],
-                targetPos: [-3.8, 4.5, -5.15],
-                baseInt: 7.0,
-                beatAmp: 5.5
-            },
-            {
-                spot: new THREE.SpotLight(0x00e5ff, 0, 16.0, 0.78, 0.9, 1.2),
-                pos: [3.8, 0.3, -4.5],
-                targetPos: [3.8, 4.5, -5.15],
-                baseInt: 7.0,
-                beatAmp: 5.5
-            }
-        ];
-        stageWallWashers.forEach(ww => {
-            ww.target = new THREE.Object3D();
-            ww.spot.position.set(ww.pos[0], ww.pos[1], ww.pos[2]);
-            ww.target.position.set(ww.targetPos[0], ww.targetPos[1], ww.targetPos[2]);
-            ww.spot.visible = false;
-            scene.add(ww.spot);
-            scene.add(ww.target);
-            ww.spot.target = ww.target;
-        });
-
-        // 8. Dynamic Stage Moving-Head Spotlights (Magenta, Cyan, Gold) sweeping walls and perimeter
-        const stageSpotlights = [
-            {
-                spot: new THREE.SpotLight(0xff007f, 0, 16.0, 0.48, 0.85, 1.2),
-                target: new THREE.Object3D(),
-                baseInt: 7.0,
-                beatAmp: 6.0,
-                origin: [discoCenterX - 1.8, 7.8, discoCenterZ - 1.4],
-                speed: 1.6,
-                phase: 0,
-                rX: 4.2,
-                rZ: 3.2,
-                yBase: 3.2,
-                yAmp: 1.8
-            },
-            {
-                spot: new THREE.SpotLight(0x00e5ff, 0, 16.0, 0.48, 0.85, 1.2),
-                target: new THREE.Object3D(),
-                baseInt: 7.0,
-                beatAmp: 6.0,
-                origin: [discoCenterX + 1.8, 7.8, discoCenterZ - 1.4],
-                speed: 1.9,
-                phase: Math.PI * 0.7,
-                rX: 3.8,
-                rZ: 3.5,
-                yBase: 2.8,
-                yAmp: 2.0
-            },
-            {
-                spot: new THREE.SpotLight(0xfacc15, 0, 15.0, 0.46, 0.85, 1.2),
-                target: new THREE.Object3D(),
-                baseInt: 6.0,
-                beatAmp: 5.0,
-                origin: [discoCenterX, 8.0, discoCenterZ + 1.6],
-                speed: 2.2,
-                phase: Math.PI * 1.3,
-                rX: 3.5,
-                rZ: 3.6,
-                yBase: 0.3,
-                yAmp: 0.4
-            }
-        ];
-        stageSpotlights.forEach(sp => {
-            sp.spot.position.set(sp.origin[0], sp.origin[1], sp.origin[2]);
-            sp.spot.visible = false;
-            scene.add(sp.spot);
-            scene.add(sp.target);
-            sp.spot.target = sp.target;
-        });
-
-        // 9. Overhead Beat Strobe Point Light (flashes on kick/snare impacts)
-        const strobeLight = new THREE.PointLight(0xffffff, 0, 16.0, 1.4);
-        strobeLight.position.set(discoCenterX, 6.2, discoCenterZ);
-        strobeLight.visible = false;
-        scene.add(strobeLight);
-
-        // 10. Saturated Moving Neon Light Pools & Wall Gobos across stage surfaces
-        const stageGobos = [
-            // Floor Pools (cyan lounge, magenta DJ station, amber arcade, violet front, emerald front-left)
-            { type: 'floor', color: 0x00e5ff, radX: 3.8, radZ: 1.8, speed: 1.1, phase: 0, scale: 2.5, y: 0.018 },
-            { type: 'floor', color: 0xff007f, radX: 3.8, radZ: -2.4, speed: 1.4, phase: Math.PI * 0.4, scale: 2.5, y: 0.019 },
-            { type: 'floor', color: 0xf59e0b, radX: -3.8, radZ: -2.4, speed: 1.2, phase: Math.PI * 0.8, scale: 2.5, y: 0.020 },
-            { type: 'floor', color: 0xa855f7, radX: 2.0, radZ: 2.8, speed: 1.3, phase: Math.PI * 1.2, scale: 2.5, y: 0.021 },
-            { type: 'floor', color: 0x10b981, radX: -2.2, radZ: 2.6, speed: 1.5, phase: Math.PI * 1.6, scale: 2.5, y: 0.022 },
-            // Left Wall Gobos (sweeping across the dark wall panels)
-            { type: 'wallLeft', color: 0xff007f, yMin: 2.0, yMax: 5.5, zMin: -3.8, zMax: 2.5, speed: 1.2, phase: 0.5, scale: 3.2, x: -5.99 },
-            { type: 'wallLeft', color: 0x00f0ff, yMin: 1.5, yMax: 5.0, zMin: -2.5, zMax: 3.5, speed: 1.6, phase: 2.4, scale: 3.0, x: -5.98 },
-            // Back Wall Gobos (sweeping across back wall & window surrounds)
-            { type: 'wallBack', color: 0xa855f7, xMin: -4.8, xMax: 4.8, yMin: 2.0, yMax: 6.2, speed: 1.1, phase: 1.8, scale: 3.4, z: -4.99 },
-            { type: 'wallBack', color: 0xfacc15, xMin: -4.2, xMax: 4.2, yMin: 1.8, yMax: 5.8, speed: 1.4, phase: 3.6, scale: 2.8, z: -4.98 }
-        ];
-
-        const goboAlphaTex = canvasTexture(256, 256, (ctx, w, h) => {
-            const grad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 0.75)');
-            grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.45)');
-            grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.10)');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-        });
-
+        const partyPointLights = [];
+        const stageWallWashers = [];
+        const stageSpotlights = [];
+        const strobeLight = { visible: false, intensity: 0 };
         const stageGoboMeshes = [];
-        stageGobos.forEach((gb) => {
-            const mat = new THREE.MeshBasicMaterial({
-                map: goboAlphaTex,
-                color: gb.color,
-                transparent: true,
-                opacity: 0,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(gb.scale, gb.scale), mat);
-            if (gb.type === 'floor') {
-                mesh.rotation.x = -Math.PI / 2;
-                mesh.position.set(0, gb.y, 0);
-            } else if (gb.type === 'wallLeft') {
-                mesh.rotation.y = Math.PI / 2;
-                mesh.position.set(gb.x, 3.5, 0);
-            } else if (gb.type === 'wallBack') {
-                mesh.position.set(0, 3.5, gb.z);
-            }
-            scene.add(mesh);
-            stageGoboMeshes.push({
-                mesh,
-                mat,
-                ...gb
-            });
-        });
-
-        // 11. Dynamic Concert Stage Laser Beams (cutting through the air and hitting surfaces)
         const laserBeams = [];
-        const laserColors = [0xff007f, 0x00f0ff, 0x22c55e, 0xa855f7, 0x00f0ff, 0xff007f];
-        const laserGroup = new THREE.Group();
-        scene.add(laserGroup);
-
-        for (let i = 0; i < 6; i++) {
-            const laserGeo = new THREE.CylinderGeometry(0.008, 0.012, 11, 8);
-            laserGeo.translate(0, -5.5, 0);
-            const laserMat = new THREE.MeshBasicMaterial({
-                color: laserColors[i],
-                transparent: true,
-                opacity: 0,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            const laserMesh = new THREE.Mesh(laserGeo, laserMat);
-            laserMesh.position.set(discoCenterX, 7.8, discoCenterZ);
-            laserGroup.add(laserMesh);
-            laserBeams.push({
-                mesh: laserMesh,
-                mat: laserMat,
-                speedX: 2.0 + (i % 3) * 0.6,
-                speedZ: 2.4 + ((i + 1) % 3) * 0.5,
-                phase: (i / 6) * Math.PI * 2,
-                baseTilt: 0.54 + (i % 2) * 0.24
-            });
-        }
-
-        // 11. Specular Disco Ball Reflection Sparkles (crisp spots covering floor, walls, desk)
-        const sparkleCount = mobileAtStart ? 120 : 240;
-        const sparklePos = new Float32Array(sparkleCount * 3);
-        const sparkleColors = new Float32Array(sparkleCount * 3);
-        const sparkleRand = seededRandom(42);
-        const colorPalette = [
-            [1.0, 0.0, 0.55],  // neon magenta
-            [0.0, 0.95, 1.0],  // electric cyan
-            [1.0, 0.85, 0.2],  // gold
-            [0.7, 0.3, 1.0],   // violet
-            [0.15, 0.95, 0.4], // emerald
-            [1.0, 1.0, 1.0]    // pure specular white
-        ];
-        for (let i = 0; i < sparkleCount; i++) {
-            const theta = sparkleRand() * Math.PI * 2;
-            const phi = (sparkleRand() - 0.5) * Math.PI * 0.9;
-            const rad = 2.4 + sparkleRand() * 5.4;
-            sparklePos[i * 3] = discoCenterX + Math.cos(theta) * Math.cos(phi) * rad;
-            sparklePos[i * 3 + 1] = Math.max(0.08, Math.min(8.8, 3.8 + Math.sin(phi) * rad));
-            sparklePos[i * 3 + 2] = discoCenterZ + Math.sin(theta) * Math.cos(phi) * rad;
-
-            const c = colorPalette[Math.floor(sparkleRand() * colorPalette.length)];
-            sparkleColors[i * 3] = c[0];
-            sparkleColors[i * 3 + 1] = c[1];
-            sparkleColors[i * 3 + 2] = c[2];
-        }
-        const sparklesGeo = new THREE.BufferGeometry();
-        sparklesGeo.setAttribute('position', new THREE.BufferAttribute(sparklePos, 3));
-        sparklesGeo.setAttribute('color', new THREE.BufferAttribute(sparkleColors, 3));
-        const sparklesMat = new THREE.PointsMaterial({
-            size: 0.09,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.0,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        const sparklesGroup = new THREE.Group();
-        sparklesGroup.position.set(discoCenterX, 0, discoCenterZ);
-        const sparklesPoints = new THREE.Points(sparklesGeo, sparklesMat);
-        sparklesGroup.add(sparklesPoints);
-        scene.add(sparklesGroup);
+        const sparklesGroup = { visible: false, rotation: { y: 0 } };
+        const sparklesMat = { opacity: 0 };
 
         /* ---------------------------------------------------------
            MUEBLE DE LUJO JUNTO AL VENTANAL: CREDENZA NÓRDICA EN NOGAL SMOKED,
@@ -8596,6 +8264,7 @@
 
         function setQualityMode(lowRes) {
             isLowResMode = Boolean(lowRes);
+            try { localStorage.setItem('edu_quality_mode', isLowResMode ? 'sd' : 'hd'); } catch (e) {}
             currentMaxDpr = isLowResMode ? 0.95 : 2.0;
             renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
             renderer.shadowMap.enabled = !isLowResMode;
@@ -9113,6 +8782,36 @@
             { passive: false }
         );
 
+        // Two-finger Pinch-to-Zoom on Smartphones & Tablets
+        let pinchStartDist = 0;
+        let pinchStartRadius = 0;
+        canvas.addEventListener('touchstart', (e) => {
+            if (api.getViewMode() !== 'stage3d' || e.touches.length !== 2) return;
+            dragging = false;
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            pinchStartDist = Math.hypot(dx, dy);
+            pinchStartRadius = orbit.tR;
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (api.getViewMode() !== 'stage3d' || e.touches.length !== 2 || pinchStartDist <= 10) return;
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const curDist = Math.hypot(dx, dy);
+            const ratio = pinchStartDist / Math.max(20, curDist);
+            if (hotspotMap.has(api.getActiveStation())) {
+                if (ratio > 1.35) {
+                    pinchStartDist = 0;
+                    api.focusStation('overview');
+                }
+                return;
+            }
+            lastInteraction = performance.now();
+            const base = baseRadius();
+            orbit.tR = Math.max(base * 0.6, Math.min(base * 1.35, pinchStartRadius * ratio));
+        }, { passive: true });
+
         window.addEventListener('resize', () => {
             camera.fov = isMobile() ? 52 : (window.innerWidth <= 1024 ? 44 : 38);
             camera.aspect = window.innerWidth / Math.max(1, window.innerHeight);
@@ -9310,7 +9009,9 @@
                     }
                 }
                 tmpN.copy(hs.normalV).applyAxisAngle(UP, focusYaw);
-                const dist = hs.dist * (isMobile() ? 1.3 : 1);
+                const aspect = window.innerWidth / Math.max(1, window.innerHeight);
+                const aspectMult = aspect < 0.65 ? 1.48 : (aspect < 0.85 ? 1.32 : (isMobile() ? 1.25 : 1.0));
+                const dist = hs.dist * aspectMult;
                 // Elements always centered directly in the middle of the screen
                 desiredPos.copy(hs.targetV).addScaledVector(tmpN, dist);
                 desiredPos.y += hs.lift + focusPitch * 1.5;

@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const FULL_SECTIONS_ORDER = ['home', 'credentials', 'projects', 'contact'];
-    const STATIONS_ORDER = ['overview', 'projects', 'credentials', 'home', 'contact', 'arcade', 'music', 'certifications', 'clock'];
+    const STATIONS_ORDER = ['overview', 'projects', 'credentials', 'home', 'contact', 'arcade', 'music', 'certifications', 'clock', 'cat', 'coffee', 'globe', 'tree', 'scenic'];
 
     const STATION_META = {
         overview: {
@@ -257,12 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (window.gsap) {
             window.gsap.ticker.add((time) => {
-                lenis.raf(time * 1000);
+                if (viewMode === 'full') lenis.raf(time * 1000);
             });
             window.gsap.ticker.lagSmoothing(0);
         } else {
             const rafLoop = (time) => {
-                lenis.raf(time);
+                if (viewMode === 'full') lenis.raf(time);
                 requestAnimationFrame(rafLoop);
             };
             requestAnimationFrame(rafLoop);
@@ -757,6 +757,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const FOCUSABLE_STATIONS = STATIONS_ORDER.slice(1);
+    function stepActiveStation(dir) {
+        const cur = Math.max(0, FOCUSABLE_STATIONS.indexOf(activeStationId));
+        const nextIdx = (cur + dir + FOCUSABLE_STATIONS.length) % FOCUSABLE_STATIONS.length;
+        focusStation(FOCUSABLE_STATIONS[nextIdx]);
+    }
+
+    const stagePrevStationBtn = document.getElementById('stage-prev-station-btn');
+    if (stagePrevStationBtn) {
+        stagePrevStationBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+        stagePrevStationBtn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            stepActiveStation(-1);
+        });
+    }
+
+    const stageNextStationBtn = document.getElementById('stage-next-station-btn');
+    if (stageNextStationBtn) {
+        stageNextStationBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+        stageNextStationBtn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            stepActiveStation(1);
+        });
+    }
+
     if (inspectorShowAllBtn) {
         inspectorShowAllBtn.addEventListener('click', () => focusStation('projects'));
     }
@@ -1184,6 +1211,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     closeStudy();
                 } else if (viewMode === 'stage3d' && activeStationId !== 'overview') {
                     focusStation('overview');
+                }
+            } else if (!modal.classList.contains('is-open') && viewMode === 'stage3d' && activeStationId !== 'overview') {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    stepActiveStation(-1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    stepActiveStation(1);
                 }
             }
         });

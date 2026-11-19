@@ -452,6 +452,7 @@ body.stage-3d-active:not(.is-overview) #stage-controls-hint {
     transform: translate3d(-18px, 0, 0);
 }
 
+body.stage-3d-active:not(.is-overview) #stage-nav-cluster,
 body.stage-3d-active:not(.is-overview) #stage-overview-btn {
     display: inline-flex;
 }
@@ -716,6 +717,7 @@ body.full-scroll-active #stage-3d-ui,
 body.full-scroll-active #stage-3d-markers,
 body.full-scroll-active #stage-dock,
 body.full-scroll-active #stage-controls-hint,
+body.full-scroll-active #stage-nav-cluster,
 body.full-scroll-active #stage-overview-btn,
 body.full-scroll-active #inspector-chrome-bar {
     display: none !important;
@@ -2355,10 +2357,25 @@ body.full-scroll-active #xmas-gift-toast {
 @media (max-width: 1180px) {
     #stage-scenic-pill,
     #stage-mood-pill,
+    #stage-nav-cluster,
     .edubot-bubble,
     .cat-bubble {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         background-color: rgba(11, 10, 20, 0.94) !important;
+    }
+}
+
+@media (max-width: 640px) {
+    #stage-scenic-pill {
+        top: 4.3rem !important;
+        padding: 4px 8px !important;
+    }
+    #stage-mood-pill {
+        top: 6.7rem !important;
+        padding: 3px 5px !important;
+    }
+    #stage-nav-cluster {
+        top: 4.3rem !important;
     }
 }

@@ -291,13 +291,20 @@
             </div>
         </div>
 
-        <!-- Back to full room view (visible while inspecting) -->
-        <button id="stage-overview-btn" type="button" data-station-target="overview"
-            title="Volver a la vista general (Esc o clic fuera)"
-            class="pointer-events-auto hidden fixed top-[4.6rem] left-4 sm:left-6 items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0b0a14]/90 hover:bg-pink-300 hover:text-slate-950 text-pink-100 border border-pink-300/45 backdrop-blur-xl font-mono-tech text-[11px] font-semibold shadow-xl transition z-40 cursor-pointer">
-            <span aria-hidden="true">←</span>
-            <span>Vista General</span>
-        </button>
+        <!-- Back to full room view + Quick Prev/Next Station Jumper (visible while inspecting) -->
+        <div id="stage-nav-cluster"
+            class="pointer-events-auto hidden fixed top-[4.6rem] left-4 sm:left-6 items-center gap-1 p-1 rounded-full bg-[#0b0a14]/90 border border-pink-300/45 backdrop-blur-xl shadow-xl z-40">
+            <button id="stage-prev-station-btn" type="button" title="Estación anterior (Flecha Izquierda)"
+                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-pink-300 hover:text-slate-950 text-pink-100 font-mono-tech text-xs font-bold transition cursor-pointer">‹</button>
+            <button id="stage-overview-btn" type="button" data-station-target="overview"
+                title="Volver a la vista general (Esc o clic fuera)"
+                class="flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-pink-300 hover:text-slate-950 text-pink-100 font-mono-tech text-[11px] font-semibold transition cursor-pointer">
+                <span aria-hidden="true">←</span>
+                <span>Vista General</span>
+            </button>
+            <button id="stage-next-station-btn" type="button" title="Siguiente estación (Flecha Derecha)"
+                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-pink-300 hover:text-slate-950 text-pink-100 font-mono-tech text-xs font-bold transition cursor-pointer">›</button>
+        </div>
 
         <!-- Arcade Play Action Pill ("¡Jugar ahora!!") -->
         <div id="stage-arcade-cta"
