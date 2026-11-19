@@ -180,7 +180,10 @@
 
         if (autoPlay || audio) {
             initAudio();
-            audio.src = encodeURI(track.file);
+            const targetSrc = encodeURI(track.file);
+            if (!audio.src || !audio.src.endsWith(targetSrc)) {
+                audio.src = targetSrc;
+            }
         }
 
         // Update widget elements
@@ -219,7 +222,13 @@
         notifyChange();
 
         if (autoPlay && audio) {
-            audio.play().catch(e => console.log('Autoplay deferred:', e));
+            const p = audio.play();
+            if (p && typeof p.catch === 'function') {
+                p.catch(e => {
+                    if (e && e.name === 'AbortError') return;
+                    console.log('Autoplay deferred:', e);
+                });
+            }
         }
     }
 
@@ -230,7 +239,13 @@
             loadTrack(currentIndex, true);
             return;
         }
-        audio.play().catch(e => console.log('Play gesture required:', e));
+        const p = audio.play();
+        if (p && typeof p.catch === 'function') {
+            p.catch(e => {
+                if (e && e.name === 'AbortError') return;
+                console.log('Play gesture required:', e);
+            });
+        }
     }
 
     function pause() {

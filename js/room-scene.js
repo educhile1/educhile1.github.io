@@ -8290,12 +8290,8 @@
 
         if (window.eduSpotifyPlayer && typeof window.eduSpotifyPlayer.onStateChange === 'function') {
             window.eduSpotifyPlayer.onStateChange((state) => {
-                if (activeMood === 'christmas' && state && state.isPlaying) {
-                    setTimeout(() => {
-                        if (activeMood === 'christmas' && window.eduSpotifyPlayer.isPlaying()) {
-                            window.eduSpotifyPlayer.pause();
-                        }
-                    }, 0);
+                if (state && state.isPlaying && !christmasAudio.paused) {
+                    stopChristmasMusic();
                 }
             });
         }
