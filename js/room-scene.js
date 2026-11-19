@@ -2220,12 +2220,36 @@
         drawFace('normal', false, 0);
         const robotFaceTex = new THREE.CanvasTexture(faceCanvas);
 
+        let sharedAudioCtx = null;
+        let userHasInteracted = false;
+        const markUserGesture = () => {
+            userHasInteracted = true;
+            if (sharedAudioCtx && sharedAudioCtx.state === 'suspended') {
+                sharedAudioCtx.resume().catch(() => {});
+            }
+        };
+        window.addEventListener('pointerdown', markUserGesture, { once: true, passive: true });
+        window.addEventListener('touchstart', markUserGesture, { once: true, passive: true });
+        window.addEventListener('keydown', markUserGesture, { once: true, passive: true });
+
+        function getSharedAudioCtx() {
+            const activated = userHasInteracted || (typeof navigator !== 'undefined' && navigator.userActivation && navigator.userActivation.hasBeenActive);
+            if (!activated) return null;
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            if (!sharedAudioCtx) {
+                sharedAudioCtx = new AudioCtx();
+            }
+            if (sharedAudioCtx.state === 'suspended') {
+                sharedAudioCtx.resume().catch(() => {});
+            }
+            return sharedAudioCtx;
+        }
+
         function playRobotChirp() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 const osc1 = ctx.createOscillator();
@@ -2260,10 +2284,8 @@
 
         function playRobotWelcomeSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6 (Harmonic arpeggio)
                 notes.forEach((freq, i) => {
@@ -2285,10 +2307,8 @@
 
         function playCatMeow(variant = 'happy') {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 const filter = ctx.createBiquadFilter();
@@ -2349,10 +2369,8 @@
 
         function playCatPurr() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 const purr = ctx.createOscillator();
@@ -2390,10 +2408,8 @@
         // LOUD, DEEP, HEARTFELT FELINE PURR (Ronroneo fuerte al recibir cariño)
         function playLoudCatPurr() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 // Dual harmonic rumble: 34 Hz sub + 68 Hz warm body
@@ -2443,10 +2459,8 @@
 
         function playWaterLickSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 osc.type = 'sine';
@@ -2465,10 +2479,8 @@
 
         function playFoodCrunchSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 osc.type = 'triangle';
@@ -2491,10 +2503,8 @@
 
         function playToyMouseSqueak() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 osc.type = 'sine';
@@ -2514,10 +2524,8 @@
 
         function playBedSquishSound(isJumpOn = true) {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 osc.type = 'triangle';
@@ -2540,10 +2548,8 @@
 
         function playCatPlayChirp() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 const osc = ctx.createOscillator();
@@ -2566,10 +2572,8 @@
 
         function playToyBounceSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 const osc = ctx.createOscillator();
@@ -2591,10 +2595,8 @@
 
         function playCupPressSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 // 1. Ceramic tactile ping
@@ -2627,10 +2629,8 @@
 
         function playCoffeeSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 const chord = [392.00, 523.25, 659.25, 783.99, 1046.50, 1318.51];
@@ -2653,10 +2653,8 @@
 
         function playTurntableNeedleSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -2674,10 +2672,8 @@
 
         function playTurntableStopSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -2695,10 +2691,8 @@
 
         function playStretchSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -2732,10 +2726,8 @@
 
         function playGlobeSpinSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -2768,10 +2760,8 @@
 
         function playChristmasJingleSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
                 const notes = [
                     { f: 659.25, d: 0.16 }, // E5
@@ -3691,9 +3681,8 @@
 
         function playTechClickSound(freq = 880, dur = 0.08) {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sine';
@@ -4995,10 +4984,8 @@
         --------------------------------------------------------- */
         function playBadgeFlipSound() {
             try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                if (ctx.state === 'suspended') ctx.resume();
+                const ctx = getSharedAudioCtx();
+                if (!ctx) return;
                 const now = ctx.currentTime;
 
                 const osc = ctx.createOscillator();
