@@ -749,12 +749,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const stageOverviewBtn = document.getElementById('stage-overview-btn');
     if (stageOverviewBtn) {
-        stageOverviewBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
-        stageOverviewBtn.addEventListener('click', (ev) => {
+        const goOverview = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             focusStation('overview');
-        });
+        };
+        stageOverviewBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+        stageOverviewBtn.addEventListener('click', goOverview);
+        stageOverviewBtn.addEventListener('touchend', goOverview, { passive: false });
     }
 
     const FOCUSABLE_STATIONS = STATIONS_ORDER.slice(1);
@@ -766,22 +768,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const stagePrevStationBtn = document.getElementById('stage-prev-station-btn');
     if (stagePrevStationBtn) {
-        stagePrevStationBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
-        stagePrevStationBtn.addEventListener('click', (ev) => {
+        const goPrev = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             stepActiveStation(-1);
-        });
+        };
+        stagePrevStationBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+        stagePrevStationBtn.addEventListener('click', goPrev);
+        stagePrevStationBtn.addEventListener('touchend', goPrev, { passive: false });
     }
 
     const stageNextStationBtn = document.getElementById('stage-next-station-btn');
     if (stageNextStationBtn) {
-        stageNextStationBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
-        stageNextStationBtn.addEventListener('click', (ev) => {
+        const goNext = (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             stepActiveStation(1);
-        });
+        };
+        stageNextStationBtn.addEventListener('pointerdown', (ev) => ev.stopPropagation());
+        stageNextStationBtn.addEventListener('click', goNext);
+        stageNextStationBtn.addEventListener('touchend', goNext, { passive: false });
     }
 
     if (inspectorShowAllBtn) {

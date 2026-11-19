@@ -134,6 +134,11 @@ body {
 .mobile-capsule-menu {
     max-height: 0;
     opacity: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    border-width: 0 !important;
+    visibility: hidden;
     transform: translateY(-8px) scale(0.98);
     overflow: hidden;
     pointer-events: none;
@@ -146,6 +151,11 @@ body {
 .mobile-capsule-menu.is-open {
     max-height: 460px;
     opacity: 1;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    margin-top: 0.625rem !important;
+    border-width: 1px !important;
+    visibility: visible;
     transform: translateY(0) scale(1);
     pointer-events: auto;
 }
@@ -2371,9 +2381,15 @@ body.full-scroll-active #xmas-gift-toast {
         top: 4.3rem !important;
         padding: 4px 8px !important;
     }
+    body.stage-3d-active:not(.is-overview) #stage-scenic-pill {
+        display: none !important;
+    }
     #stage-mood-pill {
         top: 6.7rem !important;
         padding: 3px 5px !important;
+    }
+    body.stage-3d-active:not(.is-overview) #stage-mood-pill {
+        top: 4.3rem !important;
     }
     #stage-nav-cluster {
         top: 4.3rem !important;
