@@ -97,9 +97,8 @@
 
         function canvasTexture(w, h, draw, opts) {
             const c = document.createElement('canvas');
-            const initialScale = isLowResMode ? 0.5 : 1.0;
-            c.width = Math.max(32, Math.round(w * initialScale));
-            c.height = Math.max(32, Math.round(h * initialScale));
+            c.width = w;
+            c.height = h;
             const ctx = c.getContext('2d');
             const tex = new THREE.CanvasTexture(c);
             tex.encoding = THREE.sRGBEncoding;
@@ -110,20 +109,9 @@
                 tex.repeat.set(opts.repeat[0], opts.repeat[1]);
             }
             const redraw = () => {
-                const scale = isLowResMode ? 0.5 : 1.0;
-                const targetW = Math.max(32, Math.round(w * scale));
-                const targetH = Math.max(32, Math.round(h * scale));
-                if (c.width !== targetW || c.height !== targetH) {
-                    // Dispose old WebGL texture so Three.js uses gl.texImage2D with the new dimensions instead of gl.texSubImage2D!
-                    tex.dispose();
-                    c.width = targetW;
-                    c.height = targetH;
-                }
-                ctx.save();
-                ctx.setTransform(scale, 0, 0, scale, 0, 0);
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.clearRect(0, 0, w, h);
                 draw(ctx, w, h);
-                ctx.restore();
                 tex.needsUpdate = true;
             };
             redraw();
@@ -8524,9 +8512,10 @@
         function setQualityMode(lowRes) {
             isLowResMode = Boolean(lowRes);
             try { localStorage.setItem('edu_quality_mode', isLowResMode ? 'sd' : 'hd'); } catch (e) {}
-            currentMaxDpr = isLowResMode ? 0.95 : 2.0;
+            currentMaxDpr = isLowResMode ? 0.85 : 2.0;
             renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, currentMaxDpr));
             renderer.shadowMap.enabled = !isLowResMode;
+            renderer.shadowMap.needsUpdate = true;
             if (typeof dust !== 'undefined' && dust) {
                 dust.visible = !isLowResMode;
             }
@@ -8539,7 +8528,6 @@
                     ? 'Modo Baja Resolución (SD Rápido activo) — Clic para Alta Resolución HD'
                     : 'Modo Alta Resolución (HD activo) — Clic para Baja Resolución SD';
             }
-            scheduleStaggeredRedraws();
         }
 
         if (qualityLabelEl) qualityLabelEl.textContent = isLowResMode ? 'SD' : 'HD';
