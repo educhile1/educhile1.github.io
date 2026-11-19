@@ -10,11 +10,12 @@
     <div id="game-wrapper">
         <!-- Top Nav Bar -->
         <header class="top-nav">
-            <a href="index.html#projects" class="back-link">
-                <span>←</span> Volver al Portafolio
+            <a href="index.html" class="back-link">
+                <span>←</span> Oficina 3D
             </a>
             <h1 class="arcade-title">EDU TETRIS ARCADE</h1>
             <div class="nav-right-actions">
+                <button id="quick-mode-badge" type="button" class="nav-mode-pill" title="Modo de piezas activo">7-BAG</button>
                 <button id="quick-pause" type="button" class="nav-icon-btn" title="Pausar / Reanudar (P)" aria-label="Pausar juego">⏸</button>
                 <button id="quick-mute" type="button" class="nav-icon-btn" title="Silenciar / Activar sonido" aria-label="Silenciar sonido">🔊</button>
             </div>
@@ -103,14 +104,22 @@
         <div class="overlay-content">
             <h2>EDU TETRIS</h2>
             <p>Pro Arcade Edition · Crystal FX &amp; Audio Multicapa</p>
+            <div class="mode-selector" role="group" aria-label="Modo de juego">
+                <button type="button" class="mode-btn active" data-mode="classic">
+                    <strong>🕹️ Clásico Pro (7-Bag)</strong>
+                    <span>7 piezas oficiales · T-Spins &amp; Lock Delay</span>
+                </button>
+                <button type="button" class="mode-btn" data-mode="chaos">
+                    <strong>⚡ Arcade Caos (11 Piezas)</strong>
+                    <span>Incluye Super-I, Cruz Imperial, U y Chispa</span>
+                </button>
+            </div>
             <div class="controls-info">
-                <h3>CONTROLES DE TECLADO</h3>
-                <p>Mover <span>← → / A D</span></p>
-                <p>Rotar Horario <span>↑ / W</span></p>
-                <p>Rotar Antihorario <span>Q / Z</span></p>
-                <p>Acelerar Caída <span>↓ / S</span></p>
-                <p>Caída Instantánea <span>Espacio</span></p>
-                <p>Guardar Pieza <span>C / Shift</span></p>
+                <h3>CONTROLES (TECLADO Y TÁCTIL EN TABLERO)</h3>
+                <p>Mover / Deslizar <span>← → / A D / Arrastrar</span></p>
+                <p>Rotar Horario / Anti <span>↑ W / Q Z / Toque</span></p>
+                <p>Caída Rápida / Suave <span>Espacio / ↓ S / Swipe ▼</span></p>
+                <p>Guardar Pieza (Hold) <span>C / Shift / Swipe ▲</span></p>
                 <p>Pausa <span>P / Esc</span></p>
             </div>
             <button id="start-btn" type="button" class="cta-btn">¡INICIAR PARTIDA!</button>

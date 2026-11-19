@@ -652,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const musicTracks = TETRIS_PLAYLIST.map((item, idx) => {
         const track = new Audio(encodeURI(item.file));
-        track.preload = 'auto';
+        track.preload = 'none';
         track.addEventListener('ended', () => {
             // Auto advance to next song in playlist
             const nextTrack = (idx + 1) % TETRIS_PLAYLIST.length;
@@ -753,21 +753,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const COLS = 12;
     const ROWS = 22;
     let BLOCK_SIZE = 30;
+    let blockSpriteCache = {};
 
     function resizeBoard() {
-        const availableHeight = Math.max(380, window.innerHeight - 170);
-        const availableWidth = Math.max(260, Math.min(window.innerWidth - 40, 480));
+        const isMobileLayout = window.innerWidth <= 768;
+        const reservedVertical = isMobileLayout ? 290 : 165;
+        const availableHeight = Math.max(264, window.innerHeight - reservedVertical);
+        const availableWidth = Math.max(216, Math.min(window.innerWidth - (isMobileLayout ? 24 : 40), 480));
 
         const blockSizeFromHeight = Math.floor(availableHeight / ROWS);
-        const blockSizeFromWidth = Math.floor(availableWidth / (COLS + 2));
+        const blockSizeFromWidth = Math.floor(availableWidth / (COLS + (isMobileLayout ? 0.5 : 2)));
 
-        BLOCK_SIZE = Math.max(18, Math.min(34, Math.min(blockSizeFromHeight, blockSizeFromWidth)));
+        BLOCK_SIZE = Math.max(13, Math.min(34, Math.min(blockSizeFromHeight, blockSizeFromWidth)));
+        blockSpriteCache = {};
 
         canvas.width = COLS * BLOCK_SIZE;
         canvas.height = ROWS * BLOCK_SIZE;
 
-        holdCanvas.width = 4 * BLOCK_SIZE;
-        holdCanvas.height = 4 * BLOCK_SIZE;
+        const holdBoxScale = isMobileLayout ? 2.8 : 4;
+        holdCanvas.width = Math.round(holdBoxScale * BLOCK_SIZE);
+        holdCanvas.height = Math.round(holdBoxScale * BLOCK_SIZE);
     }
 
     window.addEventListener('resize', () => {
@@ -891,9 +896,54 @@ document.addEventListener('DOMContentLoaded', () => {
     let heldPiece = null;
     let canHold = true;
     let lastMoveWasRotate = false;
+    let gameMode = 'classic'; // 'classic' (7-Bag standard) | 'chaos' (11 pieces)
+    let pieceBag = [];
+    let lockDelayTimer = 0;
+    let lockResetCount = 0;
+    const LOCK_DELAY_MS = 450;
+    const MAX_LOCK_RESETS = 10;
+
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const quickModeBadge = document.getElementById('quick-mode-badge');
+
+    function setGameMode(mode) {
+        gameMode = mode === 'chaos' ? 'chaos' : 'classic';
+        pieceBag = [];
+        modeBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === gameMode);
+        });
+        if (quickModeBadge) {
+            quickModeBadge.textContent = gameMode === 'chaos' ? '⚡ 11-PIEZAS' : '🕹️ 7-BAG';
+            quickModeBadge.classList.toggle('is-chaos', gameMode === 'chaos');
+        }
+    }
+
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => setGameMode(btn.dataset.mode));
+    });
+    if (quickModeBadge) {
+        quickModeBadge.addEventListener('click', () => {
+            setGameMode(gameMode === 'classic' ? 'chaos' : 'classic');
+            showToast(gameMode === 'chaos' ? '⚡ MODO CAOS 11 PIEZAS' : '🕹️ MODO CLÁSICO 7-BAG', gameMode === 'chaos' ? '#ff007f' : '#00f0ff');
+        });
+    }
+
+    function nextPieceTypeIndex() {
+        const poolSize = gameMode === 'chaos' ? PIECES.length : 7;
+        if (pieceBag.length === 0) {
+            pieceBag = Array.from({ length: poolSize }, (_, i) => i);
+            for (let i = pieceBag.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const tmp = pieceBag[i];
+                pieceBag[i] = pieceBag[j];
+                pieceBag[j] = tmp;
+            }
+        }
+        return pieceBag.pop();
+    }
 
     function getRandomPiece() {
-        const rand = Math.floor(Math.random() * PIECES.length);
+        const rand = nextPieceTypeIndex();
         return {
             matrix: PIECES[rand].map(row => [...row]),
             color: COLORS[rand + 1],
@@ -919,6 +969,8 @@ document.addEventListener('DOMContentLoaded', () => {
         drawNextPieces();
         lastMoveWasRotate = false;
         canHold = true;
+        lockDelayTimer = 0;
+        lockResetCount = 0;
         drawHoldPiece();
 
         if (collides(board, piece)) {
@@ -989,6 +1041,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.stroke();
 
             ctx.restore();
+            return;
+        }
+
+        // Use pre-rendered offscreen crystal block sprite for settled board cells (10x faster on mobile/tablet)
+        if (!isActive && size === BLOCK_SIZE && ctx === context) {
+            const cacheKey = `${colorHex}_${size}`;
+            let sprite = blockSpriteCache[cacheKey];
+            if (!sprite) {
+                sprite = document.createElement('canvas');
+                sprite.width = size;
+                sprite.height = size;
+                drawCrystalBlock(sprite.getContext('2d'), 0, 0, size, colorHex, { isGhost: false, isActive: false });
+                blockSpriteCache[cacheKey] = sprite;
+            }
+            ctx.drawImage(sprite, px, py);
             return;
         }
 
@@ -1610,6 +1677,44 @@ document.addEventListener('DOMContentLoaded', () => {
         return result;
     }
 
+    function triggerHaptic(ms = 12) {
+        try {
+            if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+                navigator.vibrate(ms);
+            }
+        } catch (e) {}
+    }
+
+    function isPieceGrounded() {
+        if (!piece) return false;
+        const test = { ...piece, pos: { x: piece.pos.x, y: piece.pos.y + 1 } };
+        return collides(board, test);
+    }
+
+    function resetLockDelayIfGrounded() {
+        if (isPieceGrounded() && lockResetCount < MAX_LOCK_RESETS) {
+            lockDelayTimer = 0;
+            lockResetCount++;
+        }
+    }
+
+    function lockCurrentPiece() {
+        if (!piece) return;
+        const wasTSpin = detectTSpin(piece);
+        const normX = (piece.pos.x + piece.matrix[0].length / 2) / COLS;
+        playEnhancedSound('drop', normX);
+        addScreenShake(2.5);
+        addBoardImpulse(2.2);
+        emitPieceContactFX(piece, false);
+
+        const lockX = piece.pos.x + piece.matrix[0].length / 2;
+        const lockY = piece.pos.y;
+        merge(board, piece);
+        sweep(wasTSpin, lockX, lockY);
+        resetPlayer();
+        dropCounter = 0;
+    }
+
     function pieceRotate(dir) {
         if (!piece || paused || gameOver) return;
         const originalPos = piece.pos.x;
@@ -1633,6 +1738,7 @@ document.addEventListener('DOMContentLoaded', () => {
             playEnhancedSound('wallKick');
         }
         lastMoveWasRotate = true;
+        resetLockDelayIfGrounded();
     }
 
     function pieceMove(dir) {
@@ -1644,6 +1750,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lastMoveWasRotate = false;
             const normX = (piece.pos.x + piece.matrix[0].length / 2) / COLS;
             playEnhancedSound('move', normX);
+            resetLockDelayIfGrounded();
         }
     }
 
@@ -1679,21 +1786,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (collides(board, piece)) {
             piece.pos.y--;
-            const wasTSpin = detectTSpin(piece);
-            const normX = (piece.pos.x + piece.matrix[0].length / 2) / COLS;
-            playEnhancedSound('drop', normX);
-            addScreenShake(2.5);
-            addBoardImpulse(2.2);
-            emitPieceContactFX(piece, false);
-
-            const lockX = piece.pos.x + piece.matrix[0].length / 2;
-            const lockY = piece.pos.y;
-            merge(board, piece);
-            sweep(wasTSpin, lockX, lockY);
-            resetPlayer();
+            if (isManual || lockDelayTimer >= LOCK_DELAY_MS) {
+                lockCurrentPiece();
+            }
         } else {
             lastMoveWasRotate = false;
+            lockDelayTimer = 0;
             if (isManual) {
+                updateScore(1);
                 playEnhancedSound('softDrop');
             }
         }
@@ -1710,6 +1810,10 @@ document.addEventListener('DOMContentLoaded', () => {
         piece.pos.y--;
         const endY = piece.pos.y;
         const dropDist = Math.max(0, endY - startY);
+        if (dropDist > 0) {
+            updateScore(dropDist * 2);
+        }
+        triggerHaptic(14);
 
         // Draw vertical laser trails from original startY down to landed endY
         piece.matrix.forEach((row, y) => {
@@ -1903,8 +2007,16 @@ document.addEventListener('DOMContentLoaded', () => {
         lastTime = time;
 
         dropCounter += deltaTime;
-        if (dropCounter > dropInterval) {
-            pieceDrop(false);
+        if (isPieceGrounded()) {
+            lockDelayTimer += deltaTime;
+            if (lockDelayTimer >= LOCK_DELAY_MS) {
+                lockCurrentPiece();
+            }
+        } else {
+            lockDelayTimer = 0;
+            if (dropCounter > dropInterval) {
+                pieceDrop(false);
+            }
         }
 
         draw(dt, time);
@@ -2055,6 +2167,82 @@ document.addEventListener('DOMContentLoaded', () => {
     bindTouch('touch-rotate', () => pieceRotate(1));
     bindTouch('touch-drop', () => hardDrop());
     bindTouch('touch-hold', () => hold());
+
+    // Direct Touch Gestures on the Tetris Board Canvas & Hold Box
+    if (holdCanvas) {
+        holdCanvas.style.cursor = 'pointer';
+        holdCanvas.addEventListener('click', () => hold());
+    }
+
+    let boardTouchStartX = 0;
+    let boardTouchStartY = 0;
+    let boardTouchLastX = 0;
+    let boardTouchLastY = 0;
+    let boardTouchStartTime = 0;
+    let boardTouchMoved = false;
+
+    canvas.addEventListener('touchstart', (e) => {
+        if (paused || gameOver || !startScreen.classList.contains('hidden') || e.touches.length !== 1) return;
+        e.preventDefault();
+        const t = e.touches[0];
+        boardTouchStartX = t.clientX;
+        boardTouchStartY = t.clientY;
+        boardTouchLastX = t.clientX;
+        boardTouchLastY = t.clientY;
+        boardTouchStartTime = performance.now();
+        boardTouchMoved = false;
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+        if (paused || gameOver || !startScreen.classList.contains('hidden') || e.touches.length !== 1) return;
+        e.preventDefault();
+        const t = e.touches[0];
+        const stepPx = Math.max(18, BLOCK_SIZE * 0.92);
+        const dx = t.clientX - boardTouchLastX;
+        const dy = t.clientY - boardTouchLastY;
+
+        if (Math.abs(dx) >= stepPx) {
+            const steps = Math.trunc(dx / stepPx);
+            for (let i = 0; i < Math.abs(steps); i++) {
+                pieceMove(steps > 0 ? 1 : -1);
+            }
+            boardTouchLastX += steps * stepPx;
+            boardTouchMoved = true;
+        }
+        if (dy >= stepPx * 1.15) {
+            const downSteps = Math.trunc(dy / (stepPx * 1.15));
+            for (let i = 0; i < downSteps; i++) {
+                pieceDrop(true);
+            }
+            boardTouchLastY += downSteps * stepPx * 1.15;
+            boardTouchMoved = true;
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+        if (paused || gameOver || !startScreen.classList.contains('hidden')) return;
+        e.preventDefault();
+        const elapsed = performance.now() - boardTouchStartTime;
+        const changed = e.changedTouches && e.changedTouches[0];
+        if (!changed) return;
+        const totalDx = changed.clientX - boardTouchStartX;
+        const totalDy = changed.clientY - boardTouchStartY;
+
+        // Fast vertical swipe down -> Hard Drop
+        if (totalDy > Math.max(46, BLOCK_SIZE * 2.2) && Math.abs(totalDy) > Math.abs(totalDx) * 1.5 && elapsed < 260) {
+            hardDrop();
+            return;
+        }
+        // Fast vertical swipe up -> Hold Piece
+        if (totalDy < -Math.max(46, BLOCK_SIZE * 2.2) && Math.abs(totalDy) > Math.abs(totalDx) * 1.5 && elapsed < 280) {
+            hold();
+            return;
+        }
+        // Quick tap without dragging -> Rotate Clockwise
+        if (!boardTouchMoved && Math.hypot(totalDx, totalDy) < 16 && elapsed < 260) {
+            pieceRotate(1);
+        }
+    }, { passive: false });
 
     // =================================================================
     // GAME LIFECYCLE

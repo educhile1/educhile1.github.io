@@ -133,6 +133,71 @@ body::before {
     box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
 }
 
+.nav-mode-pill {
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(0, 240, 255, 0.14);
+    border: 1px solid rgba(0, 240, 255, 0.45);
+    color: var(--neon-blue);
+    letter-spacing: 0.8px;
+    transition: all 0.2s ease;
+}
+
+.nav-mode-pill.is-chaos {
+    background: rgba(255, 0, 127, 0.18);
+    border-color: rgba(255, 0, 127, 0.55);
+    color: #ff66b2;
+}
+
+.mode-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.mode-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    padding: 10px;
+    color: #cbd5e1;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.mode-btn strong {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.78rem;
+    color: #ffffff;
+}
+
+.mode-btn span {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.2;
+}
+
+.mode-btn.active {
+    background: rgba(0, 240, 255, 0.14);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.28);
+}
+
+.mode-btn[data-mode="chaos"].active {
+    background: rgba(255, 0, 127, 0.16);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 16px rgba(255, 0, 127, 0.32);
+}
+
 /* Main Layout */
 .game-container {
     display: flex;
@@ -187,6 +252,7 @@ canvas#tetris {
     width: auto;
     height: auto;
     object-fit: contain;
+    touch-action: none;
 }
 
 /* Sidebars (Left & Right for widescreen, or single for mobile) */
@@ -527,46 +593,67 @@ canvas#tetris {
     font-family: monospace;
 }
 
-/* Responsiveness */
+/* Responsiveness — Zero-scroll Mobile & Tablet Arcade Layout */
 @media (max-width: 768px) {
+    body {
+        padding: 6px;
+        justify-content: flex-start;
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    .top-nav {
+        margin-bottom: 4px;
+    }
+
     .arcade-title {
-        font-size: 1.15rem;
-        letter-spacing: 1.5px;
+        font-size: 0.95rem;
+        letter-spacing: 1px;
     }
 
     .nav-right-actions {
         width: auto;
+        gap: 5px;
     }
 
     .back-link {
-        font-size: 0.8rem;
-        padding: 5px 10px;
+        font-size: 0.75rem;
+        padding: 4px 8px;
     }
 
     .game-container {
         flex-direction: column;
         align-items: center;
-        gap: 10px;
-        padding: 10px;
+        gap: 6px;
+        padding: 8px;
+        width: 100%;
     }
 
     .sidebar {
         width: 100%;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
+        gap: 5px;
     }
 
     .sidebar-box {
-        padding: 8px;
+        padding: 5px 4px;
+        border-radius: 8px;
     }
 
     .sidebar-box h2 {
-        font-size: 0.65rem;
+        font-size: 0.56rem;
+        margin-bottom: 2px;
+        letter-spacing: 0.8px;
     }
 
     .sidebar-box .metric {
-        font-size: 1.05rem;
+        font-size: 0.92rem;
+    }
+
+    canvas#hold-piece {
+        max-height: 38px;
+        width: auto;
     }
 
     .sidebar-box.next-box {
@@ -576,28 +663,62 @@ canvas#tetris {
     #next-pieces {
         flex-direction: row;
         justify-content: center;
-        flex-wrap: wrap;
-        gap: 6px;
+        flex-wrap: nowrap;
+        gap: 4px;
+        margin-top: 0;
+    }
+
+    #next-pieces canvas {
+        max-height: 36px;
+        width: auto;
     }
 
     .sidebar-box.audio-box {
         grid-column: span 4;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: space-between;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
+        padding: 4px 8px;
     }
 
-    .sidebar-box.audio-box h2 {
-        margin: 0;
+    .sidebar-box.audio-box h2,
+    .now-playing-label {
+        display: none;
     }
 
     .audio-controls {
         margin-bottom: 0;
+        gap: 3px;
+    }
+
+    .audio-controls button,
+    .music-controls button {
+        padding: 4px 6px;
+        font-size: 0.7rem;
+    }
+
+    .music-controls {
+        display: flex;
+        gap: 3px;
+        width: auto;
     }
 
     .mobile-controls {
         display: flex;
+        margin-top: 6px;
+        gap: 8px;
+    }
+
+    .touch-btn {
+        height: 46px;
+        min-width: 48px;
+        padding: 8px 10px;
+        font-size: 0.95rem;
+    }
+
+    .mode-selector {
+        grid-template-columns: 1fr;
     }
 }
